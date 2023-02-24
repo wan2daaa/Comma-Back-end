@@ -1,4 +1,4 @@
-package com.team.valueup.entity;
+package com.team.comma.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

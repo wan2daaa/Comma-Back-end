@@ -1,4 +1,4 @@
-package com.team.valueup;
+package com.team.comma;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

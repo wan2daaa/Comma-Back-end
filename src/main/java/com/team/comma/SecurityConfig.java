@@ -1,4 +1,4 @@
-package com.team.valueup;
+package com.team.comma;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

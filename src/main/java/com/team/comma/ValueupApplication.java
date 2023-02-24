@@ -1,4 +1,4 @@
-package com.team.valueup;
+package com.team.comma;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

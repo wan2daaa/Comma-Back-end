@@ -1,4 +1,4 @@
-package com.team.valueup;
+package com.team.comma;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
