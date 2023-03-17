@@ -13,6 +13,8 @@ import com.team.comma.dto.RequestUserDTO;
 import com.team.comma.dto.TokenDTO;
 import com.team.comma.service.UserService;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 
 @RestController
 public class UserController {
@@ -20,8 +22,8 @@ public class UserController {
 	@Autowired UserService userService;
 	
 	@RequestMapping(value = "/login" , method = RequestMethod.POST)
-	public TokenDTO login(@RequestBody RequestUserDTO userDTO) throws AccountException {
-		return userService.login(userDTO);
+	public TokenDTO login(@RequestBody RequestUserDTO userDTO , HttpServletResponse response) throws AccountException {
+		return userService.login(userDTO , response);
 	}
 	
 	@RequestMapping(value = "/register" , method = RequestMethod.POST)
