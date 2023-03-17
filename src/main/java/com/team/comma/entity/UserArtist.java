@@ -22,7 +22,7 @@ public class UserArtist {
 	private Long artistKey;
 	
 	@ManyToOne(fetch = FetchType.LAZY , cascade = CascadeType.PERSIST)
-	private UserInfo userInfo;
+	private UserEntity userInfo;
 	
 	@Column(length = 45 , nullable = false)
 	private String artistName;
