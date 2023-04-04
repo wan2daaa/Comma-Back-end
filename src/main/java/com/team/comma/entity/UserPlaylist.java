@@ -14,11 +14,14 @@ import java.time.LocalDateTime;
 @Table
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserPlayList {
+public class UserPlaylist {
 
     @Id
     @GeneratedValue
     private Long playKey;
+
+    @ManyToOne(fetch = FetchType.LAZY , cascade = CascadeType.PERSIST)
+    private UserEntity userInfo;
 
 //    @Column(length = 10, nullable = false)
 //    private Long musicKey;

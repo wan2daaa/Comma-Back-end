@@ -1,7 +1,7 @@
 package com.team.comma.repository;
 
 import com.team.comma.entity.UserEntity;
-import com.team.comma.entity.UserPlayList;
+import com.team.comma.entity.UserPlaylist;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -23,7 +23,7 @@ public class MainRepositoryTest {
         // given
 
         // when
-        List<UserEntity> result = mainRepository.findAllByUserKey(1234);
+        List<UserPlaylist> result = mainRepository.findAllByUserInfo_UserKey(1234);
 
         // then
 

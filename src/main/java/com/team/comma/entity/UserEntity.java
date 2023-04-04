@@ -72,8 +72,8 @@ public class UserEntity implements UserDetails {
 	@OneToMany(mappedBy = "genreName" , cascade = CascadeType.PERSIST , orphanRemoval = true)
 	private List<UserGenre> genreName;
 
-	@OneToMany(mappedBy = "playKey" , cascade = CascadeType.PERSIST , orphanRemoval = true)
-	private List<UserPlayList> playKey;
+	@OneToMany(mappedBy = "userInfo" , cascade = CascadeType.PERSIST , orphanRemoval = true)
+	private List<UserPlaylist> playlist;
 
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Builder.Default
