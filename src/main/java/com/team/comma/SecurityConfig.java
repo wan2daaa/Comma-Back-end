@@ -1,8 +1,8 @@
 package com.team.comma;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -11,30 +11,27 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.team.comma.security.JwtAuthenticationFilter;
 import com.team.comma.security.JwtTokenProvider;
 
+import lombok.RequiredArgsConstructor;
+
 
 @Configuration
 @EnableWebSecurity
+@PropertySource("classpath:application-oauth.properties")
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-	@Autowired
-	JwtTokenProvider jwtTokenProvider;
+	final private JwtTokenProvider jwtTokenProvider;
 	
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
         http.csrf().disable()
                 .authorizeHttpRequests()
                 .requestMatchers("/security/**").hasRole("USER")
                 .anyRequest().permitAll()
-                // .and().logout() RefreshToken 제거
-                // .logoutUrl("/logout")
-                //.deleteCookies("refreshToken")
-                // .logoutSuccessUrl("/")
-                /*.and()	OAuth 2.0
-                .oauth2Login() 
-                .clientRegistrationRepository(clientRegistrationRepository())
-                .authorizedClientService(authorizedClientService())
-                */
+                .and().logout() 
+                .logoutUrl("/logout") // logout URL에 접근하면
+                .deleteCookies("refreshToken") 
+                .deleteCookies("accessToken") // refreshToken 과 accessToken 삭제
                 .and()
                 .exceptionHandling()
                 .authenticationEntryPoint((request , response , Exception) -> {
