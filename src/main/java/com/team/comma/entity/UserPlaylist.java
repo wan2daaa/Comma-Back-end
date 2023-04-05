@@ -3,12 +3,14 @@ package com.team.comma.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
+@Data
 @Entity
 @Builder
 @Table
@@ -20,7 +22,7 @@ public class UserPlaylist {
     @GeneratedValue
     private Long playKey;
 
-    @ManyToOne(fetch = FetchType.LAZY , cascade = CascadeType.PERSIST)
+    @ManyToOne
     private UserEntity userInfo;
 
 //    @Column(length = 10, nullable = false)
