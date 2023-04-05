@@ -14,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.team.comma.dto.ArtistResponse;
 import com.team.comma.dto.TrackResponse;
-import com.team.comma.spotify.CreateAccessToken;
+import com.team.comma.spotify.CreationAccessToken;
 
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.exceptions.detailed.UnauthorizedException;
@@ -30,7 +30,7 @@ public class SpotifyServiceTest {
 
 	@BeforeEach
 	public void reissueAccessToken() {
-		CreateAccessToken accessToken = new CreateAccessToken();
+		CreationAccessToken accessToken = new CreationAccessToken();
 
 		spotifyApi = new SpotifyApi.Builder().setAccessToken(accessToken.accesstoken()).build();
 	}
@@ -53,7 +53,7 @@ public class SpotifyServiceTest {
 	@DisplayName("새로운 토큰 발급")
 	public void reissueToken() {
 		// given
-		CreateAccessToken token = new CreateAccessToken();
+		CreationAccessToken token = new CreationAccessToken();
 
 		// when
 		Throwable thrown = catchThrowable(() -> token.accesstoken());

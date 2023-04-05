@@ -7,6 +7,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Stream;
 
 import javax.security.auth.login.AccountException;
 
@@ -14,6 +15,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -25,9 +29,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.google.gson.Gson;
 import com.team.comma.dto.LoginRequest;
-import com.team.comma.dto.MessageDTO;
+import com.team.comma.dto.MessageResponse;
+import com.team.comma.dto.OAuthRequest;
 import com.team.comma.dto.RegisterRequest;
 import com.team.comma.exception.GeneralExceptionHandler;
+import com.team.comma.service.OAuthService;
 import com.team.comma.service.UserService;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,12 +44,14 @@ public class UserControllerTest {
 
 	@Mock
 	UserService userService;
+	
+	@Mock
+	OAuthService oauthService;
 
 	MockMvc mockMvc;
 	Gson gson;
 	private String userEmail = "email@naver.com";
 	private String userPassword = "password";
-	// private String userName = "name";
 
 	@BeforeEach
 	public void init() {
@@ -57,8 +65,8 @@ public class UserControllerTest {
 	public void loginUser() throws Exception {
 		// given
 		final String api = "/login";
-		final LoginRequest request = new LoginRequest(userEmail, userPassword);
-		final MessageDTO message = MessageDTO.builder().code(1).message("로그인이 성공적으로 되었습니다.").data(request.getEmail()).build();
+		final LoginRequest request = getLoginRequest();
+		final MessageResponse message = MessageResponse.builder().code(1).message("로그인이 성공적으로 되었습니다.").data(request.getEmail()).build();
 		doReturn(message).when(userService).login(any(LoginRequest.class));
 
 		// when
@@ -68,8 +76,8 @@ public class UserControllerTest {
 		// then
 		resultActions.andExpect(status().isOk());
 
-		final MessageDTO response = gson.fromJson(
-				resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8), MessageDTO.class);
+		final MessageResponse response = gson.fromJson(
+				resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8), MessageResponse.class);
 		assertThat(response.getCode()).isEqualTo(1);
 		assertThat(response.getMessage()).isEqualTo("로그인이 성공적으로 되었습니다.");
 		assertThat(response.getData()).isEqualTo(request.getEmail());
@@ -80,7 +88,7 @@ public class UserControllerTest {
 	public void notExistUser() throws Exception {
 		// given
 		final String api = "/login";
-		LoginRequest request = new LoginRequest(userEmail, userPassword);
+		LoginRequest request = getLoginRequest();
 		AccountException exception = new AccountException("정보가 올바르지 않습니다.");
 		doThrow(exception).when(userService).login(any(LoginRequest.class));
 
@@ -90,8 +98,8 @@ public class UserControllerTest {
 
 		// then
 		resultActions.andExpect(status().isOk());
-		final MessageDTO response = gson.fromJson(
-				resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8), MessageDTO.class);
+		final MessageResponse response = gson.fromJson(
+				resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8), MessageResponse.class);
 
 		assertThat(response.getCode()).isEqualTo(-1);
 		assertThat(response.getMessage()).isEqualTo("정보가 올바르지 않습니다.");
@@ -102,8 +110,8 @@ public class UserControllerTest {
 	public void registUser() throws Exception {
 		// given
 		final String api = "/register";
-		LoginRequest request = new LoginRequest(userEmail, userPassword);
-		doReturn(MessageDTO.builder().code(1).message("성공적으로 가입되었습니다.").build()).when(userService)
+		LoginRequest request = getLoginRequest();
+		doReturn(MessageResponse.builder().code(1).message("성공적으로 가입되었습니다.").build()).when(userService)
 				.register(any(RegisterRequest.class));
 
 		// when
@@ -112,8 +120,8 @@ public class UserControllerTest {
 
 		// then
 		resultActions.andExpect(status().isOk());
-		final MessageDTO response = gson.fromJson(
-				resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8), MessageDTO.class);
+		final MessageResponse response = gson.fromJson(
+				resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8), MessageResponse.class);
 		
 		assertThat(response.getCode()).isEqualTo(1);
 		assertThat(response.getMessage()).isEqualTo("성공적으로 가입되었습니다.");
@@ -124,7 +132,7 @@ public class UserControllerTest {
 	public void existUserException() throws Exception {
 		// given
 		final String api = "/register";
-		LoginRequest request = new LoginRequest(userEmail, userPassword);
+		LoginRequest request = getLoginRequest();
 		doThrow(new AccountException("이미 존재하는 계정입니다.")).when(userService)
 				.register(any(RegisterRequest.class));
 
@@ -134,11 +142,71 @@ public class UserControllerTest {
 
 		// then
 		resultActions.andExpect(status().isOk());
-		final MessageDTO response = gson.fromJson(
-				resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8), MessageDTO.class);
+		final MessageResponse response = gson.fromJson(
+				resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8), MessageResponse.class);
 		
 		assertThat(response.getCode()).isEqualTo(-1);
 		assertThat(response.getMessage()).isEqualTo("이미 존재하는 계정입니다.");
+	}
+	
+	@ParameterizedTest
+	@DisplayName("OAuth 로그인 실패 _ 토큰 만료")
+	@MethodSource("oauthServerParameter")
+	public void loginReject_FalsifyToken(final String server) throws Exception {
+		// given
+		final String api = "/oauth/login";
+		OAuthRequest oauthRequest = new OAuthRequest(server , "code", "state");
+		MessageResponse message = new MessageResponse(-1, "유효하지 않은 접근입니다." , null);
+		doReturn(message).when(oauthService).loginOAuthServer(any(OAuthRequest.class));
+		
+		// when
+		final ResultActions resultActions = mockMvc.perform(
+				MockMvcRequestBuilders.post(api).content(gson.toJson(oauthRequest)).contentType(MediaType.APPLICATION_JSON));
+				
+		// then
+		resultActions.andExpect(status().isOk());
+		final MessageResponse response = gson.fromJson(
+				resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8), MessageResponse.class);
+		
+		assertThat(response.getCode()).isEqualTo(-1);
+		assertThat(response.getMessage()).isEqualTo("유효하지 않은 접근입니다.");	
+	}
+	
+	private static Stream<Arguments> oauthServerParameter() {
+	    return Stream.of(
+	            Arguments.of("google"),
+	            Arguments.of("naver"),
+	            Arguments.of("kakao")
+	    );
+	}
+	
+	@Test
+	@DisplayName("OAuth 로그인 실패 _ 일치하지 않은 소셜 서버")
+	public void loginReject_wrongSocialServer() throws Exception {
+		// given
+		final String api = "/oauth/login";
+		OAuthRequest oauthRequest = new OAuthRequest("unknown" , "code", "state");
+		MessageResponse message = new MessageResponse(-1, "잘못된 소셜서버입니다." , null);
+		doReturn(message).when(oauthService).loginOAuthServer(any(OAuthRequest.class));
+		
+		// when
+		final ResultActions resultActions = mockMvc.perform(
+				MockMvcRequestBuilders.post(api).content(gson.toJson(oauthRequest)).contentType(MediaType.APPLICATION_JSON));
+		
+		// then
+		resultActions.andExpect(status().isOk());
+		final MessageResponse response = gson.fromJson(
+				resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8), MessageResponse.class);
+		
+		assertThat(response.getCode()).isEqualTo(-1);
+		assertThat(response.getMessage()).isEqualTo("잘못된 소셜서버입니다.");
+	}
+	
+	public LoginRequest getLoginRequest() {
+		return LoginRequest.builder()
+				.email(userEmail)
+				.password(userPassword)
+				.build();
 	}
 
 }

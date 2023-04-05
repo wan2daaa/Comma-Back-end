@@ -24,7 +24,7 @@ public class RefreshTokenRepositoryTest {
 	@DisplayName("refreshToken 탐색")
 	public void searchRefreshToken() {
 		// given
-		RefreshToken refreshTokenInstance = refreshToken();
+		RefreshToken refreshTokenInstance = getRefreshToken();
 		
 		// when
 		repository.save(refreshTokenInstance);
@@ -39,7 +39,7 @@ public class RefreshTokenRepositoryTest {
 	@DisplayName("refreshToken 저장")
 	public void saveRefreshToken() {
 		// given
-		RefreshToken refreshTokenInstance = refreshToken();
+		RefreshToken refreshTokenInstance = getRefreshToken();
 		
 		// when
 		RefreshToken result = repository.save(refreshTokenInstance);
@@ -53,7 +53,7 @@ public class RefreshTokenRepositoryTest {
 	@DisplayName("refreshToken 삭제")
 	public void removeRefreshToken() {
 		// given
-		RefreshToken refreshTokenInstance = refreshToken();
+		RefreshToken refreshTokenInstance = getRefreshToken();
 		
 		// when
 		RefreshToken result1 = repository.save(refreshTokenInstance);
@@ -66,7 +66,7 @@ public class RefreshTokenRepositoryTest {
 		assertThat(result1.getRefreshToken()).isEqualTo(refreshToken);
 	}
 	
-	public RefreshToken refreshToken() {
+	public RefreshToken getRefreshToken() {
 		return RefreshToken.builder()
 				.refreshToken(refreshToken)
 				.keyEmail(keyEmail)

@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MessageDTO {
+public class MessageResponse {
 	@Schema(description = "응답 코드")
 	private int code;
 	@Schema(description = "응답 메세지")

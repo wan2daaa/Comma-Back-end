@@ -2,7 +2,7 @@ package com.team.comma.security;
 
 import jakarta.servlet.http.Cookie;
 
-public class CreateCookie {
+public class CreationCookie {
 
 	public static Cookie createRefreshToken(String refreshToken) {
 		Cookie cookie = new Cookie("refreshToken", refreshToken);

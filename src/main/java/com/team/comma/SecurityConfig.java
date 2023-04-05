@@ -29,9 +29,12 @@ public class SecurityConfig {
                 .requestMatchers("/security/**").hasRole("USER")
                 .anyRequest().permitAll()
                 .and().logout() 
-                .logoutUrl("/logout") // logout URL에 접근하면
+                .logoutUrl("/logout")  // logout URL에 접근하면
                 .deleteCookies("refreshToken") 
                 .deleteCookies("accessToken") // refreshToken 과 accessToken 삭제
+                .logoutSuccessHandler((request, response, authentication) -> {
+                    response.sendRedirect("/logout/message");
+                })
                 .and()
                 .exceptionHandling()
                 .authenticationEntryPoint((request , response , Exception) -> {

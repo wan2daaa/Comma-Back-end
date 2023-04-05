@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @PropertySource("classpath:application-oauth.properties")
-public class GetAccessToken {
+public class IssuanceAccessToken {
 	
 	final private Environment env;
 	final private String CLIENT_PROPERTY_KEY= "spring.security.oauth2.client.registration.";

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.team.comma.dto.MessageDTO;
+import com.team.comma.dto.MessageResponse;
 import com.team.comma.dto.RegisterRequest;
 import com.team.comma.service.UserService;
 
@@ -21,11 +21,11 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class CreateOAuthUser {
+public class RegisterationOAuthUser {
 	
 	final private UserService userService;
 	
-	public MessageDTO createKakaoUser(String token) throws AccountException {
+	public MessageResponse createKakaoUser(String token) throws AccountException {
 		String reqURL = "https://kapi.kakao.com/v2/user/me"; // access_token을 이용하여 사용자 정보 조회
 		try {
 			URL url = new URL(reqURL);
@@ -52,11 +52,11 @@ public class CreateOAuthUser {
 			return userService.loginOauth(createUser(email));
 		} catch (IOException e) {
 			e.printStackTrace();
-			return MessageDTO.builder().code(-1).message("로그인을 하는 도중에 오류가 발생했습니다.").build();
+			return MessageResponse.builder().code(-1).message("로그인을 하는 도중에 오류가 발생했습니다.").build();
 		}
 	}
 
-	public MessageDTO createNaverUser(String token) throws AccountException {
+	public MessageResponse createNaverUser(String token) throws AccountException {
 		String reqURL = "https://openapi.naver.com/v1/nid/me"; // access_token을 이용하여 사용자 정보 조회
 		try {
 			URL url = new URL(reqURL);
@@ -89,11 +89,11 @@ public class CreateOAuthUser {
 			
 		} catch (IOException e) {
 			e.printStackTrace();
-			return MessageDTO.builder().code(-1).message("로그인을 하는 도중에 오류가 발생했습니다.").build();
+			return MessageResponse.builder().code(-1).message("로그인을 하는 도중에 오류가 발생했습니다.").build();
 		}
 	}
 	
-	public MessageDTO createGoogleUser(String token) throws AccountException {
+	public MessageResponse createGoogleUser(String token) throws AccountException {
 		String reqURL = "https://www.googleapis.com/userinfo/v2/me?access_token=" + token; // access_token을 이용하여 사용자 정보 조회
 		try {
 			URL url = new URL(reqURL);
@@ -119,7 +119,7 @@ public class CreateOAuthUser {
 			return userService.loginOauth(createUser(email));
 		} catch (IOException e) {
 			e.printStackTrace();
-			return MessageDTO.builder().code(-1).message("로그인을 하는 도중에 오류가 발생했습니다.").build();
+			return MessageResponse.builder().code(-1).message("로그인을 하는 도중에 오류가 발생했습니다.").build();
 		}
 	}
 	

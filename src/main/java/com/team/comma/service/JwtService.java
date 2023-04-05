@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.team.comma.dto.MessageDTO;
+import com.team.comma.dto.MessageResponse;
 import com.team.comma.entity.RefreshToken;
 import com.team.comma.entity.Token;
 import com.team.comma.exception.FalsifyTokenException;
@@ -23,10 +23,10 @@ public class JwtService {
 	RefreshTokenRepository refreshTokenRepository;
 
 	@Transactional
-	public void login(Token tokenDto) {
+	public void login(Token tokenEntity) {
 
-		RefreshToken refreshToken = RefreshToken.builder().keyEmail(tokenDto.getKey())
-				.refreshToken(tokenDto.getRefreshToken()).build();
+		RefreshToken refreshToken = RefreshToken.builder().keyEmail(tokenEntity.getKey())
+				.refreshToken(tokenEntity.getRefreshToken()).build();
 		String loginUserEmail = refreshToken.getKeyEmail();
 
 		RefreshToken token = refreshTokenRepository.existsByKeyEmail(loginUserEmail);
@@ -42,7 +42,7 @@ public class JwtService {
 		return refreshTokenRepository.findByRefreshToken(refreshToken);
 	}
 
-	public MessageDTO validateRefreshToken(String refreshToken) {
+	public MessageResponse validateRefreshToken(String refreshToken) {
 		try {
 			RefreshToken refreshToken1 = getRefreshToken(refreshToken).get();
 			String createdAccessToken = jwtTokenProvider.validateRefreshToken(refreshToken1);
@@ -53,15 +53,15 @@ public class JwtService {
 		}
 	}
 
-	public MessageDTO createRefreshJson(String createdAccessToken) {
+	public MessageResponse createRefreshJson(String createdAccessToken) {
 		if (createdAccessToken == null) {
-			return MessageDTO.builder()
+			return MessageResponse.builder()
 					.code(-7)
 					.message("Refresh 토큰이 만료되었습니다. 로그인이 필요합니다.")
 					.build();
 		}
 		
-		return MessageDTO.builder()
+		return MessageResponse.builder()
 				.code(7)
 				.message(createdAccessToken)
 				.build();

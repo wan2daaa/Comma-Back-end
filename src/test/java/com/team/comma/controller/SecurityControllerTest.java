@@ -19,7 +19,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.google.gson.Gson;
-import com.team.comma.dto.MessageDTO;
+import com.team.comma.dto.MessageResponse;
 import com.team.comma.service.JwtService;
 
 import jakarta.servlet.http.Cookie;
@@ -53,8 +53,8 @@ public class SecurityControllerTest {
 
 		// then
 		resultActions.andExpect(status().isOk());
-		final MessageDTO messageDTO = gson.fromJson(
-				resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8), MessageDTO.class);
+		final MessageResponse messageDTO = gson.fromJson(
+				resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8), MessageResponse.class);
 
 		assertThat(messageDTO.getCode()).isEqualTo(-1);
 		assertThat(messageDTO.getMessage()).isEqualTo("인증되지 않은 사용자입니다.");
@@ -65,7 +65,7 @@ public class SecurityControllerTest {
 	public void createNewAccessToken() throws Exception {
 		// given
 		final String api = "/authentication/denied";
-		doReturn(MessageDTO.builder().code(7).message("token").build()).when(jwtService).validateRefreshToken("token");
+		doReturn(MessageResponse.builder().code(7).message("token").build()).when(jwtService).validateRefreshToken("token");
 		Cookie cookie = new Cookie("refreshToken", "token");
 
 		// when
@@ -73,8 +73,8 @@ public class SecurityControllerTest {
 
 		// then
 		resultActions.andExpect(status().isOk());
-		final MessageDTO messageDTO = gson.fromJson(
-				resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8), MessageDTO.class);
+		final MessageResponse messageDTO = gson.fromJson(
+				resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8), MessageResponse.class);
 
 		assertThat(messageDTO.getCode()).isEqualTo(7);
 		assertThat(messageDTO.getMessage()).isEqualTo("token");
@@ -91,8 +91,8 @@ public class SecurityControllerTest {
 
 		// then
 		resultActions.andExpect(status().isOk());
-		MessageDTO result = gson.fromJson(
-				resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8), MessageDTO.class);
+		MessageResponse result = gson.fromJson(
+				resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8), MessageResponse.class);
 
 		assertThat(result.getCode()).isEqualTo(-1);
 		assertThat(result.getMessage()).isEqualTo("인가되지 않은 사용자입니다.");

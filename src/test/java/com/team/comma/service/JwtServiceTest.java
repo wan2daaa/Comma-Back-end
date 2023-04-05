@@ -17,7 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.team.comma.dto.MessageDTO;
+import com.team.comma.dto.MessageResponse;
 import com.team.comma.entity.RefreshToken;
 import com.team.comma.entity.Token;
 import com.team.comma.exception.FalsifyTokenException;
@@ -40,8 +40,8 @@ public class JwtServiceTest {
 	@DisplayName("토큰 생성")
 	public void createToken() {
 		// given
-		Token token = token();
-		RefreshToken refreshToken = refreshToken();
+		Token token = getToken();
+		RefreshToken refreshToken = getRefreshToken();
 		doReturn(refreshToken).when(refreshTokenRepository).existsByKeyEmail(refreshToken.getKeyEmail());
 		doNothing().when(refreshTokenRepository).deleteByKeyEmail(refreshToken.getKeyEmail());
 		doReturn(null).when(refreshTokenRepository).save(any(RefreshToken.class));
@@ -57,13 +57,13 @@ public class JwtServiceTest {
 	@DisplayName("AccessToken 토큰 반환")
 	public void createAccessToken() {
 		// given
-		RefreshToken refreshToken = refreshToken();
+		RefreshToken refreshToken = getRefreshToken();
 		Optional<RefreshToken> tokens = Optional.of(refreshToken);
 		doReturn(tokens).when(refreshTokenRepository).findByRefreshToken(refreshToken.getRefreshToken());
 		doReturn("Token").when(jwtTokenProvider).validateRefreshToken(any(RefreshToken.class));
 		
 		// when
-		MessageDTO result = jwtService.validateRefreshToken(refreshToken.getRefreshToken());
+		MessageResponse result = jwtService.validateRefreshToken(refreshToken.getRefreshToken());
 		
 		// then
 		assertThat(result.getCode()).isEqualTo(7);
@@ -74,13 +74,13 @@ public class JwtServiceTest {
 	@DisplayName("만료된 RefreshToken 반환")
 	public void expiretoken() {
 		// given
-		RefreshToken refreshToken = refreshToken();
+		RefreshToken refreshToken = getRefreshToken();
 		Optional<RefreshToken> tokens = Optional.of(refreshToken);
 		doReturn(tokens).when(refreshTokenRepository).findByRefreshToken(refreshToken.getRefreshToken());
 		doReturn(null).when(jwtTokenProvider).validateRefreshToken(any(RefreshToken.class));
 		
 		// when
-		MessageDTO result = jwtService.validateRefreshToken(refreshToken.getRefreshToken());
+		MessageResponse result = jwtService.validateRefreshToken(refreshToken.getRefreshToken());
 		
 		// then
 		assertThat(result.getCode()).isEqualTo(-7);
@@ -91,7 +91,7 @@ public class JwtServiceTest {
 	@DisplayName("변조된 RefreshToken 예외")
 	public void falsifytoken() {
 		// given
-		RefreshToken refreshToken = refreshToken();
+		RefreshToken refreshToken = getRefreshToken();
 		doThrow(NoSuchElementException.class).when(refreshTokenRepository).findByRefreshToken(refreshToken.getRefreshToken());
 		
 		// when
@@ -102,11 +102,11 @@ public class JwtServiceTest {
 		
 	}
 
-	public RefreshToken refreshToken() {
+	public RefreshToken getRefreshToken() {
 		return RefreshToken.builder().keyEmail("keyEmail").refreshToken("refreshToken").build();
 	}
 
-	public Token token() {
+	public Token getToken() {
 		return Token.builder().key("keyEmail").refreshToken("refreshToken").build();
 	}
 
