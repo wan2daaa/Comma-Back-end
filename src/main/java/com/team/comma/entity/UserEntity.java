@@ -68,10 +68,13 @@ public class UserEntity implements UserDetails {
 	
 	@OneToMany(mappedBy = "userInfo" , cascade = CascadeType.PERSIST , orphanRemoval = true)
 	private List<UserArtist> artistName;
-	
+
 	@OneToMany(mappedBy = "genreName" , cascade = CascadeType.PERSIST , orphanRemoval = true)
 	private List<UserGenre> genreName;
-	
+
+	@OneToMany(mappedBy = "userInfo" , cascade = CascadeType.PERSIST , orphanRemoval = true)
+	private List<UserPlaylist> playlist;
+
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Builder.Default
     private List<String> roles = new LinkedList<String>();
