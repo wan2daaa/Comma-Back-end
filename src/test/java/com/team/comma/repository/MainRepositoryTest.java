@@ -1,5 +1,6 @@
 package com.team.comma.repository;
 
+import com.team.comma.dto.PlaylistResponse;
 import com.team.comma.entity.UserEntity;
 import com.team.comma.entity.UserPlaylist;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;  //자동 import되지 않음
 import static org.assertj.core.api.InstanceOfAssertFactories.LOCAL_DATE;
 
+
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class MainRepositoryTest {
@@ -25,10 +27,10 @@ public class MainRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
+    final String userEmail = "email@naver.com";
+
     private UserEntity getUserEntity() {
-        final String userEmail = "email@naver.com";
-        final String userPassword = "password";
-        return UserEntity.builder().email(userEmail).password(userPassword).userType(UserEntity.UserType.GeneralUser)
+        return UserEntity.builder().email(userEmail).userType(UserEntity.UserType.GeneralUser)
                 .roles(Collections.singletonList("ROLE_USER")).build();
     }
     private UserPlaylist getUserPlaylist(UserEntity userEntity) {
@@ -45,7 +47,7 @@ public class MainRepositoryTest {
         // given
 
         // when
-        List<UserPlaylist> result = mainRepository.findAllByUserEntity_UserKey(Long.parseLong("1234"));
+        List<PlaylistResponse> result = mainRepository.findAllByUserEntity_Email("email@naver.com");
 
         // then
         assertThat(result.size()).isEqualTo(0);
@@ -59,7 +61,7 @@ public class MainRepositoryTest {
 
         // when
         mainRepository.save(playlist);
-        List<UserPlaylist> result = mainRepository.findAllByUserEntity_UserKey(userEntity.getUserKey());
+        List<PlaylistResponse> result = mainRepository.findAllByUserEntity_Email(userEntity.getEmail());
 
         // then
         assertThat(result.size()).isEqualTo(1);
