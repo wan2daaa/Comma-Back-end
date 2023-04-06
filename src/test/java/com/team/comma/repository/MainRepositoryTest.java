@@ -40,13 +40,7 @@ public class MainRepositoryTest {
         // given
         final UserEntity user = UserEntity.builder()
                 .userKey((long) 1234)
-                .password("abcd")
                 .email("test")
-                .name("test")
-                .sex("test")
-                .age("test")
-                .recommandTime(LocalDateTime.of(0001, 1 ,01, 13, 45, 00) )
-                .isLeave(0)
                 .build();
         userRepository.save(user);
         final UserEntity userEntity = userRepository.findByEmail("test");
@@ -71,13 +65,7 @@ public class MainRepositoryTest {
         // given
         final UserEntity user = UserEntity.builder()
                 .userKey((long) 1234)
-                .password("abcd")
                 .email("test")
-                .name("test")
-                .sex("test")
-                .age("test")
-                .recommandTime(LocalDateTime.of(0001, 1 ,01, 13, 45, 00) )
-                .isLeave(0)
                 .build();
 
         userRepository.save(user);

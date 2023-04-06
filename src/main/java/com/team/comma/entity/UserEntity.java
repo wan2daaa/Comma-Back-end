@@ -1,25 +1,25 @@
 package com.team.comma.entity;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -38,46 +38,36 @@ public class UserEntity implements UserDetails {
 	@GeneratedValue
 	private Long userKey;
 
-	@Column(length = 50 , nullable = false)
+	@Column(length = 50, nullable = false)
 	private String email;
 
-	@Column(length = 50 , nullable = false)
+	@Column(length = 50, nullable = true)
 	private String password;
 
-	@Column(length = 10 , nullable = false)
-	private String name;
-
-	@Column(length = 10 , nullable = false)
-	private String sex;
-
-	@Column(length = 5 , nullable = false)
-	private String age;
-
-	@Column(length = 10 , nullable = false)
-	private LocalDateTime recommandTime;
-
-	@CreationTimestamp
 	@Column(nullable = false)
-	private LocalDateTime joinTime;
+	@Enumerated(EnumType.STRING)
+	private UserType userType;
 
-	@Column(nullable = false)
-	private int isLeave;
-
-	@Column(nullable = true)
-	private LocalDateTime leaveTime;
-
-	@OneToMany(mappedBy = "userInfo" , cascade = CascadeType.PERSIST , orphanRemoval = true)
+	@OneToMany(mappedBy = "userInfo", cascade = CascadeType.PERSIST, orphanRemoval = true)
 	private List<UserArtist> artistName;
 
-	@OneToMany(mappedBy = "genreName" , cascade = CascadeType.PERSIST , orphanRemoval = true)
+	@OneToMany(mappedBy = "genreName", cascade = CascadeType.PERSIST, orphanRemoval = true)
 	private List<UserGenre> genreName;
 
-	@OneToMany(mappedBy = "userInfo" , cascade = CascadeType.PERSIST , orphanRemoval = true)
+	@OneToMany(mappedBy = "userPlaylist" , cascade = CascadeType.PERSIST , orphanRemoval = true)
 	private List<UserPlaylist> playlist;
+
+	@OneToOne(fetch = FetchType.LAZY , cascade = CascadeType.PERSIST, orphanRemoval = true)
+	private UserInfo userInfo;
 
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Builder.Default
-    private List<String> roles = new LinkedList<String>();
+	private List<String> roles = new LinkedList<String>();
+
+	// OAuth 인지 , GeneralUser 인지 확인
+	public enum UserType {
+		GeneralUser, OAuthUser
+	}
 
 	// 연관관계 편의 메소드
 	public void addUserArtist(UserArtist userArtist) {
@@ -96,15 +86,15 @@ public class UserEntity implements UserDetails {
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		Collection<GrantedAuthority> authorities = new ArrayList<>();
 
-		for(String role : roles){
-            authorities.add(new SimpleGrantedAuthority(role));
-        }
-        return authorities;
+		for (String role : roles) {
+			authorities.add(new SimpleGrantedAuthority(role));
+		}
+		return authorities;
 	}
 
 	@Override
 	public String getPassword() {
-		return null;
+		return password;
 	}
 
 	@Override
@@ -131,5 +121,4 @@ public class UserEntity implements UserDetails {
 	public boolean isEnabled() {
 		return true;
 	}
-
 }
