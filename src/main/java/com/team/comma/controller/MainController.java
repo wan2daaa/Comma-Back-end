@@ -23,4 +23,5 @@ public class MainController {
             @RequestHeader("email") final String email) {
         return ResponseEntity.ok(mainService.getUserPlaylist(email));
     }
+
 }
