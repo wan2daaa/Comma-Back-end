@@ -37,48 +37,48 @@ public class UserEntity implements UserDetails {
 	@Id
 	@GeneratedValue
 	private Long userKey;
-	
+
 	@Column(length = 50 , nullable = false)
 	private String email;
-	
+
 	@Column(length = 50 , nullable = false)
 	private String password;
-	
+
 	@Column(length = 10 , nullable = false)
 	private String name;
-	
+
 	@Column(length = 10 , nullable = false)
 	private String sex;
-	
+
 	@Column(length = 5 , nullable = false)
 	private String age;
-	
+
 	@Column(length = 10 , nullable = false)
 	private LocalDateTime recommandTime;
-	
+
 	@CreationTimestamp
 	@Column(nullable = false)
 	private LocalDateTime joinTime;
-	
+
 	@Column(nullable = false)
 	private int isLeave;
-	
+
 	@Column(nullable = true)
 	private LocalDateTime leaveTime;
-	
+
 	@OneToMany(mappedBy = "userInfo" , cascade = CascadeType.PERSIST , orphanRemoval = true)
 	private List<UserArtist> artistName;
 
 	@OneToMany(mappedBy = "genreName" , cascade = CascadeType.PERSIST , orphanRemoval = true)
 	private List<UserGenre> genreName;
 
-	@OneToMany(mappedBy = "userPlayList" , cascade = CascadeType.PERSIST , orphanRemoval = true)
+	@OneToMany(mappedBy = "userInfo" , cascade = CascadeType.PERSIST , orphanRemoval = true)
 	private List<UserPlaylist> playlist;
 
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Builder.Default
     private List<String> roles = new LinkedList<String>();
-	
+
 	// 연관관계 편의 메소드
 	public void addUserArtist(UserArtist userArtist) {
 		getArtistName().add(userArtist);
@@ -91,11 +91,11 @@ public class UserEntity implements UserDetails {
 	}
 
 	// JWT Security
-	
+
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		Collection<GrantedAuthority> authorities = new ArrayList<>();
-		
+
 		for(String role : roles){
             authorities.add(new SimpleGrantedAuthority(role));
         }
@@ -131,5 +131,5 @@ public class UserEntity implements UserDetails {
 	public boolean isEnabled() {
 		return true;
 	}
-	
+
 }
