@@ -72,7 +72,7 @@ public class UserEntity implements UserDetails {
 	@OneToMany(mappedBy = "genreName" , cascade = CascadeType.PERSIST , orphanRemoval = true)
 	private List<UserGenre> genreName;
 
-	@OneToMany(mappedBy = "userInfo" , cascade = CascadeType.PERSIST , orphanRemoval = true)
+	@OneToMany(mappedBy = "userPlayList" , cascade = CascadeType.PERSIST , orphanRemoval = true)
 	private List<UserPlaylist> playlist;
 
 	@ElementCollection(fetch = FetchType.EAGER)
@@ -84,7 +84,7 @@ public class UserEntity implements UserDetails {
 		getArtistName().add(userArtist);
 		userArtist.setUserInfo(this);
 	}
-	
+
 	public void addGenreName(UserGenre userGenre) {
 		getGenreName().add(userGenre);
 		userGenre.setUserInfo(this);

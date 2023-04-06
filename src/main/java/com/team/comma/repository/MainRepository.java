@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface MainRepository extends JpaRepository<UserPlaylist, Long> {
 
-    List<UserPlaylist> findAllByUserInfo_UserKey(int i);
+    List<UserPlaylist> findAllByUserPlayList_UserKey(Long i);
 }

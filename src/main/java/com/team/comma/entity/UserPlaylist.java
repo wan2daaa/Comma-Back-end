@@ -22,8 +22,8 @@ public class UserPlaylist {
     @GeneratedValue
     private Long playKey;
 
-    @ManyToOne
-    private UserEntity userInfo;
+    @ManyToOne(fetch = FetchType.LAZY , cascade = CascadeType.PERSIST)
+    private UserEntity userPlayList;
 
 //    @Column(length = 10, nullable = false)
 //    private Long musicKey;
