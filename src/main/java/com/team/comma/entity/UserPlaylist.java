@@ -23,7 +23,7 @@ public class UserPlaylist {
     private Long playKey;
 
     @ManyToOne(fetch = FetchType.LAZY , cascade = CascadeType.PERSIST)
-    private UserEntity userPlayList;
+    private UserEntity userEntity;
 
 //    @Column(length = 10, nullable = false)
 //    private Long musicKey;

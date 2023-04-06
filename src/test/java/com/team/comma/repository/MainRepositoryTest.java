@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;  //자동 import되지 않음
@@ -24,12 +25,27 @@ public class MainRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
+    private UserEntity getUserEntity() {
+        final String userEmail = "email@naver.com";
+        final String userPassword = "password";
+        return UserEntity.builder().email(userEmail).password(userPassword).userType(UserEntity.UserType.GeneralUser)
+                .roles(Collections.singletonList("ROLE_USER")).build();
+    }
+    private UserPlaylist getUserPlaylist(UserEntity userEntity) {
+        return UserPlaylist.builder()
+                .userEntity(userEntity)
+                .alarmSetDay("01")
+                .alarmStartTime("01")
+                .alarmEndTime("01")
+                .build();
+    }
+
     @Test
     public void 마이플레이리스트조회_0(){
         // given
 
         // when
-        List<UserPlaylist> result = mainRepository.findAllByUserPlayList_UserKey(Long.parseLong("1234"));
+        List<UserPlaylist> result = mainRepository.findAllByUserEntity_UserKey(Long.parseLong("1234"));
 
         // then
         assertThat(result.size()).isEqualTo(0);
@@ -38,23 +54,12 @@ public class MainRepositoryTest {
     @Test
     public void 마이플레이리스트조회_1() {
         // given
-        final UserEntity user = UserEntity.builder()
-                .userKey((long) 1234)
-                .email("test")
-                .build();
-        userRepository.save(user);
-        final UserEntity userEntity = userRepository.findByEmail("test");
-
-        final UserPlaylist playlist = UserPlaylist.builder()
-                .userPlayList(userEntity)
-                .alarmSetDay("01")
-                .alarmStartTime("01")
-                .alarmEndTime("01")
-                .build();
+        final UserEntity userEntity = getUserEntity();
+        final UserPlaylist playlist = getUserPlaylist(userEntity);
 
         // when
         mainRepository.save(playlist);
-        List<UserPlaylist> result = mainRepository.findAllByUserPlayList_UserKey(userEntity.getUserKey());
+        List<UserPlaylist> result = mainRepository.findAllByUserEntity_UserKey(userEntity.getUserKey());
 
         // then
         assertThat(result.size()).isEqualTo(1);
@@ -63,27 +68,14 @@ public class MainRepositoryTest {
     @Test
     public void 마이플레이리스트등록() {
         // given
-        final UserEntity user = UserEntity.builder()
-                .userKey((long) 1234)
-                .email("test")
-                .build();
-
-        userRepository.save(user);
-        final UserEntity userEntity = userRepository.findByEmail("test");
-
-        final UserPlaylist playlist = UserPlaylist.builder()
-                .userPlayList(userEntity)
-                .alarmSetDay("01")
-                .alarmStartTime("01")
-                .alarmEndTime("01")
-                .build();
+        final UserEntity userEntity = getUserEntity();
+        final UserPlaylist playlist = getUserPlaylist(userEntity);
 
         // when
         final UserPlaylist result = mainRepository.save(playlist);
 
         // then
         assertThat(result.getPlayKey()).isNotNull();
-        assertThat(result.getUserPlayList().getUserKey().equals((long) 1234));
         assertThat(result.getAlarmSetDay().equals("01"));
         assertThat(result.getAlarmStartTime().equals("01"));
         assertThat(result.getAlarmEndTime().equals("01"));
