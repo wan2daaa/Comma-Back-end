@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.team.comma.dto.MessageResponse;
 import com.team.comma.dto.OAuthRequest;
-import com.team.comma.oauth.RegisterationOAuthUser;
-import com.team.comma.oauth.IssuanceAccessToken;
+import com.team.comma.util.oauth.RegisterationOAuthUser;
+import com.team.comma.util.oauth.IssuanceAccessToken;
 
 import lombok.RequiredArgsConstructor;
 

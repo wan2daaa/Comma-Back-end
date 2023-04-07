@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import com.team.comma.dto.ArtistResponse;
 import com.team.comma.dto.TrackResponse;
 import com.team.comma.exception.SpotifyException;
-import com.team.comma.spotify.CreationAccessToken;
+import com.team.comma.util.spotify.CreationAccessToken;
 
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
@@ -26,9 +26,9 @@ public class SpotifyService {
 	SpotifyApi spotifyApi = new SpotifyApi.Builder().setAccessToken("Token").build();
 
 	public void refreshAccessToken() {
-		CreationAccessToken accessToken = new CreationAccessToken();
+		CreationAccessToken creationAccessToken = new CreationAccessToken();
 
-		spotifyApi = new SpotifyApi.Builder().setAccessToken(accessToken.accesstoken()).build();
+		spotifyApi = new SpotifyApi.Builder().setAccessToken(creationAccessToken.accessToken()).build();
 	}
 
 	public ArrayList<ArtistResponse> searchArtist_Sync(String artist) {

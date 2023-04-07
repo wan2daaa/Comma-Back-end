@@ -29,10 +29,10 @@ import com.team.comma.dto.LoginRequest;
 import com.team.comma.dto.MessageResponse;
 import com.team.comma.dto.RegisterRequest;
 import com.team.comma.entity.Token;
-import com.team.comma.entity.UserEntity;
-import com.team.comma.entity.UserEntity.UserType;
+import com.team.comma.entity.User;
+import com.team.comma.entity.User.UserType;
 import com.team.comma.repository.UserRepository;
-import com.team.comma.security.JwtTokenProvider;
+import com.team.comma.util.security.JwtTokenProvider;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -66,7 +66,7 @@ public class UserServiceTest {
 	public void deniedToGeralUserAccessOAuthUser() throws AccountException {
 		// given
 		LoginRequest login = getLoginRequest();
-		UserEntity userEntity = getOauthUserEntity();
+		User userEntity = getOauthUserEntity();
 		doReturn(userEntity).when(userRepository).findByEmail(userEmail);
 
 		// when
@@ -84,7 +84,7 @@ public class UserServiceTest {
 	public void existGeneralUser() {
 		// given
 		RegisterRequest registerRequest = getRequestUser();
-		UserEntity generalUserEntity = getGeneralUserEntity();
+		User generalUserEntity = getGeneralUserEntity();
 		doReturn(generalUserEntity).when(userRepository).findByEmail(registerRequest.getEmail());
 
 		// when
@@ -99,9 +99,9 @@ public class UserServiceTest {
 	public void registerOauthUser() throws AccountException {
 		// given
 		RegisterRequest registerRequest = getRequestUser();
-		UserEntity generalUserEntity = getGeneralUserEntity();
+		User generalUserEntity = getGeneralUserEntity();
 		doReturn(null).when(userRepository).findByEmail(registerRequest.getEmail());
-		doReturn(generalUserEntity).when(userRepository).save(any(UserEntity.class));
+		doReturn(generalUserEntity).when(userRepository).save(any(User.class));
 
 		// when
 		MessageResponse result = userService.loginOauth(registerRequest);
@@ -116,7 +116,7 @@ public class UserServiceTest {
 	public void loginOauthUser() throws AccountException {
 		// given
 		RegisterRequest registerRequest = getRequestUser();
-		UserEntity userEntity = getOauthUserEntity();
+		User userEntity = getOauthUserEntity();
 		doReturn(userEntity).when(userRepository).findByEmail(userEmail);
 
 		// when
@@ -132,7 +132,7 @@ public class UserServiceTest {
 	public void loginException_notEqualPassword() throws AccountException {
 		// given
 		LoginRequest loginRequest = getLoginRequest();
-		UserEntity userEntity = getUserEntity();
+		User userEntity = getUserEntity();
 		userEntity.setPassword("unknown");
 		doReturn(userEntity).when(userRepository).findByEmail(loginRequest.getEmail());
 		
@@ -167,7 +167,7 @@ public class UserServiceTest {
 	public void loginUserTest() throws AccountException {
 		// given
 		LoginRequest login = getLoginRequest();
-		UserEntity userEntity = getUserEntity();
+		User userEntity = getUserEntity();
 		doReturn(userEntity).when(userRepository).findByEmail(userEmail);
 		doReturn(Token.builder().build()).when(jwtTokenProvider).createAccessToken(userEntity.getUsername(),
 				userEntity.getRoles());
@@ -201,9 +201,9 @@ public class UserServiceTest {
 	public void registUser() throws AccountException {
 		// given
 		RegisterRequest registerRequest = getRegisterRequest();
-		UserEntity userEntity = getUserEntity();
+		User userEntity = getUserEntity();
 		doReturn(null).when(userRepository).findByEmail(registerRequest.getEmail());
-		doReturn(userEntity).when(userRepository).save(any(UserEntity.class));
+		doReturn(userEntity).when(userRepository).save(any(User.class));
 
 		// when
 		MessageResponse message = userService.register(registerRequest);
@@ -214,8 +214,8 @@ public class UserServiceTest {
 		assertThat(message.getData()).isEqualTo(userEntity.getEmail());
 	}
 
-	private UserEntity getUserEntity() {
-		return UserEntity.builder().email(userEmail).password(userPassword)
+	private User getUserEntity() {
+		return User.builder().email(userEmail).password(userPassword)
 				.roles(Collections.singletonList("ROLE_USER")).build();
 	}
 	
@@ -228,12 +228,12 @@ public class UserServiceTest {
 				.isLeave(0).email(userEmail).name(userName).password(userPassword).build();
 	}
 
-	public UserEntity getOauthUserEntity() {
-		return UserEntity.builder().email(userEmail).userType(UserType.OAuthUser).password(null).build();
+	public User getOauthUserEntity() {
+		return User.builder().email(userEmail).userType(UserType.OAuthUser).password(null).build();
 	}
 
-	public UserEntity getGeneralUserEntity() {
-		return UserEntity.builder().email(userEmail).userType(UserType.GeneralUser).password(userPassword).build();
+	public User getGeneralUserEntity() {
+		return User.builder().email(userEmail).userType(UserType.GeneralUser).password(userPassword).build();
 	}
 
 	public RegisterRequest getRequestUser() {

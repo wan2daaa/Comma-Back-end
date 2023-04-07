@@ -28,7 +28,7 @@ public class RegisterRequest {
 	private String age;
 	@Schema(description = "음악 추천 날짜 / '2000-01-01 12:00:00' 형식으로 지정" , example = "2000-01-01 12:00:00")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-	private LocalDateTime recommandTime;
+	private String recommendTime;
 	@Schema(description = "탈퇴 여부를 말하며 {1 : 탈퇴한 사용자} , {0 : 정상 사용자} 를 의미합니다. " , example = "0 혹은 1")
 	private int isLeave;
 }

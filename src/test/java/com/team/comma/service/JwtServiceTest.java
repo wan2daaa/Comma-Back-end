@@ -22,7 +22,7 @@ import com.team.comma.entity.RefreshToken;
 import com.team.comma.entity.Token;
 import com.team.comma.exception.FalsifyTokenException;
 import com.team.comma.repository.RefreshTokenRepository;
-import com.team.comma.security.JwtTokenProvider;
+import com.team.comma.util.security.JwtTokenProvider;
 
 @ExtendWith(MockitoExtension.class)
 public class JwtServiceTest {
