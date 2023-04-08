@@ -1,5 +1,6 @@
 package com.team.comma.service;
 
+import com.team.comma.constant.ResponseCode;
 import java.util.Collections;
 
 import javax.security.auth.login.AccountException;
@@ -48,7 +49,11 @@ public class UserService {
 
 		createJwtCookie(userEntity);
 
-		return MessageResponse.builder().code(1).message("로그인이 성공적으로 되었습니다.").data(userEntity.getEmail()).build();
+		return MessageResponse.builder()
+				.code(ResponseCode.LOGIN_SUCCESS)
+				.message("로그인이 성공적으로 되었습니다.")
+				.data(userEntity.getEmail())
+			.build();
 	}
 
 	public MessageResponse register(final RegisterRequest registerRequest) throws AccountException {
@@ -62,7 +67,11 @@ public class UserService {
 
 		User result = userRepository.save(buildEntity);
 
-		return MessageResponse.builder().code(1).message("성공적으로 가입되었습니다.").data(result.getEmail()).build();
+		return MessageResponse.builder()
+			.code(ResponseCode.REGISTER_SUCCESS)
+			.message("성공적으로 가입되었습니다.")
+			.data(result.getEmail())
+			.build();
 	}
 
 	public MessageResponse loginOauth(final RegisterRequest registerRequest) throws AccountException {
@@ -78,14 +87,20 @@ public class UserService {
 
 		createJwtCookie(userEntity);
 
-		return MessageResponse.builder().code(1).message("로그인이 성공적으로 되었습니다.").data(userEntity.getEmail()).build();
+		return MessageResponse.builder()
+			.code(ResponseCode.LOGIN_SUCCESS)
+			.message("로그인이 성공적으로 되었습니다.")
+			.data(userEntity.getEmail())
+			.build();
 	}
 
 	public User createUser(final RegisterRequest RegisterRequest , final UserType userType) {
-		return User.builder().email(RegisterRequest.getEmail())
-				.password(RegisterRequest.getPassword())
-				.roles(Collections.singletonList("ROLE_USER")).userType(userType)
-				.build();
+		return User.builder()
+			.email(RegisterRequest.getEmail())
+			.password(RegisterRequest.getPassword())
+			.roles(Collections.singletonList("ROLE_USER"))
+			.userType(userType)
+			.build();
 	}
 
 	public void createJwtCookie(User userEntity) {

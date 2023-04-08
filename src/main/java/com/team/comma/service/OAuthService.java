@@ -1,5 +1,6 @@
 package com.team.comma.service;
 
+import com.team.comma.constant.ResponseCode;
 import javax.security.auth.login.AccountException;
 
 import org.springframework.stereotype.Service;
@@ -45,7 +46,10 @@ public class OAuthService {
 			}
 		}
 		
-		return MessageResponse.builder().code(-1).message("잘못된 소셜서버입니다.").build();
+		return MessageResponse.builder()
+			.code(ResponseCode.SIMPLE_REQUEST_FAILURE)
+			.message("잘못된 소셜서버입니다.")
+			.build();
 	}
 
 }
