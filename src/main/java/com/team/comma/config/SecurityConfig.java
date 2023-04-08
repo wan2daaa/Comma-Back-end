@@ -12,6 +12,9 @@ import com.team.comma.util.security.JwtAuthenticationFilter;
 import com.team.comma.util.security.JwtTokenProvider;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 
 @Configuration
@@ -24,27 +27,50 @@ public class SecurityConfig {
 	
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .authorizeHttpRequests()
-                .requestMatchers("/security/**").hasRole("USER")
-                .anyRequest().permitAll()
-                .and().logout() 
+        http
+            .cors().configurationSource(corsConfigurationSource())
+        .and()
+            .csrf().disable()
+            .authorizeHttpRequests()
+            .requestMatchers("/security/**").hasRole("USER")
+            .anyRequest().permitAll()
+        .and()
+            .logout()
                 .logoutUrl("/logout")  // logout URL에 접근하면
-                .deleteCookies("refreshToken") 
+                .deleteCookies("refreshToken")
                 .deleteCookies("accessToken") // refreshToken 과 accessToken 삭제
                 .logoutSuccessHandler((request, response, authentication) -> {
                     response.sendRedirect("/logout/message");
                 })
-                .and()
-                .exceptionHandling()
-                .authenticationEntryPoint((request , response , Exception) -> {
-                	response.sendRedirect("/authentication/denied"); // 인증되지 않은 사용자
-                })
-                .accessDeniedPage("/authorization/denied"); // 인가되지 않은 사용자가 접속했을 때
+        .and()
+            .exceptionHandling()
+            .authenticationEntryPoint((request , response , Exception) -> {
+                response.sendRedirect("/authentication/denied"); // 인증되지 않은 사용자
+            })
+            .accessDeniedPage("/authorization/denied"); // 인가되지 않은 사용자가 접속했을 때
         
         http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), // 필터
 				UsernamePasswordAuthenticationFilter.class);
         
         return http.build();
+    }
+
+    // CORS 허용 적용
+
+    /**
+     * FIXME: CORS 세부 설정 필요
+     */
+   @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+       CorsConfiguration configuration = new CorsConfiguration();
+
+       configuration.addAllowedOrigin("/localhost:3000"); //허용할 URL
+       configuration.addAllowedHeader("*"); //허용할 Header
+       configuration.addAllowedMethod("*"); //허용할 Http Method
+       configuration.setAllowCredentials(true);
+
+       UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+       source.registerCorsConfiguration("/**", configuration);
+       return source;
     }
 }
