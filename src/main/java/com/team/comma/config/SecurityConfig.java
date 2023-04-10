@@ -1,5 +1,6 @@
 package com.team.comma.config;
 
+import com.team.comma.constant.UserRole;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -19,7 +20,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
-@PropertySource("classpath:application-oauth.properties")
+@PropertySource("classpath:application-oauth.yaml")
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -32,7 +33,7 @@ public class SecurityConfig {
         .and()
             .csrf().disable()
             .authorizeHttpRequests()
-            .requestMatchers("/security/**").hasRole("USER")
+            .requestMatchers("/security/**").hasRole(UserRole.USER.name())
             .anyRequest().permitAll()
         .and()
             .logout()
