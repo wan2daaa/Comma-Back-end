@@ -1,10 +1,10 @@
 package com.team.comma.util.security;
 
+import com.team.comma.constant.UserRole;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -12,8 +12,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
-import com.team.comma.entity.RefreshToken;
-import com.team.comma.entity.Token;
+import com.team.comma.domain.RefreshToken;
+import com.team.comma.domain.Token;
 import com.team.comma.exception.FalsifyTokenException;
 
 import io.jsonwebtoken.Claims;
@@ -47,9 +47,9 @@ public class JwtTokenProvider {
 	}
 
 	// JWT 토큰 생성
-	public Token createAccessToken(String userPk, List<String> roles) {
+	public Token createAccessToken(String userPk, UserRole role) {
 		Claims claims = Jwts.claims().setSubject(userPk); // JWT payload 에 저장되는 정보단위, 보통 여기서 user를 식별하는 값을 넣는다.
-		claims.put("roles", roles); // 정보는 key / value 쌍으로 저장된다.
+		claims.put("roles", role); // 정보는 key / value 쌍으로 저장된다.
 		Date now = new Date();
 
 		String accessToken = Jwts.builder().setClaims(claims) // 정보 저장

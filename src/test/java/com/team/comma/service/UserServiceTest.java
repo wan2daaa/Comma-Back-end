@@ -8,6 +8,8 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import com.team.comma.constant.UserRole;
+import com.team.comma.constant.UserType;
 import java.time.LocalDateTime;
 import java.util.Collections;
 
@@ -28,9 +30,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import com.team.comma.dto.LoginRequest;
 import com.team.comma.dto.MessageResponse;
 import com.team.comma.dto.RegisterRequest;
-import com.team.comma.entity.Token;
-import com.team.comma.entity.User;
-import com.team.comma.entity.User.UserType;
+import com.team.comma.domain.Token;
+import com.team.comma.domain.User;
 import com.team.comma.repository.UserRepository;
 import com.team.comma.util.security.JwtTokenProvider;
 
@@ -170,7 +171,7 @@ public class UserServiceTest {
 		User userEntity = getUserEntity();
 		doReturn(userEntity).when(userRepository).findByEmail(userEmail);
 		doReturn(Token.builder().build()).when(jwtTokenProvider).createAccessToken(userEntity.getUsername(),
-				userEntity.getRoles());
+				userEntity.getRole());
 		doNothing().when(jwtService).login(any(Token.class));
 
 		// when
@@ -216,7 +217,7 @@ public class UserServiceTest {
 
 	private User getUserEntity() {
 		return User.builder().email(userEmail).password(userPassword)
-				.roles(Collections.singletonList("ROLE_USER")).build();
+				.role(UserRole.USER).build();
 	}
 	
 	private LoginRequest getLoginRequest() {
@@ -224,20 +225,21 @@ public class UserServiceTest {
 	}
 
 	private RegisterRequest getRegisterRequest() {
-		return RegisterRequest.builder().age("20").sex("female").recommandTime(LocalDateTime.of(2015, 12, 25, 12, 0))
+		return RegisterRequest.builder().age(20).sex("female").recommendTime(
+				LocalDateTime.of(2015, 12, 25, 12, 0))
 				.isLeave(0).email(userEmail).name(userName).password(userPassword).build();
 	}
 
 	public User getOauthUserEntity() {
-		return User.builder().email(userEmail).userType(UserType.OAuthUser).password(null).build();
+		return User.builder().email(userEmail).type(UserType.OAuthUser).password(null).build();
 	}
 
 	public User getGeneralUserEntity() {
-		return User.builder().email(userEmail).userType(UserType.GeneralUser).password(userPassword).build();
+		return User.builder().email(userEmail).type(UserType.GeneralUser).password(userPassword).build();
 	}
 
 	public RegisterRequest getRequestUser() {
-		return RegisterRequest.builder().email(userEmail).password(userPassword).age("20").isLeave(0).sex("femail")
+		return RegisterRequest.builder().email(userEmail).password(userPassword).age(20).isLeave(0).sex("femail")
 				.name(userName).build();
 	}
 
