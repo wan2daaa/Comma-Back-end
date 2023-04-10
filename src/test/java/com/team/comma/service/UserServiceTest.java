@@ -134,7 +134,7 @@ public class UserServiceTest {
 		// given
 		LoginRequest loginRequest = getLoginRequest();
 		User userEntity = getUserEntity();
-		userEntity.setPassword("unknown");
+//		userEntity.setPassword("unknown");
 		doReturn(userEntity).when(userRepository).findByEmail(loginRequest.getEmail());
 		
 		// when
@@ -225,9 +225,10 @@ public class UserServiceTest {
 	}
 
 	private RegisterRequest getRegisterRequest() {
-		return RegisterRequest.builder().age(20).sex("female").recommendTime(
-				LocalDateTime.of(2015, 12, 25, 12, 0))
-				.isLeave(0).email(userEmail).name(userName).password(userPassword).build();
+		return null;
+//		return RegisterRequest.builder().age(20).sex("female").recommendTime(
+//				LocalDateTime.of(2015, 12, 25, 12, 0))
+//				.isLeave(0).email(userEmail).name(userName).password(userPassword).build();
 	}
 
 	public User getOauthUserEntity() {

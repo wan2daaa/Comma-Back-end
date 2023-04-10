@@ -25,6 +25,7 @@ import org.hibernate.annotations.DynamicInsert;
 @DynamicInsert
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "archive_tb")
 public class Archive extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

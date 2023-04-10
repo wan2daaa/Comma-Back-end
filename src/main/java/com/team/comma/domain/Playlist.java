@@ -48,10 +48,7 @@ public class Playlist extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @Setter
-    @JoinColumn(name = "track_id")
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Track track;
-
+    @OneToMany(mappedBy = "playlist")
+    private List<Track> track;
 
 }
