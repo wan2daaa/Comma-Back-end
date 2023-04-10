@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import com.team.comma.constant.UserRole;
 import com.team.comma.constant.UserType;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collections;
 
 import javax.security.auth.login.AccountException;
@@ -133,9 +134,12 @@ public class UserServiceTest {
 	public void loginException_notEqualPassword() throws AccountException {
 		// given
 		LoginRequest loginRequest = getLoginRequest();
-		User userEntity = getUserEntity();
-		userEntity.setPassword("unknown");
-		doReturn(userEntity).when(userRepository).findByEmail(loginRequest.getEmail());
+//		User userEntity = getUserEntity();
+//		userEntity.setPassword("unknown");
+		User user = User.builder()
+			.password("unknown")
+			.build();
+		doReturn(user).when(userRepository).findByEmail(loginRequest.getEmail());
 		
 		// when
 		Throwable thrown = catchThrowable(() -> userService.login(loginRequest));
@@ -226,7 +230,7 @@ public class UserServiceTest {
 
 	private RegisterRequest getRegisterRequest() {
 		return RegisterRequest.builder().age(20).sex("female").recommendTime(
-				LocalDateTime.of(2015, 12, 25, 12, 0))
+				LocalTime.of( 12, 0))
 				.isLeave(0).email(userEmail).name(userName).password(userPassword).build();
 	}
 
