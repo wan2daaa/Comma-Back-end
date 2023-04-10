@@ -1,15 +1,7 @@
 package com.team.comma.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Getter
@@ -35,5 +27,9 @@ public class Track extends BaseEntity {
 
     private Boolean albumFlag;
 
+    @Setter
+    @JoinColumn(name = "playlist_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Playlist playlist;
 
 }
