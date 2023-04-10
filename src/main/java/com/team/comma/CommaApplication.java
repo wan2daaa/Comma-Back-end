@@ -2,12 +2,14 @@ package com.team.comma;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+@EnableJpaAuditing
 @SpringBootApplication
-public class ValueupApplication {
+public class CommaApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ValueupApplication.class, args);
+		SpringApplication.run(CommaApplication.class, args);
 	}
 
 }

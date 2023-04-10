@@ -1,4 +1,4 @@
-package com.team.comma.oauth;
+package com.team.comma.util.oauth;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-@PropertySource("classpath:application-oauth.properties")
+@PropertySource("classpath:application-oauth.yaml")
 public class IssuanceAccessToken {
 	
 	final private Environment env;

@@ -1,5 +1,6 @@
 package com.team.comma.service;
 
+import com.team.comma.constant.ResponseCode;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -7,11 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.team.comma.dto.MessageResponse;
-import com.team.comma.entity.RefreshToken;
-import com.team.comma.entity.Token;
+import com.team.comma.domain.RefreshToken;
+import com.team.comma.domain.Token;
 import com.team.comma.exception.FalsifyTokenException;
 import com.team.comma.repository.RefreshTokenRepository;
-import com.team.comma.security.JwtTokenProvider;
+import com.team.comma.util.security.JwtTokenProvider;
 
 import jakarta.transaction.Transactional;
 
@@ -56,15 +57,15 @@ public class JwtService {
 	public MessageResponse createRefreshJson(String createdAccessToken) {
 		if (createdAccessToken == null) {
 			return MessageResponse.builder()
-					.code(-7)
-					.message("Refresh 토큰이 만료되었습니다. 로그인이 필요합니다.")
-					.build();
+				.code(ResponseCode.REFRESH_TOKEN_EXPIRED)
+				.message("Refresh 토큰이 만료되었습니다. 로그인이 필요합니다.")
+				.build();
 		}
 		
 		return MessageResponse.builder()
-				.code(7)
-				.message(createdAccessToken)
-				.build();
+			.code(ResponseCode.ACCESS_TOKEN_CREATE_SUCCESS)
+			.message(createdAccessToken)
+			.build();
 	}
 
 	public JwtService() {

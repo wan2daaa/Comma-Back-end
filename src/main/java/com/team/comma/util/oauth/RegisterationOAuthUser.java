@@ -1,5 +1,6 @@
-package com.team.comma.oauth;
+package com.team.comma.util.oauth;
 
+import com.team.comma.constant.ResponseCode;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -52,7 +53,10 @@ public class RegisterationOAuthUser {
 			return userService.loginOauth(createUser(email));
 		} catch (IOException e) {
 			e.printStackTrace();
-			return MessageResponse.builder().code(-1).message("로그인을 하는 도중에 오류가 발생했습니다.").build();
+			return MessageResponse.builder()
+				.code(ResponseCode.SIMPLE_REQUEST_FAILURE)
+				.message("로그인을 하는 도중에 오류가 발생했습니다.")
+				.build();
 		}
 	}
 
@@ -89,7 +93,10 @@ public class RegisterationOAuthUser {
 			
 		} catch (IOException e) {
 			e.printStackTrace();
-			return MessageResponse.builder().code(-1).message("로그인을 하는 도중에 오류가 발생했습니다.").build();
+			return MessageResponse.builder()
+				.code(ResponseCode.SIMPLE_REQUEST_FAILURE)
+				.message("로그인을 하는 도중에 오류가 발생했습니다.")
+				.build();
 		}
 	}
 	
@@ -119,7 +126,10 @@ public class RegisterationOAuthUser {
 			return userService.loginOauth(createUser(email));
 		} catch (IOException e) {
 			e.printStackTrace();
-			return MessageResponse.builder().code(-1).message("로그인을 하는 도중에 오류가 발생했습니다.").build();
+			return MessageResponse.builder()
+				.code(ResponseCode.SIMPLE_REQUEST_FAILURE)
+				.message("로그인을 하는 도중에 오류가 발생했습니다.")
+				.build();
 		}
 	}
 	

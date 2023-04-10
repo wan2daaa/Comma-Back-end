@@ -10,11 +10,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MessageResponse {
+public class MessageResponse<D> {
 	@Schema(description = "응답 코드")
 	private int code;
 	@Schema(description = "응답 메세지")
 	private String message;
 	@Schema(description = "응답 데이터로 보낼 데이터가 없다면 null")
-	private String data;
+	private D data;
 }
