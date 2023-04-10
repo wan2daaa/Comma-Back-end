@@ -1,4 +1,4 @@
-package com.team.comma.spotify;
+package com.team.comma.util.spotify;
 
 import java.io.IOException;
 
@@ -17,7 +17,7 @@ public class CreationAccessToken {
 	private SpotifyApi spotifyApi = new SpotifyApi.Builder().setClientId(clientId).setClientSecret(clientSecret)
 			.build();
 
-	public String accesstoken() {
+	public String accessToken() {
 		ClientCredentialsRequest clientCredentialsRequest = spotifyApi.clientCredentials().build();
 		try {
 			final ClientCredentials clientCredentials = clientCredentialsRequest.execute();

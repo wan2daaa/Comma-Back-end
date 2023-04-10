@@ -1,16 +1,14 @@
-package com.team.comma.entity;
+package com.team.comma.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-@Getter
+@NoArgsConstructor
 public class Token {
 	private String id;
 	private String code;

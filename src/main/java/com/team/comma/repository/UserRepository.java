@@ -2,10 +2,10 @@ package com.team.comma.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.team.comma.entity.UserEntity;
+import com.team.comma.domain.User;
 
-public interface UserRepository extends JpaRepository<UserEntity, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
-	public UserEntity findByEmail(String id);
+	public User findByEmail(String id);
 
 }

@@ -26,8 +26,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team.comma.dto.MessageResponse;
 import com.team.comma.dto.OAuthRequest;
-import com.team.comma.oauth.RegisterationOAuthUser;
-import com.team.comma.oauth.IssuanceAccessToken;
+import com.team.comma.util.oauth.RegisterationOAuthUser;
+import com.team.comma.util.oauth.IssuanceAccessToken;
 
 @ExtendWith(MockitoExtension.class)
 public class OAuthServiceTest {

@@ -1,4 +1,4 @@
-package com.team.comma.security;
+package com.team.comma.util.security;
 
 import jakarta.servlet.http.Cookie;
 
