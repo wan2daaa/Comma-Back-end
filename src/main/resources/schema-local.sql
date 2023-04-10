@@ -1,12 +1,12 @@
 SET foreign_key_checks = 0;
 
-drop table if exists archive;
+drop table if exists archive_tb;
 
 drop table if exists favorite_artist_tb;
 
 drop table if exists favorite_genre_tb;
 
-drop table if exists following;
+drop table if exists following_tb;
 
 drop table if exists playlist_tb;
 
@@ -41,25 +41,9 @@ create table user_tb
     primary key (id)
 );
 
-create table track_tb
-(
-    id              bigint not null auto_increment,
-    album_flag      TINYINT(1),
-    album_image_url varchar(255),
-    album_name      varchar(255),
-    artist_names    varchar(255),
-    duration_ms     integer,
-    track_title     varchar(255),
-    created_at      datetime(6),
-    updated_at      datetime(6),
-    del_flag       TINYINT(1),
-    primary key (id)
-);
-
 create table playlist_tb
 (
     id             bigint not null auto_increment,
-    track_id       bigint,
     user_id        bigint,
     alarm_day      smallint,
     alarm_flag     bit,
@@ -69,11 +53,27 @@ create table playlist_tb
     updated_at     datetime(6),
     del_flag       TINYINT(1),
     primary key (id),
-    foreign key (track_id) references track_tb(id),
     foreign key (user_id) references user_tb (id)
 );
 
-create table archive
+create table track_tb
+(
+    id              bigint not null auto_increment,
+    playlist_id       bigint,
+    album_flag      TINYINT(1),
+    album_image_url varchar(255),
+    album_name      varchar(255),
+    artist_names    varchar(255),
+    duration_ms     integer,
+    track_title     varchar(255),
+    created_at      datetime(6),
+    updated_at      datetime(6),
+    del_flag       TINYINT(1),
+    primary key (id),
+    foreign key (playlist_id) references playlist_tb (id)
+);
+
+create table archive_tb
 (
     id          bigint not null auto_increment,
     content     TEXT,
@@ -111,7 +111,7 @@ create table favorite_genre_tb
     foreign key (user_id) references user_tb(id)
 );
 
-create table following
+create table following_tb
 (
     id              bigint not null auto_increment,
     user_email_to   bigint,

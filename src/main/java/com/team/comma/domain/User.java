@@ -88,6 +88,8 @@ public class User extends BaseEntity implements UserDetails {
 	@OneToMany(mappedBy = "genreName")
 	private List<FavoriteGenre> genreNames;
 
+	@OneToMany(mappedBy = "user")
+	private List<Playlist> playlist;
 
 	//연관관계 편의 메소드
 	public void addArchiveList(Archive archive) {
