@@ -1,6 +1,9 @@
 package com.team.comma.service;
 
 import com.team.comma.constant.ResponseCode;
+import com.team.comma.constant.UserRole;
+import com.team.comma.constant.UserType;
+import java.time.LocalDateTime;
 import java.util.Collections;
 
 import javax.security.auth.login.AccountException;
@@ -12,9 +15,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import com.team.comma.dto.LoginRequest;
 import com.team.comma.dto.MessageResponse;
 import com.team.comma.dto.RegisterRequest;
-import com.team.comma.entity.Token;
-import com.team.comma.entity.User;
-import com.team.comma.entity.User.UserType;
+import com.team.comma.domain.Token;
+import com.team.comma.domain.User;
 import com.team.comma.repository.UserRepository;
 import com.team.comma.util.security.CreationCookie;
 import com.team.comma.util.security.JwtTokenProvider;
@@ -39,7 +41,7 @@ public class UserService {
 			throw new AccountException("정보가 올바르지 않습니다.");
 		}
 
-		if (user.getUserType() == UserType.OAuthUser) {
+		if (user.getType() == UserType.OAuthUser) {
 			throw new AccountException("일반 사용자는 OAuth 계정으로 로그인할 수 없습니다.");
 		}
 		
@@ -81,7 +83,7 @@ public class UserService {
 			User createUser = createUser(registerRequest, UserType.OAuthUser);
 
 			findUser = userRepository.save(createUser);
-		} else if (findUser.getUserType() == UserType.GeneralUser) { // 일반 사용자가 존재한다면
+		} else if (findUser.getType() == UserType.GeneralUser) { // 일반 사용자가 존재한다면
 			throw new AccountException("일반 사용자가 이미 존재합니다.");
 		}
 
@@ -97,14 +99,18 @@ public class UserService {
 	public User createUser(final RegisterRequest RegisterRequest , final UserType userType) {
 		return User.builder()
 			.email(RegisterRequest.getEmail())
+			.name(RegisterRequest.getName())
+			.sex(RegisterRequest.getSex())
+			.age(RegisterRequest.getAge())
 			.password(RegisterRequest.getPassword())
-			.roles(Collections.singletonList("ROLE_USER"))
-			.userType(userType)
+			.recommendTime(RegisterRequest.getRecommendTime())
+			.role(UserRole.USER)
+			.type(userType)
 			.build();
 	}
 
 	public void createJwtCookie(User userEntity) {
-		Token token = jwtTokenProvider.createAccessToken(userEntity.getUsername(), userEntity.getRoles());
+		Token token = jwtTokenProvider.createAccessToken(userEntity.getUsername(), userEntity.getRole());
 		jwtService.login(token);
 
 		ServletRequestAttributes attr = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes());

@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.team.comma.dto.MessageResponse;
-import com.team.comma.entity.RefreshToken;
-import com.team.comma.entity.Token;
+import com.team.comma.domain.RefreshToken;
+import com.team.comma.domain.Token;
 import com.team.comma.exception.FalsifyTokenException;
 import com.team.comma.repository.RefreshTokenRepository;
 import com.team.comma.util.security.JwtTokenProvider;

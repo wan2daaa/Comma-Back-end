@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-@PropertySource("classpath:application-oauth.properties")
+@PropertySource("classpath:application-oauth.yaml")
 public class IssuanceAccessToken {
 	
 	final private Environment env;
