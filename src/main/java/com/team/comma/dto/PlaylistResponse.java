@@ -10,8 +10,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PlaylistResponse {
 
-    private final Long playKey;
+    private final Long playlistKey;
     private final UserEntity userEntity;
+    private final String alarmYn;
     private final String alarmSetDay;
     private final String alarmStartTime;
     private final String alarmEndTime;

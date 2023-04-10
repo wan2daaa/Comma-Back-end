@@ -36,7 +36,6 @@ public class MainRepositoryTest {
     private UserPlaylist getUserPlaylist(UserEntity userEntity) {
         return UserPlaylist.builder()
                 .userEntity(userEntity)
-                .alarmYn("Y")
                 .alarmSetDay("01")
                 .alarmStartTime("01")
                 .alarmEndTime("01")
@@ -78,7 +77,7 @@ public class MainRepositoryTest {
         final UserPlaylist result = mainRepository.save(playlist);
 
         // then
-        assertThat(result.getPlayKey()).isNotNull();
+        assertThat(result.getPlaylistKey()).isNotNull();
         assertThat(result.getAlarmYn().equals("Y"));
         assertThat(result.getAlarmSetDay().equals("01"));
         assertThat(result.getAlarmStartTime().equals("01"));

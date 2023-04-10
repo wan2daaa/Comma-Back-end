@@ -54,7 +54,7 @@ public class UserEntity implements UserDetails {
 	@OneToMany(mappedBy = "genreName", cascade = CascadeType.PERSIST, orphanRemoval = true)
 	private List<UserGenre> genreName;
 
-	@OneToMany(mappedBy = "userEntity" , cascade = CascadeType.PERSIST , orphanRemoval = true)
+	@OneToMany(mappedBy = "playlistKey" , cascade = CascadeType.PERSIST , orphanRemoval = true)
 	private List<UserPlaylist> userPlaylist;
 
 	@OneToOne(fetch = FetchType.LAZY , cascade = CascadeType.PERSIST, orphanRemoval = true)

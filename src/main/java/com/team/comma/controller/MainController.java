@@ -6,10 +6,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,9 +15,9 @@ import java.util.List;
 public class MainController {
     private final MainService mainService;
 
-    @GetMapping("/main/playlist")
+    @PostMapping("/main/playlist")
     public ResponseEntity<List<PlaylistResponse>> getUserPlaylist(
-            @RequestHeader("email") final String email) {
+            @RequestBody String email) {
         return ResponseEntity.ok(mainService.getUserPlaylist(email));
     }
 

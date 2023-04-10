@@ -42,7 +42,7 @@ public class MainControllerTest {
 
         // when
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.get(url)
+                MockMvcRequestBuilders.post(url)
         );
 
         // then
@@ -61,8 +61,8 @@ public class MainControllerTest {
 
         // when
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.get(url)
-                        .header("email", userEmail)
+                MockMvcRequestBuilders.post(url)
+                        .content(userEmail)
         );
 
         // then
