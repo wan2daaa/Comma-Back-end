@@ -1,6 +1,5 @@
 package com.team.comma.domain;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -48,7 +47,5 @@ public class Playlist extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @OneToMany(mappedBy = "playlist")
-    private List<Track> track;
 
 }

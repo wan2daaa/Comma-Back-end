@@ -9,4 +9,5 @@ import java.util.List;
 public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
 
     List<Playlist> findAllByUser_Email(String email);
+
 }
