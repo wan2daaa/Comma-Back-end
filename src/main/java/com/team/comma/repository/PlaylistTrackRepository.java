@@ -7,7 +7,6 @@ import java.util.List;
 
 public interface PlaylistTrackRepository extends JpaRepository<PlaylistTrack, Long> {
 
-    List<PlaylistTrack> findAllByPlaylist_Id(Long id);
-    List<PlaylistTrack> findAllByTrack_Id(Long id);
+    List<PlaylistTrack> findAllByPlaylist_Id(Long playlistId);
 
 }

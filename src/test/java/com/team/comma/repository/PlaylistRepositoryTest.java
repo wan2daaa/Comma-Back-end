@@ -11,13 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;  //자동 import되지 않음
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class PlaylistTrackRepositoryTest {
+public class PlaylistRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
@@ -49,6 +50,7 @@ public class PlaylistTrackRepositoryTest {
         // given
         userRepository.save(getUser());
         User user = userRepository.findByEmail(userEmail);
+
         playlistRepository.save(getPlaylist(user, "테스트 플레이리스트1"));
         playlistRepository.save(getPlaylist(user, "테스트 플레이리스트2"));
 
@@ -60,7 +62,7 @@ public class PlaylistTrackRepositoryTest {
     }
 
     @Test
-    public void 플레이리스트_곡조회_0(){
+    public void 플레이리스트_곡_조회_0(){
         // given
         userRepository.save(getUser());
         User user = userRepository.findByEmail(userEmail);
@@ -75,7 +77,7 @@ public class PlaylistTrackRepositoryTest {
     }
 
     @Test
-    public void 플레이리스트_곡조회_2(){
+    public void 플레이리스트_곡_조회_2(){
         // given
         userRepository.save(getUser());
         User user = userRepository.findByEmail(userEmail);
@@ -85,8 +87,8 @@ public class PlaylistTrackRepositoryTest {
         Track track1 = trackRepository.save(getTrack("track1"));
         Track track2 = trackRepository.save(getTrack("track2"));
 
-        playlistTrackRepository.save(getPToT(playlist,track1));
-        playlistTrackRepository.save(getPToT(playlist,track2));
+        playlistTrackRepository.save(getPlaylistTrack(playlist,track1));
+        playlistTrackRepository.save(getPlaylistTrack(playlist,track2));
 
         // when
         List<PlaylistTrack> result = playlistTrackRepository.findAllByPlaylist_Id(playlist.getId());
@@ -94,21 +96,6 @@ public class PlaylistTrackRepositoryTest {
         // then
         assertThat(result.size()).isEqualTo(2);
     }
-
-//    @Test
-//    public void 플레이리스트조회_곡상세조회(){
-//        // given
-//        userRepository.save(getUser());
-//        User user = userRepository.findByEmail(userEmail);
-//        playlistRepository.save(getPlaylist(user, "테스트 플레이리스트1"));
-//        playlistRepository.save(getPlaylist(user, "테스트 플레이리스트2"));
-//
-//        // when
-//        List<Playlist> result = playlistRepository.findAllByUser_Email(userEmail);
-//
-//        // then
-//        assertThat(result.size()).isEqualTo(2);
-//    }
 
     private User getUser() {
         return User.builder()
@@ -131,7 +118,7 @@ public class PlaylistTrackRepositoryTest {
                 .build();
     }
 
-    private PlaylistTrack getPToT(Playlist playlist,Track track) {
+    private PlaylistTrack getPlaylistTrack(Playlist playlist,Track track) {
         return PlaylistTrack.builder()
                 .playlist(playlist)
                 .track(track)
