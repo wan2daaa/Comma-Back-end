@@ -69,15 +69,12 @@ public class User extends BaseEntity implements UserDetails {
 
 	private boolean vibrateFlag;
 
-	private boolean leavedFlag;
-
 	// OAuth 로그인 유저인지 , 기본 로그인 유저인지 확인
 	@Enumerated(EnumType.STRING)
 	private UserType type;
 
 	@Enumerated(EnumType.STRING)
 	private UserRole role;
-
 
 	@OneToMany(mappedBy = "user")
 	private List<Archive> archiveList;
@@ -87,9 +84,6 @@ public class User extends BaseEntity implements UserDetails {
 
 	@OneToMany(mappedBy = "genreName")
 	private List<FavoriteGenre> genreNames;
-
-	@OneToMany(mappedBy = "user")
-	private List<Playlist> playlist;
 
 	//연관관계 편의 메소드
 	public void addArchiveList(Archive archive) {

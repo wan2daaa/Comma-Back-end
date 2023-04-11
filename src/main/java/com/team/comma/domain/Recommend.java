@@ -58,6 +58,4 @@ public class Recommend extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private User recommendTo;
 
-
-
 }

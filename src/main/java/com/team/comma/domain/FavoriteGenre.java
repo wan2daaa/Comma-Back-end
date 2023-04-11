@@ -34,12 +34,12 @@ public class FavoriteGenre extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@JoinColumn(name = "user_id")
 	@ManyToOne(fetch = FetchType.LAZY)
 	private User user;
 
 	@Column(length = 45, nullable = false)
 	private String genreName;
-
 
 	public void setUser(User user) {
 		if(this.user != null) {
