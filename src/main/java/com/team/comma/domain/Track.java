@@ -19,17 +19,12 @@ public class Track extends BaseEntity {
 
     private Integer durationMs;
 
-    private String artistNames;
+    private String artistName;
 
     private String albumName;
 
     private String albumImageUrl;
 
-    private Boolean albumFlag;
-
-    @Setter
-    @JoinColumn(name = "playlist_id")
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Playlist playlist;
+    private Boolean alarmFlag;
 
 }
