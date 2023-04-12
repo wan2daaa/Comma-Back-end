@@ -79,7 +79,7 @@ public class PlaylistServiceTest {
     }
 
     @Test
-    public void 플레이리스트_곡조회_() {
+    public void 사용자플레이리스트_조회() {
         // given
         doReturn(Arrays.asList(
                 PlaylistResponse.builder().build(),
