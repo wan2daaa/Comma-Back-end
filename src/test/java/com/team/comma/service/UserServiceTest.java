@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import com.team.comma.constant.UserRole;
 import com.team.comma.constant.UserType;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collections;
 
 import javax.security.auth.login.AccountException;
@@ -133,8 +134,7 @@ public class UserServiceTest {
 	public void loginException_notEqualPassword() throws AccountException {
 		// given
 		LoginRequest loginRequest = getLoginRequest();
-		User userEntity = getUserEntity();
-//		userEntity.setPassword("unknown");
+		User userEntity = User.builder().email(userEmail).password("unknown").role(UserRole.USER).build();
 		doReturn(userEntity).when(userRepository).findByEmail(loginRequest.getEmail());
 		
 		// when
@@ -178,8 +178,11 @@ public class UserServiceTest {
 		final MessageResponse result = userService.login(login);
 
 		// then
+		User user = (User)result.getData();
+
 		assertThat(result.getCode()).isEqualTo(1);
-		assertThat(result.getData()).isEqualTo(login.getEmail());
+		assertThat(user).isNotNull();
+		assertThat(user.getEmail()).isEqualTo(userEmail);
 	}
 
 	@Test
@@ -210,9 +213,12 @@ public class UserServiceTest {
 		MessageResponse message = userService.register(registerRequest);
 
 		// then
+		User user = (User)message.getData();
+
 		assertThat(message.getCode()).isEqualTo(1);
 		assertThat(message.getMessage()).isEqualTo("성공적으로 가입되었습니다.");
-		assertThat(message.getData()).isEqualTo(userEntity.getEmail());
+		assertThat(user).isNotNull();
+		assertThat(user.getEmail()).isEqualTo(userEntity.getEmail());
 	}
 
 	private User getUserEntity() {
@@ -225,10 +231,9 @@ public class UserServiceTest {
 	}
 
 	private RegisterRequest getRegisterRequest() {
-		return null;
-//		return RegisterRequest.builder().age(20).sex("female").recommendTime(
-//				LocalDateTime.of(2015, 12, 25, 12, 0))
-//				.isLeave(0).email(userEmail).name(userName).password(userPassword).build();
+		return RegisterRequest.builder().age(20).sex("female").recommendTime(
+				LocalTime.of(12 , 00))
+				.isLeave(0).email(userEmail).name(userName).password(userPassword).build();
 	}
 
 	public User getOauthUserEntity() {
