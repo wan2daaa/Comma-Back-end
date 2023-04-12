@@ -4,7 +4,7 @@ spring:
       client:
         registration:
           naver:
-            redirect-uri: http://localhost:8080/login/oauth2/code/naver
+            redirect-uri: http://43.201.188.96:8080/login/oauth2/code/naver
             authorization-grant-type: authorization_code
             client-secret: iVKKbgoepS
             client-id: cRB2fcyuQl_QRISKVV0a
@@ -12,7 +12,7 @@ spring:
           kakao:
             client-secret: unknown
             client-authentication-method: POST
-            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+            redirect-uri: http://43.201.188.96:8080/login/oauth2/code/kakao
             authorization-grant-type: authorization_code
             client-id: 54a1a647665a4c69080a68825c0982a1
             scope: account_email
