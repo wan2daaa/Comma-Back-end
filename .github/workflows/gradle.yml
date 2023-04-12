@@ -28,7 +28,16 @@ jobs:
         distribution: 'temurin'
         
     - uses : actions/checkout@v3
-        
+  
+    - name: mysql setup
+      uses: mirromutth/mysql-action@v1.1
+      with:
+        host port: 3306
+        mysql root password: password
+        mysql database: comma
+        mysql user: root
+        mysql password: password
+    
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
       
