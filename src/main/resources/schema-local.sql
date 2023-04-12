@@ -34,7 +34,6 @@ create table user_tb
     type           varchar(255),
     sound_flag     TINYINT(1),
     vibrate_flag   TINYINT(1),
-    leaved_flag    TINYINT(1),
     created_at     datetime(6),
     updated_at     datetime(6),
     del_flag       TINYINT(1),
@@ -59,18 +58,29 @@ create table playlist_tb
 create table track_tb
 (
     id              bigint not null auto_increment,
-    playlist_id       bigint,
     album_flag      TINYINT(1),
     album_image_url varchar(255),
     album_name      varchar(255),
-    artist_names    varchar(255),
+    artist_name    varchar(255),
     duration_ms     integer,
     track_title     varchar(255),
     created_at      datetime(6),
     updated_at      datetime(6),
     del_flag       TINYINT(1),
+    primary key (id)
+);
+
+create table playlist_track_tb
+(
+    id  bigint not null auto_increment,
+    playlist_id bigint,
+    track_id bigint,
+    created_at datetime(6),
+    updated_at      datetime(6),
+    del_flag       TINYINT(1),
     primary key (id),
-    foreign key (playlist_id) references playlist_tb (id)
+    foreign key (playlist_id) references playlist_tb (id),
+    foreign key (track_id) references track_tb (id)
 );
 
 create table archive_tb

@@ -38,13 +38,13 @@ public class PlaylistService {
 
         List<Playlist> userPlaylist = getPlaylist(email); // userEmail로 playlist 조회
         if(userPlaylist.size() != 0){
-            for(int i = 0; i <= userPlaylist.size(); i++){
+            for(int i = 0; i < userPlaylist.size(); i++){
                 Playlist playlist = userPlaylist.get(i);
                 List<PlaylistTrackResponse> tracks = new ArrayList<>();
 
                 List<PlaylistTrack> playlistTracks = getPlaylistTrack(playlist.getId()); // playlistId로 track 조회
                 if(playlistTracks.size() != 0) {
-                    for (int j = 0; j <= playlistTracks.size(); j++) {
+                    for (int j = 0; j < playlistTracks.size(); j++) {
                         Track track = playlistTracks.get(j).getTrack();
                         tracks.add(createTrack(track));
                     }
