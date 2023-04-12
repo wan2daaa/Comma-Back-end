@@ -5,13 +5,12 @@ import lombok.*;
 @Getter
 @Builder
 @RequiredArgsConstructor
-@AllArgsConstructor
 public class PlaylistTrackResponse {
-    private Long id;
-    private String trackTitle;
-    private Integer durationMs;
-    private String artistName;
-    private String albumName;
-    private String albumImageUrl;
-    private Boolean alarmFlag;
+    private final Long id;
+    private final String trackTitle;
+    private final Integer durationMs;
+    private final String artistName;
+    private final String albumName;
+    private final String albumImageUrl;
+    private final Boolean alarmFlag;
 }

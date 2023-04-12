@@ -1,8 +1,6 @@
 package com.team.comma.controller;
 
 import com.google.gson.Gson;
-import com.team.comma.domain.Playlist;
-import com.team.comma.domain.PlaylistTrack;
 import com.team.comma.dto.PlaylistResponse;
 import com.team.comma.service.PlaylistService;
 import org.junit.jupiter.api.BeforeEach;

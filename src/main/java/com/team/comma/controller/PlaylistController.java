@@ -1,8 +1,5 @@
 package com.team.comma.controller;
 
-import com.nimbusds.oauth2.sdk.Response;
-import com.team.comma.domain.Playlist;
-import com.team.comma.domain.PlaylistTrack;
 import com.team.comma.dto.PlaylistResponse;
 import com.team.comma.service.PlaylistService;
 import io.swagger.v3.oas.annotations.Operation;
