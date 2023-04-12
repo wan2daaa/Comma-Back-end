@@ -48,7 +48,7 @@ public class Playlist extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @OneToMany(mappedBy = "playlist")
+    @OneToMany
     private List<Track> track;
 
 }

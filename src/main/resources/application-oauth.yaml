@@ -4,7 +4,7 @@ spring:
       client:
         registration:
           naver:
-            redirect-uri: http://localhost:3000/oauth/login
+            redirect-uri: http://localhost:8080/login/oauth2/code/naver
             authorization-grant-type: authorization_code
             client-secret: iVKKbgoepS
             client-id: cRB2fcyuQl_QRISKVV0a
@@ -12,16 +12,16 @@ spring:
           kakao:
             client-secret: unknown
             client-authentication-method: POST
-            redirect-uri: http://localhost:3000/oauth/login
+            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
             authorization-grant-type: authorization_code
             client-id: 54a1a647665a4c69080a68825c0982a1
             scope: account_email
             client-name: kakao
           google:
-            redirect-uri: http://localhost:3000/oauth/login
+            redirect-uri: http://localhost:8080/login/oauth2/code/google
             client-secret: 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
             client-id: 505351076247-r4tihp3g0d6hdg9vrhqlk8bdfsnr93ck.apps.googleusercontent.com
-            scope: email
+            scope: email , profile
         provider:
           kakao:
             user-name-attribute: id

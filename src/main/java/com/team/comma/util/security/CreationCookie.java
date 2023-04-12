@@ -19,7 +19,7 @@ public class CreationCookie {
 		Cookie cookie = new Cookie("accessToken", accessToken);
 		cookie.setDomain("localhost");
 		cookie.setPath("/");
-		cookie.setMaxAge(14 * 24 * 60 * 60 * 1000); // 30분간 저장
+		cookie.setMaxAge(30 * 60 * 1000); // 30분간 저장
 		cookie.setSecure(true);
 		cookie.setHttpOnly(true);
 		
