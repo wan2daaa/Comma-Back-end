@@ -25,50 +25,56 @@ public class PlaylistService {
     final private PlaylistTrackRepository playlistTrackRepository;
     final private PlaylistRepository playlistRepository;
 
-    public List<PlaylistResponse> getPlaylist(String email) {
+    public List<Playlist> getPlaylist(final String email){
+        return playlistRepository.findAllByUser_Email(email);
+    }
+
+    public List<PlaylistTrack> getPlaylistTrack(final Long id){
+        return playlistTrackRepository.findAllByPlaylist_Id(id);
+    }
+
+    public List<PlaylistResponse> getPlaylistResponse(String email) {
         List<PlaylistResponse> result = new ArrayList<>();
 
-        List<Playlist> userPlaylist = playlistRepository.findAllByUser_Email(email); // userEmail로 playlist 조회
+        List<Playlist> userPlaylist = getPlaylist(email); // userEmail로 playlist 조회
         if(userPlaylist.size() != 0){
             for(int i = 0; i <= userPlaylist.size(); i++){
                 Playlist playlist = userPlaylist.get(i);
-
                 List<PlaylistTrackResponse> tracks = new ArrayList<>();
 
-                List<PlaylistTrack> playlistTracks = playlistTrackRepository.findAllByPlaylist_Id(playlist.getId()); // playlistId로 track 조회
+                List<PlaylistTrack> playlistTracks = getPlaylistTrack(playlist.getId()); // playlistId로 track 조회
                 if(playlistTracks.size() != 0) {
                     for (int j = 0; j <= playlistTracks.size(); j++) {
                         Track track = playlistTracks.get(j).getTrack();
-                        tracks.add(PlaylistTrackResponse.builder()
-                                .id(track.getId())
-                                .trackTitle(track.getTrackTitle())
-                                .durationMs(track.getDurationMs())
-                                .artistName(track.getArtistName())
-                                .albumName(track.getAlbumName())
-                                .albumImageUrl(track.getAlbumImageUrl())
-                                .alarmFlag(track.getAlarmFlag())
-                                .build());
+                        tracks.add(createTrack(track));
                     }
-                } else {
-                    return null;
                 }
-
-                PlaylistResponse temp = PlaylistResponse.builder()
-                        .playlistId(playlist.getId())
-                        .playlistTitle(playlist.getPlaylistTitle())
-                        .alarmFlag(playlist.isAlarmFlag())
-                        .alarmDay(playlist.getAlarmDay())
-                        .alarmTime(playlist.getAlarmTime())
-                        .tracks(tracks)
-                        .build();
-
-                result.add(temp);
+                result.add(createPlaylist(playlist,tracks));
             }
-
-            return result;
-        } else {
-            return null;
         }
+        return result;
+    }
 
+    public PlaylistTrackResponse createTrack(final Track track){
+        return PlaylistTrackResponse.builder()
+                .id(track.getId())
+                .trackTitle(track.getTrackTitle())
+                .durationMs(track.getDurationMs())
+                .artistName(track.getArtistName())
+                .albumName(track.getAlbumName())
+                .albumImageUrl(track.getAlbumImageUrl())
+                .alarmFlag(track.getAlarmFlag())
+                .build();
+    }
+
+    public PlaylistResponse createPlaylist(final Playlist playlist, final List<PlaylistTrackResponse> tracks){
+        return PlaylistResponse.builder()
+                .playlistId(playlist.getId())
+                .playlistTitle(playlist.getPlaylistTitle())
+                .alarmFlag(playlist.isAlarmFlag())
+                .alarmDay(playlist.getAlarmDay())
+                .alarmTime(playlist.getAlarmTime())
+                .tracks(tracks)
+                .build();
     }
 }

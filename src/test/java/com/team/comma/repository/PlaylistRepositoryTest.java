@@ -86,7 +86,6 @@ public class PlaylistRepositoryTest {
 
         Track track1 = trackRepository.save(getTrack("track1"));
         Track track2 = trackRepository.save(getTrack("track2"));
-
         playlistTrackRepository.save(getPlaylistTrack(playlist,track1));
         playlistTrackRepository.save(getPlaylistTrack(playlist,track2));
 
