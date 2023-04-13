@@ -1,7 +1,10 @@
 package com.team.comma.controller;
 
 import com.google.gson.Gson;
+import com.team.comma.domain.Playlist;
+import com.team.comma.domain.Track;
 import com.team.comma.dto.PlaylistResponse;
+import com.team.comma.dto.PlaylistTrackResponse;
 import com.team.comma.service.PlaylistService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +18,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -55,10 +59,15 @@ public class PlaylistControllerTest {
     public void 사용자플레이리스트조회_성공() throws Exception {
         // given
         final String url = "/userPlaylist";
+        List<PlaylistTrackResponse> tracks = Arrays.asList(
+                PlaylistTrackResponse.of(Track.builder().build()),
+                PlaylistTrackResponse.of(Track.builder().build()),
+                PlaylistTrackResponse.of(Track.builder().build()));
+
         doReturn(Arrays.asList(
-                PlaylistResponse.builder().build(),
-                PlaylistResponse.builder().build(),
-                PlaylistResponse.builder().build()
+                PlaylistResponse.of(Playlist.builder().build(), tracks),
+                PlaylistResponse.of(Playlist.builder().build(), tracks),
+                PlaylistResponse.of(Playlist.builder().build(), tracks)
         )).when(playlistService).getPlaylistResponse(userEmail);
 
         // when

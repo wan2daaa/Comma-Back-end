@@ -1,8 +1,6 @@
 package com.team.comma.dto;
 
 import com.team.comma.domain.Playlist;
-import com.team.comma.domain.Track;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -11,9 +9,8 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Getter
-@Builder
 @RequiredArgsConstructor
-public class PlaylistResponse {
+public final class PlaylistResponse {
 
     private final Long playlistId;
     private final String playlistTitle;
@@ -22,5 +19,18 @@ public class PlaylistResponse {
     private final LocalTime alarmTime;
 
     private final List<PlaylistTrackResponse> tracks;
+
+    private PlaylistResponse(Playlist playlist, List<PlaylistTrackResponse> tracks) {
+        this.playlistId = playlist.getId();
+        this.playlistTitle = playlist.getPlaylistTitle();
+        this.alarmFlag = playlist.isAlarmFlag();
+        this.alarmDay = playlist.getAlarmDay();
+        this.alarmTime = playlist.getAlarmTime();
+        this.tracks = tracks;
+    }
+
+    public static PlaylistResponse of(Playlist playlist, List<PlaylistTrackResponse> tracks) {
+        return new PlaylistResponse(playlist, tracks);
+    }
 
 }

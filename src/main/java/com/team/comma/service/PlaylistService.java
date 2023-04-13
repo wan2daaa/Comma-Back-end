@@ -2,7 +2,6 @@ package com.team.comma.service;
 
 import com.team.comma.domain.Playlist;
 import com.team.comma.domain.PlaylistTrack;
-import com.team.comma.domain.Track;
 import com.team.comma.dto.PlaylistResponse;
 import com.team.comma.dto.PlaylistTrackResponse;
 import com.team.comma.repository.PlaylistRepository;
@@ -30,7 +29,7 @@ public class PlaylistService {
         return playlistTrackRepository.findAllByPlaylist_Id(id);
     }
 
-    public List<PlaylistResponse> getPlaylistResponse(String email) {
+    public List<PlaylistResponse> getPlaylistResponse(final String email) {
         List<PlaylistResponse> result = new ArrayList<>();
         List<PlaylistTrackResponse> tracks = new ArrayList<>();
 
@@ -40,35 +39,13 @@ public class PlaylistService {
                 List<PlaylistTrack> playlistTracks = getPlaylistTrack(playlist.getId()); // playlistId로 track 조회
                 if(playlistTracks.size() != 0) {
                     for (PlaylistTrack playlistTrack : playlistTracks) {
-                        tracks.add(createTrack(playlistTrack.getTrack()));
+                        tracks.add(PlaylistTrackResponse.of(playlistTrack.getTrack()));
                     }
                 }
-                result.add(createPlaylist(playlist,tracks));
+                result.add(PlaylistResponse.of(playlist,tracks));
             }
         }
         return result;
     }
 
-    public PlaylistTrackResponse createTrack(final Track track){
-        return PlaylistTrackResponse.builder()
-                .id(track.getId())
-                .trackTitle(track.getTrackTitle())
-                .durationMs(track.getDurationMs())
-                .artistName(track.getArtistName())
-                .albumName(track.getAlbumName())
-                .albumImageUrl(track.getAlbumImageUrl())
-                .alarmFlag(track.getAlarmFlag())
-                .build();
-    }
-
-    public PlaylistResponse createPlaylist(final Playlist playlist, final List<PlaylistTrackResponse> tracks){
-        return PlaylistResponse.builder()
-                .playlistId(playlist.getId())
-                .playlistTitle(playlist.getPlaylistTitle())
-                .alarmFlag(playlist.isAlarmFlag())
-                .alarmDay(playlist.getAlarmDay())
-                .alarmTime(playlist.getAlarmTime())
-                .tracks(tracks)
-                .build();
-    }
 }

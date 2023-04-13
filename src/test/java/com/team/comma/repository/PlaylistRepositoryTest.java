@@ -26,7 +26,7 @@ public class PlaylistRepositoryTest {
     final String userEmail = "email@naver.com";
 
     @Test
-    public void 플레이리스트조회_0(){
+    public void 플레이리스트조회_실패_데이터없음(){
         // given
 
         // when
@@ -37,7 +37,7 @@ public class PlaylistRepositoryTest {
     }
 
     @Test
-    public void 플레이리스트조회_2(){
+    public void 플레이리스트조회_성공_2(){
         // given
         userRepository.save(getUser());
         final User user = userRepository.findByEmail(userEmail);

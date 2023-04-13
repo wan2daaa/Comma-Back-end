@@ -2,7 +2,6 @@ package com.team.comma.service;
 
 import com.team.comma.domain.Playlist;
 import com.team.comma.domain.PlaylistTrack;
-import com.team.comma.dto.PlaylistResponse;
 import com.team.comma.repository.PlaylistRepository;
 import com.team.comma.repository.PlaylistTrackRepository;
 import org.junit.jupiter.api.Test;
@@ -29,7 +28,7 @@ public class PlaylistServiceTest {
     private String userEmail = "email@naver.com";
 
     @Test
-    public void 플레이리스트_조회() {
+    public void 플레이리스트_조회_성공() {
         // given
         doReturn(Arrays.asList(
                 Playlist.builder().build(),
@@ -45,7 +44,7 @@ public class PlaylistServiceTest {
     }
 
     @Test
-    public void 플레이리스트_곡조회() {
+    public void 플레이리스트_곡조회_성공() {
         // given
         doReturn(Arrays.asList(
                 PlaylistTrack.builder().build(),
@@ -61,12 +60,12 @@ public class PlaylistServiceTest {
     }
 
     @Test
-    public void 사용자플레이리스트_조회() {
+    public void 사용자플레이리스트_조회_성공() {
         // given
         doReturn(Arrays.asList(
-                PlaylistResponse.builder().build(),
-                PlaylistResponse.builder().build(),
-                PlaylistResponse.builder().build()
+                Playlist.builder().build(),
+                Playlist.builder().build(),
+                Playlist.builder().build()
         )).when(playlistTrackRepository).findAllByPlaylist_Id(123L);
 
         // when
