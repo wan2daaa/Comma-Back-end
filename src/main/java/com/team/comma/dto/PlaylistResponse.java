@@ -37,10 +37,6 @@ public final class PlaylistResponse {
         return new PlaylistResponse(playlist, tracks);
     }
 
-    public List<PlaylistTrackResponse> getList() {
-        return Collections.unmodifiableList(tracks);
-    }
-
     public List<PlaylistTrackResponse> getTracks() {
         return Collections.unmodifiableList(tracks);
     }
