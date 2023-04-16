@@ -35,22 +35,18 @@ public class PlaylistService {
 
     public List<PlaylistResponse> createPlaylist(List<Playlist> userPlaylist){
         List<PlaylistResponse> result = new ArrayList<>();
-        if(userPlaylist.size() != 0){
-            for(Playlist playlist : userPlaylist){
-                List<PlaylistTrack> playlistTracks = getPlaylistTrack(playlist.getId()); // playlistId로 track 조회
-                List<PlaylistTrackResponse> tracks = createPlaylistTracks(playlistTracks);
-                result.add(PlaylistResponse.of(playlist,tracks));
-            }
+        for(Playlist playlist : userPlaylist){
+            List<PlaylistTrack> playlistTracks = getPlaylistTrack(playlist.getId()); // playlistId로 track 조회
+            List<PlaylistTrackResponse> tracks = createPlaylistTracks(playlistTracks);
+            result.add(PlaylistResponse.of(playlist,tracks));
         }
         return result;
     }
 
     public List<PlaylistTrackResponse> createPlaylistTracks(List<PlaylistTrack> playlistTracks){
         List<PlaylistTrackResponse> result = new ArrayList<>();
-        if(playlistTracks.size() != 0) {
-            for (PlaylistTrack playlistTrack : playlistTracks) {
-                result.add(PlaylistTrackResponse.of(playlistTrack.getTrack()));
-            }
+        for (PlaylistTrack playlistTrack : playlistTracks) {
+            result.add(PlaylistTrackResponse.of(playlistTrack.getTrack()));
         }
         return result;
     }

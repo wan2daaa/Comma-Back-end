@@ -1,8 +1,10 @@
 package com.team.comma.controller;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.team.comma.domain.Playlist;
 import com.team.comma.domain.Track;
+import com.team.comma.dto.ArtistResponse;
 import com.team.comma.dto.PlaylistResponse;
 import com.team.comma.dto.PlaylistTrackResponse;
 import com.team.comma.service.PlaylistService;
@@ -17,9 +19,12 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -71,12 +76,12 @@ public class PlaylistControllerTest {
         )).when(playlistService).getPlaylistResponse(userEmail);
 
         // when
-        final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.get(url)
-                        .header("email", userEmail)
-        );
+        final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get(url).header("email",userEmail));
 
         // then
         resultActions.andExpect(status().isOk());
+
+        final List<PlaylistResponse> result = playlistService.getPlaylistResponse(userEmail);
+        assertThat(result.size()).isEqualTo(3);
     }
 }

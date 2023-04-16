@@ -6,7 +6,11 @@ import lombok.RequiredArgsConstructor;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import static java.util.Collections.unmodifiableList;
 
 @Getter
 @RequiredArgsConstructor
@@ -26,11 +30,19 @@ public final class PlaylistResponse {
         this.alarmFlag = playlist.isAlarmFlag();
         this.alarmDay = playlist.getAlarmDay();
         this.alarmTime = playlist.getAlarmTime();
-        this.tracks = tracks;
+        this.tracks = new ArrayList<>(tracks);
     }
 
     public static PlaylistResponse of(Playlist playlist, List<PlaylistTrackResponse> tracks) {
         return new PlaylistResponse(playlist, tracks);
+    }
+
+    public List<PlaylistTrackResponse> getList() {
+        return Collections.unmodifiableList(tracks);
+    }
+
+    public List<PlaylistTrackResponse> getTracks() {
+        return Collections.unmodifiableList(tracks);
     }
 
 }
