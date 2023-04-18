@@ -1,14 +1,10 @@
 package com.team.comma.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.team.comma.dto.ArtistResponse;
+import com.team.comma.dto.TrackResponse;
+import com.team.comma.service.SpotifyService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,13 +17,14 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.team.comma.dto.ArtistResponse;
-import com.team.comma.dto.TrackResponse;
-import com.team.comma.service.SpotifyService;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
 
-import javax.xml.transform.Result;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /*
  * https://developer.spotify.com/documentation/web-api/reference/get-an-artist
@@ -125,7 +122,7 @@ public class SpotifyControllerTest {
 		// given
 		final String api = "/spotify/artist?year=2023&offset=0";
 		doReturn(new ArrayList<String>(Arrays.asList("A" , "B" , "C" , "D" , "E"))).when(spotifyService)
-				.getArtistByYear(2023 , 0);
+				.getArtistByYear(0);
 		// when
 		final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get(api));
 		// then

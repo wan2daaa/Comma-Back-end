@@ -128,9 +128,9 @@ public class SpotifyServiceTest {
 	@DisplayName("연도 별 아티스트 가져오기")
 	public void getArtistByYear() {
 		// given
-		long year = 2023;
+
 		// when
-		ArrayList<String> result = spotifyService.getArtistByYear(year ,  0);
+		ArrayList<String> result = spotifyService.getArtistByYear(0);
 		// then
 		assertThat(result).isNotNull();
 	}

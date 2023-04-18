@@ -1,18 +1,12 @@
 package com.team.comma.service;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.neovisionaries.i18n.CountryCode;
-import org.apache.hc.core5.http.ParseException;
-import org.springframework.stereotype.Service;
-
 import com.team.comma.dto.ArtistResponse;
 import com.team.comma.dto.TrackResponse;
 import com.team.comma.exception.SpotifyException;
 import com.team.comma.util.spotify.CreationAccessToken;
-
+import org.apache.hc.core5.http.ParseException;
+import org.springframework.stereotype.Service;
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.exceptions.detailed.UnauthorizedException;
@@ -22,6 +16,10 @@ import se.michaelthelin.spotify.model_objects.specification.Track;
 import se.michaelthelin.spotify.requests.data.browse.miscellaneous.GetAvailableGenreSeedsRequest;
 import se.michaelthelin.spotify.requests.data.search.simplified.SearchArtistsRequest;
 import se.michaelthelin.spotify.requests.data.search.simplified.SearchTracksRequest;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
 
 @Service
 public class SpotifyService {
@@ -119,7 +117,9 @@ public class SpotifyService {
 		}
 	}
 
-	public ArrayList<String> getArtistByYear(long year , int offset) {
+	public ArrayList<String> getArtistByYear(int offset) {
+		int year = LocalDate.now().getYear();
+
 		SearchArtistsRequest artists = spotifyApi.searchArtists(String.format("year:%d" , year))
 				.offset(offset)
 				.limit(10)
@@ -136,7 +136,7 @@ public class SpotifyService {
 			return artistNames;
 		} catch (UnauthorizedException e) {
 			refreshSpotifyToken();
-			return getArtistByYear(year , offset);
+			return getArtistByYear(offset);
 		} catch (IOException | ParseException | SpotifyWebApiException e) {
 			System.out.println("Exception.. : " + e);
 			throw new SpotifyException(e.getMessage());
