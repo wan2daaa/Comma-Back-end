@@ -111,6 +111,29 @@ public class SpotifyServiceTest {
 		// then
 		assertThat(result).isNotEmpty();
 	}
+
+	@Test
+	@DisplayName("장르 정보 가져오기")
+	public void getGenresList() {
+		// given
+
+		// when
+		String[] result = spotifyService.getGenres();
+
+		// then
+		assertThat(result).isNotNull();
+	}
+
+	@Test
+	@DisplayName("연도 별 아티스트 가져오기")
+	public void getArtistByYear() {
+		// given
+		long year = 2023;
+		// when
+		ArrayList<String> result = spotifyService.getArtistByYear(year ,  0);
+		// then
+		assertThat(result).isNotNull();
+	}
 	
 	/*
 	@Test

@@ -3,7 +3,6 @@ package com.team.comma.util.security;
 import com.team.comma.constant.UserRole;
 import java.util.Base64;
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

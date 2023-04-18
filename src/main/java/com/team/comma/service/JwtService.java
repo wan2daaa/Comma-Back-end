@@ -1,20 +1,20 @@
 package com.team.comma.service;
 
-import com.team.comma.constant.ResponseCode;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.team.comma.dto.MessageResponse;
 import com.team.comma.domain.RefreshToken;
 import com.team.comma.domain.Token;
+import com.team.comma.dto.MessageResponse;
 import com.team.comma.exception.FalsifyTokenException;
 import com.team.comma.repository.RefreshTokenRepository;
 import com.team.comma.util.security.JwtTokenProvider;
-
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.NoSuchElementException;
+import java.util.Optional;
+
+import static com.team.comma.constant.ResponseCode.ACCESS_TOKEN_CREATE_SUCCESS;
+import static com.team.comma.constant.ResponseCode.REFRESH_TOKEN_EXPIRED;
 
 @Service
 public class JwtService {
@@ -56,16 +56,10 @@ public class JwtService {
 
 	public MessageResponse createRefreshJson(String createdAccessToken) {
 		if (createdAccessToken == null) {
-			return MessageResponse.builder()
-				.code(ResponseCode.REFRESH_TOKEN_EXPIRED)
-				.message("Refresh 토큰이 만료되었습니다. 로그인이 필요합니다.")
-				.build();
+			return MessageResponse.of(REFRESH_TOKEN_EXPIRED , "Refresh 토큰이 만료되었습니다. 로그인이 필요합니다.");
 		}
 		
-		return MessageResponse.builder()
-			.code(ResponseCode.ACCESS_TOKEN_CREATE_SUCCESS)
-			.message(createdAccessToken)
-			.build();
+		return MessageResponse.of(ACCESS_TOKEN_CREATE_SUCCESS , createdAccessToken);
 	}
 
 	public JwtService() {

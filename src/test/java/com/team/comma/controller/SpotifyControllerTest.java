@@ -27,6 +27,8 @@ import com.team.comma.dto.ArtistResponse;
 import com.team.comma.dto.TrackResponse;
 import com.team.comma.service.SpotifyService;
 
+import javax.xml.transform.Result;
+
 /*
  * https://developer.spotify.com/documentation/web-api/reference/get-an-artist
  */
@@ -96,6 +98,43 @@ public class SpotifyControllerTest {
 				new TypeToken<ArrayList<ArtistResponse>>() {}.getType());
 		
 		assertThat(result.size()).isEqualTo(3);
+	}
+
+	@Test
+	@DisplayName("장르 목록 가져오기")
+	public void getGenresList() throws Exception {
+		// given
+		final String api = "/spotify/genre";
+		doReturn(new String[] {"A" , "B" , "C"}).when(spotifyService).getGenres();
+
+		// when
+		final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get(api));
+
+		// then
+		resultActions.andExpect(status().isOk());
+		final String[] result = gson.fromJson(
+				resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8) ,
+				String [].class);
+
+		assertThat(result.length).isEqualTo(3);
+	}
+
+	@Test
+	@DisplayName("연도별 아티스트 목록 가져오기")
+	public void getArtistListByYear() throws Exception {
+		// given
+		final String api = "/spotify/artist?year=2023&offset=0";
+		doReturn(new ArrayList<String>(Arrays.asList("A" , "B" , "C" , "D" , "E"))).when(spotifyService)
+				.getArtistByYear(2023 , 0);
+		// when
+		final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get(api));
+		// then
+		resultActions.andExpect(status().isOk());
+		final ArrayList<String> result = gson.fromJson(
+				resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8) ,
+				new TypeToken<ArrayList<String>>() {}.getType());
+
+		assertThat(result.size()).isEqualTo(5);
 	}
 
 }

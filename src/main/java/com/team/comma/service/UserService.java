@@ -1,29 +1,26 @@
 package com.team.comma.service;
 
-import com.team.comma.constant.ResponseCode;
 import com.team.comma.constant.UserRole;
 import com.team.comma.constant.UserType;
-import java.time.LocalDateTime;
-import java.util.Collections;
-
-import javax.security.auth.login.AccountException;
-
+import com.team.comma.domain.Token;
+import com.team.comma.domain.User;
+import com.team.comma.dto.LoginRequest;
+import com.team.comma.dto.MessageResponse;
+import com.team.comma.dto.RegisterRequest;
+import com.team.comma.repository.UserRepository;
+import com.team.comma.util.security.CreationCookie;
+import com.team.comma.util.security.JwtTokenProvider;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import com.team.comma.dto.LoginRequest;
-import com.team.comma.dto.MessageResponse;
-import com.team.comma.dto.RegisterRequest;
-import com.team.comma.domain.Token;
-import com.team.comma.domain.User;
-import com.team.comma.repository.UserRepository;
-import com.team.comma.util.security.CreationCookie;
-import com.team.comma.util.security.JwtTokenProvider;
+import javax.security.auth.login.AccountException;
 
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
+import static com.team.comma.constant.ResponseCode.LOGIN_SUCCESS;
+import static com.team.comma.constant.ResponseCode.REGISTER_SUCCESS;
 
 @Service
 @Transactional
@@ -51,11 +48,7 @@ public class UserService {
 
 		createJwtCookie(user);
 
-		return MessageResponse.<User>builder()
-				.code(ResponseCode.LOGIN_SUCCESS)
-				.message("로그인이 성공적으로 되었습니다.")
-				.data(user)
-			.build();
+		return MessageResponse.of(LOGIN_SUCCESS , "로그인이 성공적으로 되었습니다." , user);
 	}
 
 	public MessageResponse register(final RegisterRequest registerRequest) throws AccountException {
@@ -69,11 +62,7 @@ public class UserService {
 
 		User savedUser = userRepository.save(buildEntity);
 
-		return MessageResponse.<User>builder()
-			.code(ResponseCode.REGISTER_SUCCESS)
-			.message("성공적으로 가입되었습니다.")
-			.data(savedUser)
-			.build();
+		return MessageResponse.of(REGISTER_SUCCESS , "성공적으로 가입되었습니다." , savedUser);
 	}
 
 	public MessageResponse loginOauth(final RegisterRequest registerRequest) throws AccountException {
@@ -89,11 +78,7 @@ public class UserService {
 
 		createJwtCookie(findUser);
 
-		return MessageResponse.<User>builder()
-			.code(ResponseCode.LOGIN_SUCCESS)
-			.message("로그인이 성공적으로 되었습니다.")
-			.data(findUser)
-			.build();
+		return MessageResponse.of(LOGIN_SUCCESS , "로그인이 성공적으로 되었습니다." , findUser);
 	}
 
 	public User createUser(final RegisterRequest RegisterRequest , final UserType userType) {
@@ -109,7 +94,7 @@ public class UserService {
 			.build();
 	}
 
-	public void createJwtCookie(User userEntity) {
+	public Token createJwtCookie(User userEntity) {
 		Token token = jwtTokenProvider.createAccessToken(userEntity.getUsername(), userEntity.getRole());
 		jwtService.login(token);
 
@@ -120,6 +105,17 @@ public class UserService {
 			response.addCookie(CreationCookie.createRefreshToken(token.getRefreshToken()));
 			response.addCookie(CreationCookie.createAccessToken(token.getAccessToken()));
 		}
+
+		return token;
 	}
 
+    public User getUserByCookie(String token) throws AccountException {
+		String userName = jwtTokenProvider.getUserPk(token);
+		User user = userRepository.findByEmail(userName);
+
+		if(user == null) {
+			throw new AccountException("사용자를 찾을 수 없습니다.");
+		}
+		return user;
+    }
 }

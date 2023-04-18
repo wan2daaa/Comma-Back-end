@@ -1,11 +1,9 @@
 package com.team.comma.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.doReturn;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.nio.charset.StandardCharsets;
-
+import com.google.gson.Gson;
+import com.team.comma.dto.MessageResponse;
+import com.team.comma.service.JwtService;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,11 +16,13 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.google.gson.Gson;
-import com.team.comma.dto.MessageResponse;
-import com.team.comma.service.JwtService;
+import java.nio.charset.StandardCharsets;
 
-import jakarta.servlet.http.Cookie;
+import static com.team.comma.constant.ResponseCode.ACCESS_TOKEN_CREATE_SUCCESS;
+import static com.team.comma.constant.ResponseCode.AUTHORIZATION_ERROR;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 public class SecurityControllerTest {
@@ -52,11 +52,11 @@ public class SecurityControllerTest {
 		final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get(api));
 
 		// then
-		resultActions.andExpect(status().isOk());
+		resultActions.andExpect(status().isForbidden());
 		final MessageResponse messageDTO = gson.fromJson(
 				resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8), MessageResponse.class);
 
-		assertThat(messageDTO.getCode()).isEqualTo(-1);
+		assertThat(messageDTO.getCode()).isEqualTo(AUTHORIZATION_ERROR);
 		assertThat(messageDTO.getMessage()).isEqualTo("인증되지 않은 사용자입니다.");
 	}
 
@@ -65,7 +65,7 @@ public class SecurityControllerTest {
 	public void createNewAccessToken() throws Exception {
 		// given
 		final String api = "/authentication/denied";
-		doReturn(MessageResponse.builder().code(7).message("token").build()).when(jwtService).validateRefreshToken("token");
+		doReturn(MessageResponse.of(ACCESS_TOKEN_CREATE_SUCCESS ,"token")).when(jwtService).validateRefreshToken("token");
 		Cookie cookie = new Cookie("refreshToken", "token");
 
 		// when
@@ -90,11 +90,11 @@ public class SecurityControllerTest {
 		final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get(api));
 
 		// then
-		resultActions.andExpect(status().isOk());
+		resultActions.andExpect(status().isForbidden());
 		MessageResponse result = gson.fromJson(
 				resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8), MessageResponse.class);
 
-		assertThat(result.getCode()).isEqualTo(-1);
+		assertThat(result.getCode()).isEqualTo(AUTHORIZATION_ERROR);
 		assertThat(result.getMessage()).isEqualTo("인가되지 않은 사용자입니다.");
 		
 	}
