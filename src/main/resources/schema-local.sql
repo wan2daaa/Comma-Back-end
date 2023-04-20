@@ -1,157 +1,235 @@
 SET foreign_key_checks = 0;
 
-drop table if exists archive_tb;
+DROP TABLE IF EXISTS alert_day_tb;
 
-drop table if exists favorite_artist_tb;
 
-drop table if exists favorite_genre_tb;
+DROP TABLE IF EXISTS archive_tb;
 
-drop table if exists following_tb;
 
-drop table if exists playlist_tb;
+DROP TABLE IF EXISTS favorite_artist_tb;
 
-drop table if exists recommend_tb;
 
-drop table if exists t_refresh_token;
+DROP TABLE IF EXISTS favorite_genre_tb;
 
-drop table if exists track_tb;
 
-drop table if exists user_tb;
+DROP TABLE IF EXISTS favorite_track_tb;
+
+
+DROP TABLE IF EXISTS following_tb;
+
+
+DROP TABLE IF EXISTS history_tb;
+
+
+DROP TABLE IF EXISTS playlist_tb;
+
+
+DROP TABLE IF EXISTS playlist_track_tb;
+
+
+DROP TABLE IF EXISTS recommend_tb;
+
+
+DROP TABLE IF EXISTS refresh_token_tb;
+
+
+DROP TABLE IF EXISTS track_artist_tb;
+
+
+DROP TABLE IF EXISTS track_tb;
+
+
+DROP TABLE IF EXISTS track_play_count_tb;
+
+
+DROP TABLE IF EXISTS user_detail_tb;
+
+
+DROP TABLE IF EXISTS user_tb;
 
 SET foreign_key_checks = 1;
 
-create table user_tb
+CREATE TABLE user_tb
 (
-    id             bigint       not null auto_increment,
-    email          varchar(100),
-    name           varchar(10),
-    sex            varchar(10),
-    age            integer,
-    nickname       varchar(255),
-    password       varchar(50),
-    recommend_time time,
-    role           varchar(255),
-    type           varchar(255),
-    sound_flag     TINYINT(1),
-    vibrate_flag   TINYINT(1),
-    leaved_flag    TINYINT(1),
-    created_at     datetime(6),
-    updated_at     datetime(6),
-    del_flag       TINYINT(1),
-    primary key (id)
+    id       BIGINT NOT NULL AUTO_INCREMENT,
+    email    VARCHAR(100),
+    password VARCHAR(50),
+    role     VARCHAR(255),
+    type     VARCHAR(255),
+    del_flag BOOLEAN,
+    PRIMARY KEY (id)
 );
 
-create table playlist_tb
+CREATE TABLE user_detail_tb
 (
-    id             bigint not null auto_increment,
-    user_id        bigint,
-    alarm_day      smallint,
-    alarm_flag     bit,
-    alarm_time     time,
-    playlist_title varchar(255),
-    created_at     datetime(6),
-    updated_at     datetime(6),
-    del_flag       TINYINT(1),
-    primary key (id),
-    foreign key (user_id) references user_tb (id)
+    id                   BIGINT  NOT NULL AUTO_INCREMENT,
+    user_id              BIGINT,
+    sex                  VARCHAR(10),
+    age                  INTEGER,
+    recommend_time       TIME,
+    nickname             VARCHAR(10),
+    profile_image_url    VARCHAR(50),
+    popup_alert_flag     BOOLEAN NOT NULL,
+    favorite_public_flag BOOLEAN NOT NULL,
+    calender_public_flag BOOLEAN NOT NULL,
+    all_public_flag      BOOLEAN NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES user_tb (id)
 );
 
-create table track_tb
+CREATE TABLE playlist_tb
 (
-    id              bigint not null auto_increment,
-    playlist_id       bigint,
-    album_flag      TINYINT(1),
-    album_image_url varchar(255),
-    album_name      varchar(255),
-    artist_names    varchar(255),
-    duration_ms     integer,
-    track_title     varchar(255),
-    created_at      datetime(6),
-    updated_at      datetime(6),
-    del_flag       TINYINT(1),
-    primary key (id),
-    foreign key (playlist_id) references playlist_tb (id)
+    id               BIGINT  NOT NULL AUTO_INCREMENT,
+    user_id          BIGINT,
+    playlist_title   VARCHAR(100),
+    alarm_start_time TIME,
+    alarm_flag       BOOLEAN NOT NULL,
+    list_sequence    INTEGER,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES user_tb (id)
 );
 
-create table archive_tb
+CREATE TABLE alert_day_tb
 (
-    id          bigint not null auto_increment,
+    id          BIGINT NOT NULL AUTO_INCREMENT,
+    playlist_id BIGINT,
+    alarm_day   SMALLINT,
+    PRIMARY KEY (id),
+    FOREIGN KEY (playlist_id) REFERENCES playlist_tb (id)
+);
+
+CREATE TABLE track_tb
+(
+    id              BIGINT NOT NULL AUTO_INCREMENT,
+    playlist_id     BIGINT,
+    album_flag      BOOLEAN,
+    album_image_url VARCHAR(255),
+    album_name      VARCHAR(255),
+    artist_names    VARCHAR(255),
+    duration_ms     INTEGER,
+    track_title     VARCHAR(255),
+    created_at      DATETIME(6),
+    updated_at      DATETIME(6),
+    del_flag        BOOLEAN,
+    PRIMARY KEY (id),
+    FOREIGN KEY (playlist_id) REFERENCES playlist_tb (id)
+);
+
+CREATE TABLE playlist_track_tb
+(
+    id            BIGINT NOT NULL AUTO_INCREMENT,
+    playlist_id   BIGINT,
+    track_id      BIGINT,
+    play_sequence INTEGER,
+    play_flag     BOOLEAN,
+    PRIMARY KEY (id),
+    FOREIGN KEY (playlist_id) REFERENCES playlist_tb (id),
+    FOREIGN KEY (track_id) REFERENCES track_tb (id)
+);
+
+CREATE TABLE archive_tb
+(
+    id          BIGINT NOT NULL AUTO_INCREMENT,
+    user_id     BIGINT,
+    playlist_id BIGINT,
     content     TEXT,
-    playlist_id bigint,
-    user_id     bigint,
-    created_at     datetime(6),
-    updated_at     datetime(6),
-    del_flag       TINYINT(1),
-    primary key (id),
-    foreign key (playlist_id) references playlist_tb (id),
-    foreign key (user_id) references user_tb (id)
+    created_at  DATETIME(6),
+    public_flag BOOLEAN,
+    PRIMARY KEY (id),
+    FOREIGN KEY (playlist_id) REFERENCES playlist_tb (id),
+    FOREIGN KEY (user_id) REFERENCES user_tb (id)
 );
 
-create table favorite_artist_tb
+CREATE TABLE favorite_artist_tb
 (
-    id          bigint      not null auto_increment,
-    artist_name varchar(45) not null,
-    user_id     bigint,
-    created_at     datetime(6),
-    updated_at     datetime(6),
-    del_flag       TINYINT(1),
-    primary key (id),
-    foreign key (user_id) references user_tb (id)
+    id               BIGINT NOT NULL AUTO_INCREMENT,
+    user_id          BIGINT,
+    artist_image_url VARCHAR(50),
+    artist_name      VARCHAR(50),
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES user_tb (id)
 );
 
-create table favorite_genre_tb
+CREATE TABLE favorite_genre_tb
 (
-    id                 bigint      not null auto_increment,
-    genre_name         varchar(45) not null,
-    user_id            bigint,
-    created_at     datetime(6),
-    updated_at     datetime(6),
-    del_flag       TINYINT(1),
-    primary key (id),
-    foreign key (user_id) references user_tb(id)
+    id              BIGINT      NOT NULL auto_increment,
+    user_id         BIGINT,
+    genre_name      VARCHAR(45) NOT NULL,
+    genre_image_url VARCHAR(50),
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES user_tb (id)
 );
 
-create table following_tb
+CREATE TABLE favorite_track_tb
 (
-    id              bigint not null auto_increment,
-    user_email_to   bigint,
-    user_email_from bigint,
-    block_flag      TINYINT(1),
-    created_at     datetime(6),
-    updated_at     datetime(6),
-    del_flag       TINYINT(1),
-    primary key (id),
-    foreign key (user_email_to) references user_tb (id),
-    foreign key (user_email_from) references user_tb (id)
+    id            BIGINT NOT NULL AUTO_INCREMENT,
+    user_id       BIGINT,
+    track_id      BIGINT,
+    favorite_flag BOOLEAN,
+    play_count    INTEGER,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES user_tb (id),
+    FOREIGN KEY (track_id) REFERENCES track_tb (id)
 );
 
-
-
-create table recommend_tb
+CREATE TABLE following_tb
 (
-    id             bigint       not null auto_increment,
-    playlist_id    bigint,
-    recommend_from bigint,
-    recommend_to   bigint,
+    id         BIGINT NOT NULL AUTO_INCREMENT,
+    user_from  BIGINT,
+    user_to    BIGINT,
+    block_flag BOOLEAN,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_from) REFERENCES user_tb (id),
+    FOREIGN KEY (user_to) REFERENCES user_tb (id)
+);
+
+CREATE TABLE recommend_tb
+(
+    id             BIGINT NOT NULL AUTO_INCREMENT,
+    playlist_id    BIGINT,
+    recommend_from BIGINT,
+    recommend_to   BIGINT,
+    recommend_type VARCHAR(255),
     comment        TEXT,
-    play_count     integer default 0,
-    recommend_type varchar(255) not null,
-    created_at     datetime(6),
-    updated_at     datetime(6),
-    del_flag       TINYINT(1),
-    primary key (id),
-    foreign key (playlist_id) references playlist_tb (id),
-    foreign key (recommend_from) references recommend_tb (id),
-    foreign key (recommend_to) references recommend_tb (id)
+    PRIMARY KEY (id),
+    FOREIGN KEY (playlist_id) REFERENCES playlist_tb (id),
+    FOREIGN KEY (recommend_from) REFERENCES recommend_tb (id),
+    FOREIGN KEY (recommend_to) REFERENCES recommend_tb (id)
 );
 
-create table t_refresh_token
+CREATE TABLE track_artist_tb
 (
-    refresh_token_id bigint       not null auto_increment,
-    key_email        varchar(255) not null,
-    refresh_token    varchar(255) not null,
-    primary key (refresh_token_id)
+    id          BIGINT NOT NULL AUTO_INCREMENT,
+    track_id    BIGINT,
+    artist_name VARCHAR(30),
+    PRIMARY KEY (id),
+    FOREIGN KEY (track_id) REFERENCES track_tb (id)
 );
 
+CREATE TABLE history_tb
+(
+    id             BIGINT NOT NULL AUTO_INCREMENT,
+    user_id        BIGINT,
+    del_flag       BOOLEAN,
+    search_history VARCHAR(50),
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES user_tb (id)
+);
 
+CREATE TABLE track_play_count_tb
+(
+    id               BIGINT NOT NULL AUTO_INCREMENT,
+    user_id          BIGINT,
+    play_count       INTEGER DEFAULT 1,
+    spotify_track_id VARCHAR(255),
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES user_tb (id)
+);
 
+CREATE TABLE refresh_token_tb
+(
+    id        BIGINT       NOT NULL AUTO_INCREMENT,
+    key_email VARCHAR(255) NOT NULL,
+    token     VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id)
+);

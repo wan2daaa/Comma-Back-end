@@ -38,104 +38,66 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "user_tb")
-public class User extends BaseEntity implements UserDetails {
+public class User implements UserDetails {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@Column(length = 100, nullable = false)
-	private String email;
-	@Column(length = 10 , nullable = false)
-	private String name;
+    @Column(length = 100, nullable = false)
+    private String email;
 
-	@Column(length = 10)
-	private String sex;
+    @Column(length = 50)
+    private String password;
 
-	@Column(length = 5)
-	private Integer age;
+    /**
+     * OAuth 로그인 유저인지 , 기본 로그인 유저인지 확인
+     */
+    @Enumerated(EnumType.STRING)
+    private UserType type;
 
-	@Column(length = 50)
-	private String password;
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
 
-	@Column(length = 10 , nullable = false)
-	private LocalTime recommendTime;
+    private Boolean delFlag;
 
-	private String nickname;
+    // JWT Security
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(role.getKey()));
+        return authorities;
+    }
 
-	private boolean soundFlag;
+    @Override
+    public String getPassword() {
+        return password;
+    }
 
-	private boolean vibrateFlag;
+    @Override
+    public String getUsername() {
+        return email;
+    }
 
-	// OAuth 로그인 유저인지 , 기본 로그인 유저인지 확인
-	@Enumerated(EnumType.STRING)
-	private UserType type;
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
 
-	@Enumerated(EnumType.STRING)
-	private UserRole role;
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
 
-	@OneToMany(mappedBy = "user")
-	private List<Archive> archiveList;
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
 
-	@OneToMany(mappedBy = "user")
-	private List<FavoriteArtist> artistNames;
-
-	@OneToMany(mappedBy = "genreName")
-	private List<FavoriteGenre> genreNames;
-
-	//연관관계 편의 메소드
-	public void addArchiveList(Archive archive) {
-		getArchiveList().add(archive);
-			archive.setUser(this);
-	}
-
-	public void addFavoriteArtists(FavoriteArtist favoriteArtist) {
-		getArtistNames().add(favoriteArtist);
-			favoriteArtist.setUser(this);
-	}
-
-	public void addFavoriteGenres(FavoriteGenre favoriteGenre) {
-		getGenreNames().add(favoriteGenre);
-		favoriteGenre.setUser(this);
-	}
-
-	// JWT Security
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		Collection<GrantedAuthority> authorities = new ArrayList<>();
-			authorities.add(new SimpleGrantedAuthority(role.getKey()));
-		return authorities;
-	}
-
-	@Override
-	public String getPassword() {
-		return password;
-	}
-
-	@Override
-	public String getUsername() {
-		return email;
-	}
-
-	@Override
-	public boolean isAccountNonExpired() {
-		return true;
-	}
-
-	@Override
-	public boolean isAccountNonLocked() {
-		return true;
-	}
-
-	@Override
-	public boolean isCredentialsNonExpired() {
-		return true;
-	}
-
-	@Override
-	public boolean isEnabled() {
-		return true;
-	}
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }

@@ -1,6 +1,5 @@
 package com.team.comma.domain;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -20,22 +19,22 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "favorite_artist_tb")
-public class FavoriteArtist {
+@Table(name = "favorite_track_tb")
+public class FavoriteTrack {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 50)
-    private String artistName;
+    private Integer playCount;
 
-    @Column(length = 50)
-    private String artistImageUrl;
+    private Boolean favoriteFlag;
 
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
+    @JoinColumn(name = "track_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Track track;
 }

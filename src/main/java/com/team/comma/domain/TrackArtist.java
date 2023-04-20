@@ -20,22 +20,17 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "favorite_artist_tb")
-public class FavoriteArtist {
+@Table(name = "track_artist_tb")
+public class TrackArtist {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 50)
+    @Column(length = 30)
     private String artistName;
 
-    @Column(length = 50)
-    private String artistImageUrl;
-
-
+    @JoinColumn(name = "track_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
-
+    private Track track;
 }

@@ -29,22 +29,16 @@ import org.hibernate.annotations.ColumnDefault;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "recommend_tb")
-public class Recommend extends BaseEntity {
+public class Recommend {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private RecommendType recommendType;
 
-    @Lob
     @Column(columnDefinition = "TEXT")
     private String comment;
-
-    @ColumnDefault("0")
-    private Integer playCount;
 
     @JoinColumn(name = "playlist_id")
     @ManyToOne(fetch = FetchType.LAZY)
