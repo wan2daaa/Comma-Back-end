@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.IOException;
 
 @Data
+@EqualsAndHashCode(callSuper=false)
 @Component
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
@@ -29,7 +31,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         SessionUser user = (SessionUser) httpSession.getAttribute("user");
 
         if(user == null) { // 이메일이 없을 때
-            getRedirectStrategy().sendRedirect(request , response , createRedirectUrl("http://localhost:3000/oauth2/disallowance"));
+            getRedirectStrategy().sendRedirect(request , response , createRedirectUrl("http://43.201.188.96:3000/oauth2/disallowance"));
             return;
         }
 
@@ -39,7 +41,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         httpSession.removeAttribute("user"); // 세션 삭제
 
-        getRedirectStrategy().sendRedirect(request , response , createRedirectUrl("http://localhost:3000"));
+        getRedirectStrategy().sendRedirect(request , response , createRedirectUrl("http://43.201.188.96:3000"));
     }
 
     public String createRedirectUrl(String url) {
@@ -47,3 +49,4 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     }
 
 }
+

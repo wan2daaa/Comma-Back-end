@@ -20,22 +20,19 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "favorite_artist_tb")
-public class FavoriteArtist {
+@Table(name = "history_tb")
+public class History {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(length = 50)
-    private String artistName;
+    private String searchHistory;
 
-    @Column(length = 50)
-    private String artistImageUrl;
+    private Boolean delFlag;
 
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
-
 }

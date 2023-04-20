@@ -28,28 +28,20 @@ import lombok.Data;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "favorite_genre_tb")
-public class FavoriteGenre extends BaseEntity {
+public class FavoriteGenre {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@JoinColumn(name = "user_id")
-	@ManyToOne(fetch = FetchType.LAZY)
-	private User user;
+    @Column(length = 45, nullable = false)
+    private String genreName;
 
-	@Column(length = 45, nullable = false)
-	private String genreName;
+    @Column(length = 50)
+    private String genreImageUrl;
 
-	public void setUser(User user) {
-		if(this.user != null) {
-			this.user.getGenreNames().remove(this);
-		}
-		this.user = user;
-
-		if(!user.getGenreNames().contains(this)) {
-			user.getGenreNames().add(this);
-		}
-	}
+    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
 
 }

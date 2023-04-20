@@ -1,21 +1,14 @@
 package com.team.comma.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
 import com.team.comma.constant.UserRole;
 import com.team.comma.constant.UserType;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Collections;
-
-import javax.security.auth.login.AccountException;
-
+import com.team.comma.domain.Token;
+import com.team.comma.domain.User;
+import com.team.comma.dto.LoginRequest;
+import com.team.comma.dto.MessageResponse;
+import com.team.comma.dto.RegisterRequest;
+import com.team.comma.repository.UserRepository;
+import com.team.comma.util.security.JwtTokenProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,13 +21,13 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import com.team.comma.dto.LoginRequest;
-import com.team.comma.dto.MessageResponse;
-import com.team.comma.dto.RegisterRequest;
-import com.team.comma.domain.Token;
-import com.team.comma.domain.User;
-import com.team.comma.repository.UserRepository;
-import com.team.comma.util.security.JwtTokenProvider;
+import javax.security.auth.login.AccountException;
+import java.time.LocalTime;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -50,6 +43,7 @@ public class UserServiceTest {
 
 	@Spy
 	private JwtTokenProvider jwtTokenProvider;
+
 
 	private String userEmail = "email@naver.com";
 	private String userPassword = "password";
@@ -219,6 +213,33 @@ public class UserServiceTest {
 		assertThat(message.getMessage()).isEqualTo("성공적으로 가입되었습니다.");
 		assertThat(user).isNotNull();
 		assertThat(user.getEmail()).isEqualTo(userEntity.getEmail());
+	}
+
+	@Test
+	@DisplayName("AccessToken 쿠키로 사용자 정보 가져오기 실패 _ 존재하지 않은 사용자")
+	public void getUserInfoByCookieButNotExistendUser() {
+		// given
+		User user = getUserEntity();
+		String accessToken = userService.createJwtCookie(user).getAccessToken();
+		doReturn(null).when(userRepository).findByEmail(any(String.class));
+		// when
+		Throwable thrown = catchThrowable(() -> userService.getUserByCookie(accessToken));
+		// then
+		assertThat(thrown).isInstanceOf(AccountException.class).hasMessage("사용자를 찾을 수 없습니다.");
+	}
+
+	@Test
+	@DisplayName("AccessToken 쿠키로 사용자 정보 가져오기")
+	public void getUserInfoByCookie() throws AccountException {
+		// given
+		User user = getUserEntity();
+		String accessToken = userService.createJwtCookie(user).getAccessToken();
+		doReturn(getUserEntity()).when(userRepository).findByEmail(any(String.class));
+		// when
+		User result = userService.getUserByCookie(accessToken);
+		// then
+		assertThat(result).isNotNull();
+		assertThat(result.getEmail()).isEqualTo(userEmail);
 	}
 
 	private User getUserEntity() {

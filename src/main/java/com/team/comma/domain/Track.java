@@ -1,6 +1,7 @@
 package com.team.comma.domain;
 
 import jakarta.persistence.*;
+import java.util.List;
 import lombok.*;
 
 import java.util.List;
@@ -11,22 +12,24 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "track_tb")
-public class Track extends BaseEntity {
+public class Track {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(length = 30)
     private String trackTitle;
 
-    private Integer durationMs;
+    private Integer durationTimeMs;
 
-    private String artistName;
-
-    private String albumName;
-
+    @Column(length = 50)
     private String albumImageUrl;
 
-    private Boolean alarmFlag;
+    @Column(length = 50)
+    private String spotifyTrackId;
+
+    @Column(length = 50)
+    private String spotifyTrackHref;
 
 }

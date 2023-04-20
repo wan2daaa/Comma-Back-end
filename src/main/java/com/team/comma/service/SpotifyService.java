@@ -1,31 +1,32 @@
 package com.team.comma.service;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
-import org.apache.hc.core5.http.ParseException;
-import org.springframework.stereotype.Service;
-
+import com.neovisionaries.i18n.CountryCode;
 import com.team.comma.dto.ArtistResponse;
 import com.team.comma.dto.TrackResponse;
 import com.team.comma.exception.SpotifyException;
 import com.team.comma.util.spotify.CreationAccessToken;
-
+import org.apache.hc.core5.http.ParseException;
+import org.springframework.stereotype.Service;
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.exceptions.detailed.UnauthorizedException;
 import se.michaelthelin.spotify.model_objects.specification.Artist;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.Track;
+import se.michaelthelin.spotify.requests.data.browse.miscellaneous.GetAvailableGenreSeedsRequest;
 import se.michaelthelin.spotify.requests.data.search.simplified.SearchArtistsRequest;
 import se.michaelthelin.spotify.requests.data.search.simplified.SearchTracksRequest;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
 
 @Service
 public class SpotifyService {
 
 	SpotifyApi spotifyApi = new SpotifyApi.Builder().setAccessToken("Token").build();
 
-	public void refreshAccessToken() {
+	public void refreshSpotifyToken() {
 		CreationAccessToken creationAccessToken = new CreationAccessToken();
 
 		spotifyApi = new SpotifyApi.Builder().setAccessToken(creationAccessToken.accessToken()).build();
@@ -58,7 +59,7 @@ public class SpotifyService {
 			return result;
 		} catch (UnauthorizedException e) { // 토큰이 유효하지 않을 때..
 			System.out.println("Token is Expire.. Token reissue.");
-			refreshAccessToken();
+			refreshSpotifyToken();
 			return searchArtist_Sync(artist);
 		} catch (IOException | ParseException | SpotifyWebApiException e) {
 			System.out.println("Exceptipn.. : " + e);
@@ -94,8 +95,48 @@ public class SpotifyService {
 
 		} catch (UnauthorizedException e) { // 토큰이 유효하지 않을 때..
 			System.out.println("Token is Expire.. Token reissue.");
-			refreshAccessToken();
+			refreshSpotifyToken();
 			return searchTrack_Sync(track);
+		} catch (IOException | ParseException | SpotifyWebApiException e) {
+			System.out.println("Exception.. : " + e);
+			throw new SpotifyException(e.getMessage());
+		}
+	}
+
+    public String[] getGenres() {
+		GetAvailableGenreSeedsRequest genres = spotifyApi.getAvailableGenreSeeds().build();
+
+		try {
+			return genres.execute();
+		} catch (UnauthorizedException e) {
+			refreshSpotifyToken();
+			return getGenres();
+		} catch (IOException | ParseException | SpotifyWebApiException e) {
+			System.out.println("Exception.. : " + e);
+			throw new SpotifyException(e.getMessage());
+		}
+	}
+
+	public ArrayList<String> getArtistByYear(int offset) {
+		int year = LocalDate.now().getYear();
+
+		SearchArtistsRequest artists = spotifyApi.searchArtists(String.format("year:%d" , year))
+				.offset(offset)
+				.limit(10)
+				.market(CountryCode.KR)
+				.build();
+
+		ArrayList<String> artistNames = new ArrayList<>();
+		try {
+			Paging<Artist> artistPaging = artists.execute();
+			for(Artist artist : artistPaging.getItems()) {
+				artistNames.add(artist.getName());
+			}
+
+			return artistNames;
+		} catch (UnauthorizedException e) {
+			refreshSpotifyToken();
+			return getArtistByYear(offset);
 		} catch (IOException | ParseException | SpotifyWebApiException e) {
 			System.out.println("Exception.. : " + e);
 			throw new SpotifyException(e.getMessage());

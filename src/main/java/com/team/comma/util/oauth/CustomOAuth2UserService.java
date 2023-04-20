@@ -32,30 +32,33 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         // 현재 서비스중인 서버 ( 네이버 , 카카오 , 구글 )
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         // OAuth2 서버의 키값 ( 구글 = sub , 네이버 = response , 카카오 = id )
-        String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
+        String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
+            .getUserInfoEndpoint().getUserNameAttributeName();
         // 사용자 정보 값
-        OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
+        OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName,
+            oAuth2User.getAttributes());
 
         User user = saveOrUpdate(attributes);
 
-        if(user != null) { // email 정보가 없을 경우
-            httpSession.setAttribute("user" , SessionUser.of(user)); // 세션 저장
+        if (user != null) { // email 정보가 없을 경우
+            httpSession.setAttribute("user", SessionUser.of(user)); // 세션 저장
         }
 
-        return new DefaultOAuth2User(Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")), attributes.getAttributes() , attributes.getNameAttributeKey());
+        return new DefaultOAuth2User(Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
+            attributes.getAttributes(), attributes.getNameAttributeKey());
     }
 
     public User saveOrUpdate(OAuthAttributes attributes) {
 
-        if(attributes.getEmail() == null) { // email 정보가 없으면 종료
+        if (attributes.getEmail() == null) { // email 정보가 없으면 종료
             return null;
         }
 
         User user = userRepository.findByEmail(attributes.getEmail());
 
-        if(user == null) { // 정보가 없을 때만
-            User createUser = User.builder().email(attributes.getEmail()).name(attributes.getName())
-                    .role(UserRole.USER).type(UserType.OAuthUser).build();
+        if (user == null) { // 정보가 없을 때만
+            User createUser = User.builder().email(attributes.getEmail())
+                .role(UserRole.USER).type(UserType.OAuthUser).build();
             return userRepository.save(createUser);
         }
         return user;
