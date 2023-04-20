@@ -22,7 +22,6 @@ public class Track {
     private Integer durationTimeMs;
 
     @Column(length = 50)
-
     private String albumImageUrl;
 
     @Column(length = 50)
@@ -31,8 +30,4 @@ public class Track {
     @Column(length = 50)
     private String spotifyTrackHref;
 
-//    @ElementCollection
-//    @CollectionTable(name = "track_artist_tb")
-//    @Column(name = "artist_name")
-//    private List<String> artistNameList;
 }

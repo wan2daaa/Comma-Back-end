@@ -100,17 +100,13 @@ CREATE TABLE alert_day_tb
 
 CREATE TABLE track_tb
 (
-    id              BIGINT NOT NULL AUTO_INCREMENT,
-    playlist_id     BIGINT,
-    album_flag      BOOLEAN,
-    album_image_url VARCHAR(255),
-    album_name      VARCHAR(255),
-    artist_names    VARCHAR(255),
-    duration_ms     INTEGER,
-    track_title     VARCHAR(255),
-    created_at      DATETIME(6),
-    updated_at      DATETIME(6),
-    del_flag        BOOLEAN,
+    id                 BIGINT NOT NULL AUTO_INCREMENT,
+    playlist_id        BIGINT,
+    track_title        VARCHAR(30),
+    duration_time_ms   INTEGER,
+    album_image_url    VARCHAR(50),
+    spotify_track_id   VARCHAR(50),
+    spotify_track_href VARCHAR(50),
     PRIMARY KEY (id),
     FOREIGN KEY (playlist_id) REFERENCES playlist_tb (id)
 );
