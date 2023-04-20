@@ -1,7 +1,7 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.0.1'
-	id 'io.spring.dependency-management' version '1.1.0'
+    id 'java'
+    id 'org.springframework.boot' version '3.0.1'
+    id 'io.spring.dependency-management' version '1.1.0'
 }
 
 
@@ -10,13 +10,13 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 allprojects {
@@ -26,33 +26,40 @@ allprojects {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	compileOnly 'org.projectlombok:lombok'
-	implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.30'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    compileOnly 'org.projectlombok:lombok'
+    implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.30'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
 
-	// Swagger
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.3'
+    // H2
+    runtimeOnly 'com.h2database:h2'
 
-	// JWT
-	implementation 'io.jsonwebtoken:jjwt:0.9.1'
-	implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
-	
-	// API ( OAuth2.0 )
-	implementation 'org.apache.httpcomponents:httpclient:4.5.14'
-	implementation 'com.google.code.gson:gson:2.10.1'
-	
-	//Spotify
-	implementation 'se.michaelthelin.spotify:spotify-web-api-java:8.0.0'
-	implementation 'com.github.thelinmichael:spotify-web-api-java:master-SNAPSHOT'
+
+    // Swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.3'
+
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
+
+    // API ( OAuth2.0 )
+    implementation 'org.apache.httpcomponents:httpclient:4.5.14'
+    implementation 'com.google.code.gson:gson:2.10.1'
+
+    //Spotify
+    implementation 'se.michaelthelin.spotify:spotify-web-api-java:8.0.0'
+    implementation 'com.github.thelinmichael:spotify-web-api-java:master-SNAPSHOT'
+
+    //GOOGLE-GUAVA
+    implementation("com.google.guava:guava:31.1-jre")
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }

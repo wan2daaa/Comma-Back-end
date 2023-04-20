@@ -18,51 +18,52 @@ import static com.team.comma.constant.ResponseCode.REFRESH_TOKEN_EXPIRED;
 
 @Service
 public class JwtService {
-	@Autowired
-	JwtTokenProvider jwtTokenProvider;
-	@Autowired
-	RefreshTokenRepository refreshTokenRepository;
 
-	@Transactional
-	public void login(Token tokenEntity) {
+    @Autowired
+    JwtTokenProvider jwtTokenProvider;
+    @Autowired
+    RefreshTokenRepository refreshTokenRepository;
 
-		RefreshToken refreshToken = RefreshToken.builder().keyEmail(tokenEntity.getKey())
-				.refreshToken(tokenEntity.getRefreshToken()).build();
-		String loginUserEmail = refreshToken.getKeyEmail();
+    @Transactional
+    public void login(Token tokenEntity) {
 
-		RefreshToken token = refreshTokenRepository.existsByKeyEmail(loginUserEmail);
-		if (token != null) { // 기존 존재하는 토큰 제거
-			refreshTokenRepository.deleteByKeyEmail(loginUserEmail);
-		}
-		refreshTokenRepository.save(refreshToken);
+        RefreshToken refreshToken = RefreshToken.builder().keyEmail(tokenEntity.getKey())
+            .token(tokenEntity.getRefreshToken()).build();
+        String loginUserEmail = refreshToken.getKeyEmail();
 
-	}
+        RefreshToken token = refreshTokenRepository.existsByKeyEmail(loginUserEmail);
+        if (token != null) { // 기존 존재하는 토큰 제거
+            refreshTokenRepository.deleteByKeyEmail(loginUserEmail);
+        }
+        refreshTokenRepository.save(refreshToken);
 
-	public Optional<RefreshToken> getRefreshToken(String refreshToken) {
+    }
 
-		return refreshTokenRepository.findByRefreshToken(refreshToken);
-	}
+    public Optional<RefreshToken> getRefreshToken(String refreshToken) {
 
-	public MessageResponse validateRefreshToken(String refreshToken) {
-		try {
-			RefreshToken refreshToken1 = getRefreshToken(refreshToken).get();
-			String createdAccessToken = jwtTokenProvider.validateRefreshToken(refreshToken1);
+        return refreshTokenRepository.findByToken(refreshToken);
+    }
 
-			return createRefreshJson(createdAccessToken);
-		} catch (NoSuchElementException e) {
-			throw new FalsifyTokenException("변조되거나, 알 수 없는 RefreshToken 입니다.");
-		}
-	}
+    public MessageResponse validateRefreshToken(String refreshToken) {
+        try {
+            RefreshToken refreshToken1 = getRefreshToken(refreshToken).get();
+            String createdAccessToken = jwtTokenProvider.validateRefreshToken(refreshToken1);
 
-	public MessageResponse createRefreshJson(String createdAccessToken) {
-		if (createdAccessToken == null) {
-			return MessageResponse.of(REFRESH_TOKEN_EXPIRED , "Refresh 토큰이 만료되었습니다. 로그인이 필요합니다.");
-		}
-		
-		return MessageResponse.of(ACCESS_TOKEN_CREATE_SUCCESS , createdAccessToken);
-	}
+            return createRefreshJson(createdAccessToken);
+        } catch (NoSuchElementException e) {
+            throw new FalsifyTokenException("변조되거나, 알 수 없는 RefreshToken 입니다.");
+        }
+    }
 
-	public JwtService() {
+    public MessageResponse createRefreshJson(String createdAccessToken) {
+        if (createdAccessToken == null) {
+            return MessageResponse.of(REFRESH_TOKEN_EXPIRED, "Refresh 토큰이 만료되었습니다. 로그인이 필요합니다.");
+        }
 
-	}
+        return MessageResponse.of(ACCESS_TOKEN_CREATE_SUCCESS, createdAccessToken);
+    }
+
+    public JwtService() {
+
+    }
 }

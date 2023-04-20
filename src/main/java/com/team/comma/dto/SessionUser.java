@@ -5,11 +5,10 @@ import com.team.comma.domain.User;
 import java.io.Serializable;
 
 public final class SessionUser implements Serializable {
+
     final private String email;
-    final private String name;
 
     private SessionUser(User user) {
-        this.name = user.getName();
         this.email = user.getEmail();
     }
 
@@ -21,7 +20,4 @@ public final class SessionUser implements Serializable {
         return email;
     }
 
-    public String getName() {
-        return name;
-    }
 }

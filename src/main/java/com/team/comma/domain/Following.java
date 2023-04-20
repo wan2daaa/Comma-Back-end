@@ -22,22 +22,19 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "following_tb")
-public class Following extends BaseEntity {
+public class Following {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Setter
-    @JoinColumn(name = "user_email_from")
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User userEmailFrom;
-
-    @Setter
-    @JoinColumn(name = "user_email_to")
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User userEmailTo;
-
     private Boolean blockFlag;
+
+    @JoinColumn(name = "user_from")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User userFrom;
+
+    @JoinColumn(name = "user_to")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User userTo;
 
 }
