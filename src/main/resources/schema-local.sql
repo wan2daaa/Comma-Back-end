@@ -114,11 +114,12 @@ CREATE TABLE track_tb
 
 CREATE TABLE playlist_track_tb
 (
-    id            BIGINT NOT NULL AUTO_INCREMENT,
-    playlist_id   BIGINT,
-    track_id      BIGINT,
-    play_sequence INTEGER,
-    play_flag     BOOLEAN,
+    id                  BIGINT NOT NULL AUTO_INCREMENT,
+    playlist_id         BIGINT,
+    track_id            BIGINT,
+    play_sequence       INTEGER,
+    play_flag           BOOLEAN,
+    track_alarm_flag    BOOLEAN,
     PRIMARY KEY (id),
     FOREIGN KEY (playlist_id) REFERENCES playlist_tb (id),
     FOREIGN KEY (track_id) REFERENCES track_tb (id)

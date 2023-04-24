@@ -2,7 +2,6 @@ package com.team.comma.domain;
 
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
 import lombok.*;
 
 import java.util.List;
@@ -36,9 +35,13 @@ public class Track {
     @OneToMany(mappedBy = "track")
     private List<TrackArtist> trackArtistList;
 
-    public void setTrackArtistList(TrackArtist trackArtist) {
-        getTrackArtistList().add(trackArtist);
-        trackArtist.setTrack(this);
+    public void addTrackArtistList(String artistName) {
+        TrackArtist trackArtist = TrackArtist.builder()
+                .artistName(artistName)
+                .track(this)
+                .build();
+
+        trackArtistList.add(trackArtist);
     }
 
 }
