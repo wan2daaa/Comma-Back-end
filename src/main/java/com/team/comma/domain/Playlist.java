@@ -33,7 +33,7 @@ public class Playlist {
 
     private LocalTime alarmStartTime;
 
-    private boolean alarmFlag;
+    private Boolean alarmFlag;
 
     private Integer listSequence;
 

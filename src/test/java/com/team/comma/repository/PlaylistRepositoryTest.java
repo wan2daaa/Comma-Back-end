@@ -64,6 +64,7 @@ public class PlaylistRepositoryTest {
     private Playlist getPlaylist(User user, String title) {
         return Playlist.builder()
                 .playlistTitle(title)
+                .alarmFlag(true)
                 .user(user)
                 .build();
     }

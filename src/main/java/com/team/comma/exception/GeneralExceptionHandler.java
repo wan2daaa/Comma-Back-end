@@ -1,6 +1,7 @@
 package com.team.comma.exception;
 
 import com.team.comma.dto.MessageResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,11 +20,21 @@ public class GeneralExceptionHandler {
 	/*
 	 * 토큰 변조 , 사용자를 찾을 수 없을 때 , 사용자가 이미 존재하거나 정보가 일치하지 않을 때
 	 */
-	@ExceptionHandler({FalsifyTokenException.class , UsernameNotFoundException.class , AccountException.class})
+	@ExceptionHandler({UsernameNotFoundException.class , AccountException.class})
 	public ResponseEntity<MessageResponse> handleBadRequest(Exception e) {
 		MessageResponse message = MessageResponse.of(SIMPLE_REQUEST_FAILURE , e.getMessage());
 
 		return ResponseEntity.badRequest().body(message);
+	}
+
+	/*
+		토큰 변조
+	 */
+	@ExceptionHandler(FalsifyTokenException.class)
+	public ResponseEntity<MessageResponse> handleForbiddenRequest(Exception e) {
+		MessageResponse message = MessageResponse.of(AUTHORIZATION_ERROR , e.getMessage());
+
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(message);
 	}
 	
 	/*
@@ -45,4 +56,13 @@ public class GeneralExceptionHandler {
 		return ResponseEntity.internalServerError().body(message);
 	}
 
+	/*
+		RefreshToken 만료
+	 */
+	@ExceptionHandler({ExpireTokenException.class})
+	public ResponseEntity<MessageResponse> handleExpireTokenException(Exception e) {
+		MessageResponse message = MessageResponse.of(REFRESH_TOKEN_EXPIRED, e.getMessage());
+
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(message);
+	}
 }

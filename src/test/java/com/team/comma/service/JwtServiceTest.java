@@ -1,28 +1,28 @@
 package com.team.comma.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-
-import java.util.NoSuchElementException;
-import java.util.Optional;
-
+import com.team.comma.domain.RefreshToken;
+import com.team.comma.domain.Token;
+import com.team.comma.exception.ExpireTokenException;
+import com.team.comma.exception.FalsifyTokenException;
+import com.team.comma.repository.RefreshTokenRepository;
+import com.team.comma.util.security.JwtTokenProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-import com.team.comma.dto.MessageResponse;
-import com.team.comma.domain.RefreshToken;
-import com.team.comma.domain.Token;
-import com.team.comma.exception.FalsifyTokenException;
-import com.team.comma.repository.RefreshTokenRepository;
-import com.team.comma.util.security.JwtTokenProvider;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+
+import static org.apache.http.cookie.SM.SET_COOKIE;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class JwtServiceTest {
@@ -55,7 +55,7 @@ public class JwtServiceTest {
     }
 
     @Test
-    @DisplayName("AccessToken 토큰 반환")
+    @DisplayName("새로운 AccessToken 반환")
     public void createAccessToken() {
         // given
         RefreshToken refreshToken = getRefreshToken();
@@ -64,15 +64,15 @@ public class JwtServiceTest {
         doReturn("Token").when(jwtTokenProvider).validateRefreshToken(any(RefreshToken.class));
 
         // when
-        MessageResponse result = jwtService.validateRefreshToken(refreshToken.getToken());
+        ResponseEntity result = jwtService.validateRefreshToken(refreshToken.getToken());
 
         // then
-        assertThat(result.getCode()).isEqualTo(7);
-        assertThat(result.getMessage()).isEqualTo("Token");
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(result.getHeaders().get(SET_COOKIE).toString()).contains("accessToken=Token");
     }
 
     @Test
-    @DisplayName("만료된 RefreshToken 반환")
+    @DisplayName("새로운 AccessToken 반환 예외 _ 만료된 RefreshToken")
     public void expireToken() {
         // given
         RefreshToken refreshToken = getRefreshToken();
@@ -81,16 +81,15 @@ public class JwtServiceTest {
         doReturn(null).when(jwtTokenProvider).validateRefreshToken(any(RefreshToken.class));
 
         // when
-        MessageResponse result = jwtService.validateRefreshToken(refreshToken.getToken());
+        Throwable thrown = catchThrowable(() -> jwtService.validateRefreshToken(refreshToken.getToken()));
 
         // then
-        assertThat(result.getCode()).isEqualTo(-7);
-        assertThat(result.getMessage()).isEqualTo("Refresh 토큰이 만료되었습니다. 로그인이 필요합니다.");
+        assertThat(thrown).isInstanceOf(ExpireTokenException.class).hasMessage("Refresh 토큰이 만료되었습니다. 로그인이 필요합니다.");
     }
 
     // testssss
     @Test
-    @DisplayName("변조된 RefreshToken 예외")
+    @DisplayName("새로운 AccessToken 반환 예외 _ 변조된 RefreshToken")
     public void falsifyToken() {
         // given
         RefreshToken refreshToken = getRefreshToken();

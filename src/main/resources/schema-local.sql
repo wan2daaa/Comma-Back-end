@@ -49,32 +49,33 @@ DROP TABLE IF EXISTS user_tb;
 
 SET foreign_key_checks = 1;
 
-CREATE TABLE user_tb
-(
-    id       BIGINT NOT NULL AUTO_INCREMENT,
-    email    VARCHAR(100),
-    password VARCHAR(50),
-    role     VARCHAR(255),
-    type     VARCHAR(255),
-    del_flag BOOLEAN,
-    PRIMARY KEY (id)
-);
-
 CREATE TABLE user_detail_tb
 (
     id                   BIGINT  NOT NULL AUTO_INCREMENT,
     user_id              BIGINT,
     sex                  VARCHAR(10),
-    age                  INTEGER,
+    age                  INT ,
     recommend_time       TIME,
     nickname             VARCHAR(10),
     profile_image_url    VARCHAR(50),
-    popup_alert_flag     BOOLEAN NOT NULL,
-    favorite_public_flag BOOLEAN NOT NULL,
-    calender_public_flag BOOLEAN NOT NULL,
-    all_public_flag      BOOLEAN NOT NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (user_id) REFERENCES user_tb (id)
+    popup_alert_flag     VARCHAR(10) NOT NULL,
+    favorite_public_flag VARCHAR(10) NOT NULL,
+    calender_public_flag VARCHAR(10) NOT NULL,
+    all_public_flag      VARCHAR(10) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE user_tb
+(
+    id       BIGINT NOT NULL AUTO_INCREMENT,
+    email    VARCHAR(100) not null,
+    user_detail_tb BIGINT ,
+    password VARCHAR(50),
+    role     VARCHAR(255),
+    type     VARCHAR(255),
+    del_flag varchar(255),
+    FOREIGN KEY (user_detail_tb) REFERENCES user_detail_tb (id),
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE playlist_tb

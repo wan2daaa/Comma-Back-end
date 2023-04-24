@@ -2,34 +2,17 @@ package com.team.comma.domain;
 
 import com.team.comma.constant.UserRole;
 import com.team.comma.constant.UserType;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Table;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import lombok.AccessLevel;
-import lombok.Getter;
-import org.apache.commons.lang3.arch.Processor.Arch;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.DynamicInsert;
+import com.team.comma.util.converter.BooleanConverter;
+import jakarta.persistence.*;
+import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 
 @Entity
@@ -52,6 +35,38 @@ public class User implements UserDetails {
     @Column(length = 50)
     private String password;
 
+    @Setter
+    @JsonIgnore
+    @OneToOne(fetch = FetchType.LAZY , cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "user_detail_tb")
+    private UserDetail userDetail;
+
+    @OneToMany(cascade = CascadeType.ALL , mappedBy = "user")
+    @Builder.Default
+    private List<FavoriteGenre> favoriteGenre = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL , mappedBy = "user")
+    @Builder.Default
+    private List<FavoriteArtist> favoriteArtist = new ArrayList<>();
+
+    // 연관관계 편의 메서드
+    public void addFavoriteGenre(String genre) {
+        FavoriteGenre genreData = FavoriteGenre.builder()
+                .genreName(genre)
+                .user(this)
+                .build();
+
+        favoriteGenre.add(genreData);
+    }
+
+    public void addFavoriteArtist(String artist) {
+        FavoriteArtist artistData = FavoriteArtist.builder()
+                .artistName(artist)
+                .user(this)
+                .build();
+
+        favoriteArtist.add(artistData);
+    }
     /**
      * OAuth 로그인 유저인지 , 기본 로그인 유저인지 확인
      */
@@ -61,7 +76,9 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    private Boolean delFlag;
+    @Builder.Default
+    @Convert(converter = BooleanConverter.class)
+    private Boolean delFlag = false;
 
     // JWT Security
     @Override

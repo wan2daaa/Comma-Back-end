@@ -1,25 +1,18 @@
 package com.team.comma.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import com.team.comma.util.converter.BooleanConverter;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+
 import java.time.LocalTime;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicInsert
 @Table(name = "user_detail_tb")
 public class UserDetail {
 
@@ -30,8 +23,8 @@ public class UserDetail {
     @Column(length = 10)
     private String sex;
 
-    @Column(length = 5)
-    private Integer age;
+    @Column
+    private int age;
 
     @Column(length = 10)
     private LocalTime recommendTime;
@@ -42,14 +35,21 @@ public class UserDetail {
     @Column(length = 50)
     private String profileImageUrl;
 
-    private Boolean popupAlertFlag;
-    private Boolean favoritePublicFlag;
+    @Builder.Default
+    @Convert(converter = BooleanConverter.class)
+    private Boolean popupAlertFlag = true;
+    @Builder.Default
+    @Convert(converter = BooleanConverter.class)
+    private Boolean favoritePublicFlag = true;
 
-    private Boolean calenderPublicFlag;
+    @Builder.Default
+    @Convert(converter = BooleanConverter.class)
+    private Boolean calenderPublicFlag = true;
 
-    private Boolean allPublicFlag;
-
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Builder.Default
+    @Convert(converter = BooleanConverter.class)
+    private Boolean allPublicFlag = true;
 }
+
+
+

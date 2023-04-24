@@ -3,18 +3,22 @@ package com.team.comma.service;
 import com.team.comma.domain.RefreshToken;
 import com.team.comma.domain.Token;
 import com.team.comma.dto.MessageResponse;
+import com.team.comma.exception.ExpireTokenException;
 import com.team.comma.exception.FalsifyTokenException;
 import com.team.comma.repository.RefreshTokenRepository;
 import com.team.comma.util.security.JwtTokenProvider;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static com.team.comma.constant.ResponseCode.ACCESS_TOKEN_CREATE_SUCCESS;
-import static com.team.comma.constant.ResponseCode.REFRESH_TOKEN_EXPIRED;
+import static com.team.comma.constant.ResponseCode.ACCESS_TOKEN_CREATE;
+import static org.apache.http.cookie.SM.SET_COOKIE;
 
 @Service
 public class JwtService {
@@ -44,7 +48,7 @@ public class JwtService {
         return refreshTokenRepository.findByToken(refreshToken);
     }
 
-    public MessageResponse validateRefreshToken(String refreshToken) {
+    public ResponseEntity validateRefreshToken(String refreshToken) {
         try {
             RefreshToken refreshToken1 = getRefreshToken(refreshToken).get();
             String createdAccessToken = jwtTokenProvider.validateRefreshToken(refreshToken1);
@@ -55,12 +59,22 @@ public class JwtService {
         }
     }
 
-    public MessageResponse createRefreshJson(String createdAccessToken) {
+    public ResponseEntity createRefreshJson(String createdAccessToken) {
         if (createdAccessToken == null) {
-            return MessageResponse.of(REFRESH_TOKEN_EXPIRED, "Refresh 토큰이 만료되었습니다. 로그인이 필요합니다.");
+            throw new ExpireTokenException("Refresh 토큰이 만료되었습니다. 로그인이 필요합니다.");
         }
 
-        return MessageResponse.of(ACCESS_TOKEN_CREATE_SUCCESS, createdAccessToken);
+        ResponseCookie cookie = ResponseCookie.from("accessToken" , createdAccessToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(30 * 60 * 1000)
+                .domain("localhost")
+                .build();
+
+
+        return ResponseEntity.status(HttpStatus.OK).header(SET_COOKIE , cookie.toString())
+                .body(MessageResponse.of(ACCESS_TOKEN_CREATE , "AccessToken이 재발급되었습니다."));
     }
 
     public JwtService() {

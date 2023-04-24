@@ -1,10 +1,10 @@
 package com.team.comma.controller;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.team.comma.domain.Playlist;
+import com.team.comma.domain.PlaylistTrack;
 import com.team.comma.domain.Track;
-import com.team.comma.dto.ArtistResponse;
+import com.team.comma.domain.TrackArtist;
 import com.team.comma.dto.PlaylistResponse;
 import com.team.comma.dto.PlaylistTrackResponse;
 import com.team.comma.service.PlaylistService;
@@ -19,8 +19,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -64,10 +62,14 @@ public class PlaylistControllerTest {
     public void 사용자플레이리스트조회_성공() throws Exception {
         // given
         final String url = "/userPlaylist";
+        List<TrackArtist> trackArtists = Arrays.asList(
+                TrackArtist.builder().build(),
+                TrackArtist.builder().build());
+
         List<PlaylistTrackResponse> tracks = Arrays.asList(
-                PlaylistTrackResponse.of(Track.builder().build()),
-                PlaylistTrackResponse.of(Track.builder().build()),
-                PlaylistTrackResponse.of(Track.builder().build()));
+                PlaylistTrackResponse.of(PlaylistTrack.builder().build(), Track.builder().trackArtistList(trackArtists).build()),
+                PlaylistTrackResponse.of(PlaylistTrack.builder().build(), Track.builder().trackArtistList(trackArtists).build()),
+                PlaylistTrackResponse.of(PlaylistTrack.builder().build(), Track.builder().trackArtistList(trackArtists).build()));
 
         doReturn(Arrays.asList(
                 PlaylistResponse.of(Playlist.builder().build(), tracks),

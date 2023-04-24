@@ -30,6 +30,8 @@ public class PlaylistTrack {
 
     private Boolean playFlag;
 
+    private Boolean trackAlarmFlag;
+
     @JoinColumn(name = "playlist_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Playlist playlist;

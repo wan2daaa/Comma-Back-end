@@ -117,7 +117,7 @@ public class SpotifyService {
 		}
 	}
 
-	public ArrayList<String> getArtistByYear(int offset) {
+	public String[] getArtistByYear(int offset) {
 		int year = LocalDate.now().getYear();
 
 		SearchArtistsRequest artists = spotifyApi.searchArtists(String.format("year:%d" , year))
@@ -133,7 +133,7 @@ public class SpotifyService {
 				artistNames.add(artist.getName());
 			}
 
-			return artistNames;
+			return artistNames.toArray(new String[artistNames.size()]);
 		} catch (UnauthorizedException e) {
 			refreshSpotifyToken();
 			return getArtistByYear(offset);

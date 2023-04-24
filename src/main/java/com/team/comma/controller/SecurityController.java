@@ -25,17 +25,23 @@ public class SecurityController {
 		if(authorization == null) {
 			MessageResponse message = MessageResponse.of(AUTHORIZATION_ERROR , "인증되지 않은 사용자입니다.");
 
-			return new ResponseEntity(message , HttpStatus.FORBIDDEN);
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(message);
 		}
 
-		return ResponseEntity.ok().body(jwtService.validateRefreshToken(authorization));
+		return jwtService.validateRefreshToken(authorization);
 	}
 
 	@GetMapping(value = "/authorization/denied")
 	public ResponseEntity<MessageResponse> informAuthorizationDenied() {
 		MessageResponse message = MessageResponse.of(AUTHORIZATION_ERROR , "인가되지 않은 사용자입니다.");
 
-		return new ResponseEntity(message , HttpStatus.FORBIDDEN);
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(message);
+	}
+
+
+	@GetMapping("/security")
+	public String getSecurity() {
+		return "Security";
 	}
 
 	@GetMapping(value = "/logout/message")

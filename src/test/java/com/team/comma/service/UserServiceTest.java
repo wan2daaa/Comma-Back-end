@@ -4,9 +4,7 @@ import com.team.comma.constant.UserRole;
 import com.team.comma.constant.UserType;
 import com.team.comma.domain.Token;
 import com.team.comma.domain.User;
-import com.team.comma.dto.LoginRequest;
-import com.team.comma.dto.MessageResponse;
-import com.team.comma.dto.RegisterRequest;
+import com.team.comma.dto.*;
 import com.team.comma.repository.UserRepository;
 import com.team.comma.util.security.JwtTokenProvider;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,17 +15,21 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.security.auth.login.AccountException;
 import java.time.LocalTime;
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.http.HttpHeaders.SET_COOKIE;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -98,13 +100,17 @@ public class UserServiceTest {
 		User generalUserEntity = getGeneralUserEntity();
 		doReturn(null).when(userRepository).findByEmail(registerRequest.getEmail());
 		doReturn(generalUserEntity).when(userRepository).save(any(User.class));
+		doReturn(Token.builder().accessToken("accessTokenData").refreshToken("refreshTokenData").build())
+				.when(jwtTokenProvider).createAccessToken(generalUserEntity.getUsername(),
+						generalUserEntity.getRole());
+		doNothing().when(jwtService).login(any(Token.class));
 
 		// when
-		MessageResponse result = userService.loginOauth(registerRequest);
+		ResponseEntity result = userService.loginOauth(registerRequest);
 
 		// then
-		assertThat(result).isNotNull();
-		assertThat(result.getCode()).isEqualTo(1);
+		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(result.getHeaders().get(SET_COOKIE).toString()).contains("accessTokenData").contains("refreshTokenData");
 	}
 
 	@Test
@@ -114,13 +120,17 @@ public class UserServiceTest {
 		RegisterRequest registerRequest = getRequestUser();
 		User userEntity = getOauthUserEntity();
 		doReturn(userEntity).when(userRepository).findByEmail(userEmail);
+		doReturn(Token.builder().accessToken("accessTokenData").refreshToken("refreshTokenData").build())
+				.when(jwtTokenProvider).createAccessToken(userEntity.getUsername(),
+						userEntity.getRole());
+		doNothing().when(jwtService).login(any(Token.class));
 
 		// when
-		MessageResponse result = userService.loginOauth(registerRequest);
+		ResponseEntity result = userService.loginOauth(registerRequest);
 
 		// then
-		assertThat(result).isNotNull();
-		assertThat(result.getCode()).isEqualTo(1);
+		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(result.getHeaders().get(SET_COOKIE).toString()).contains("accessTokenData").contains("refreshTokenData");
 	}
 
 	@Test
@@ -164,19 +174,17 @@ public class UserServiceTest {
 		LoginRequest login = getLoginRequest();
 		User userEntity = getUserEntity();
 		doReturn(userEntity).when(userRepository).findByEmail(userEmail);
-		doReturn(Token.builder().build()).when(jwtTokenProvider).createAccessToken(userEntity.getUsername(),
+		doReturn(Token.builder().accessToken("accessTokenData").refreshToken("refreshTokenData").build())
+				.when(jwtTokenProvider).createAccessToken(userEntity.getUsername(),
 				userEntity.getRole());
 		doNothing().when(jwtService).login(any(Token.class));
 
 		// when
-		final MessageResponse result = userService.login(login);
+		final ResponseEntity result = userService.login(login);
 
 		// then
-		User user = (User)result.getData();
-
-		assertThat(result.getCode()).isEqualTo(1);
-		assertThat(user).isNotNull();
-		assertThat(user.getEmail()).isEqualTo(userEmail);
+		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(result.getHeaders().get(SET_COOKIE).toString()).contains("accessTokenData").contains("refreshTokenData");
 	}
 
 	@Test
@@ -207,7 +215,7 @@ public class UserServiceTest {
 		MessageResponse message = userService.register(registerRequest);
 
 		// then
-		User user = (User)message.getData();
+		UserResponse user = (UserResponse)message.getData();
 
 		assertThat(message.getCode()).isEqualTo(1);
 		assertThat(message.getMessage()).isEqualTo("성공적으로 가입되었습니다.");
@@ -220,7 +228,7 @@ public class UserServiceTest {
 	public void getUserInfoByCookieButNotExistendUser() {
 		// given
 		User user = getUserEntity();
-		String accessToken = userService.createJwtCookie(user).getAccessToken();
+		String accessToken = userService.createJwtToken(user).getAccessToken();
 		doReturn(null).when(userRepository).findByEmail(any(String.class));
 		// when
 		Throwable thrown = catchThrowable(() -> userService.getUserByCookie(accessToken));
@@ -233,13 +241,61 @@ public class UserServiceTest {
 	public void getUserInfoByCookie() throws AccountException {
 		// given
 		User user = getUserEntity();
-		String accessToken = userService.createJwtCookie(user).getAccessToken();
+		String accessToken = userService.createJwtToken(user).getAccessToken();
 		doReturn(getUserEntity()).when(userRepository).findByEmail(any(String.class));
 		// when
-		User result = userService.getUserByCookie(accessToken);
+		UserResponse result = userService.getUserByCookie(accessToken);
 		// then
 		assertThat(result).isNotNull();
 		assertThat(result.getEmail()).isEqualTo(userEmail);
+	}
+
+	@Test
+	@DisplayName("사용자 정보 저장 실패 _ 로그인 되어있지 않음")
+	public void saveUserInformationFail_notExistToken() {
+		// given
+		UserDetailRequest userDetail = getUserDetailRequest();
+		// when
+		Throwable thrown = catchThrowable(() -> userService.createUserInformation(userDetail , null));
+		// then
+		assertThat(thrown).isInstanceOf(AccountException.class).hasMessage("로그인이 되어있지 않습니다.");
+	}
+
+	@Test
+	@DisplayName("사용자 정보 저장 실패 _ 존재하지 않는 사용자")
+	public void saveUserInfomationFail_notExistUser() {
+		// given
+		UserDetailRequest userDetail = getUserDetailRequest();
+		User user = getUserEntity();
+		String accessToken = userService.createJwtToken(user).getAccessToken();
+		doReturn(null).when(userRepository).findByEmail(any(String.class));
+
+		// when
+		Throwable thrown = catchThrowable( () -> userService.createUserInformation(userDetail , accessToken));
+		// then
+		assertThat(thrown).isInstanceOf(AccountException.class).hasMessage("사용자를 찾을 수 없습니다.");
+	}
+
+	@Test
+	@DisplayName("사용자 정보 저장 성공")
+	public void saveUserInfomation() throws AccountException {
+		// given
+		UserDetailRequest userDetail = getUserDetailRequest();
+		User user = getUserEntity();
+		String accessToken = userService.createJwtToken(user).getAccessToken();
+		doReturn(user).when(userRepository).findByEmail(any(String.class));
+		// when
+		ResponseEntity result = userService.createUserInformation(userDetail , accessToken);
+		// then
+		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+	}
+
+	private UserDetailRequest getUserDetailRequest() {
+		return UserDetailRequest.builder().age(20).sex("female").nickName("name")
+				.recommendTime(LocalTime.of(12 , 0))
+				.artistNames(Arrays.asList("artist1" , "artist2" , "artist3"))
+				.genres(Arrays.asList("genre1" , "genre2" , "genre3"))
+				.build();
 	}
 
 	private User getUserEntity() {
@@ -252,9 +308,7 @@ public class UserServiceTest {
 	}
 
 	private RegisterRequest getRegisterRequest() {
-		return RegisterRequest.builder().age(20).sex("female").recommendTime(
-				LocalTime.of(12 , 00))
-				.isLeave(0).email(userEmail).name(userName).password(userPassword).build();
+		return RegisterRequest.builder().email(userEmail).password(userPassword).build();
 	}
 
 	public User getOauthUserEntity() {
@@ -266,8 +320,7 @@ public class UserServiceTest {
 	}
 
 	public RegisterRequest getRequestUser() {
-		return RegisterRequest.builder().email(userEmail).password(userPassword).age(20).isLeave(0).sex("femail")
-				.name(userName).build();
+		return RegisterRequest.builder().email(userEmail).password(userPassword).build();
 	}
 
 }

@@ -36,6 +36,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         }
 
         Token token = jwtTokenProvider.createAccessToken(user.getEmail() , UserRole.USER);
+
         response.addCookie(CreationCookie.createAccessToken(token.getAccessToken()));
         response.addCookie(CreationCookie.createRefreshToken(token.getRefreshToken()));
 
@@ -47,6 +48,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     public String createRedirectUrl(String url) {
         return UriComponentsBuilder.fromUriString(url).build().toUriString();
     }
+
 
 }
 

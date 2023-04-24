@@ -1,6 +1,7 @@
 package com.team.comma.config;
 
 import com.team.comma.constant.UserRole;
+import com.team.comma.exception.ExceptionHandlerFilter;
 import com.team.comma.util.oauth.CustomOAuth2UserService;
 import com.team.comma.util.oauth.OAuth2AuthenticationSuccessHandler;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +28,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     final private JwtTokenProvider jwtTokenProvider;
+    final private ExceptionHandlerFilter exceptionHandlerFilter;
     final private CustomOAuth2UserService oauth2UserService;
     final private OAuth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler;
 
@@ -39,7 +41,8 @@ public class SecurityConfig {
             .and()
             .csrf().disable()
             .authorizeHttpRequests()
-            .requestMatchers("/security/**").hasRole(UserRole.USER.name())
+                .requestMatchers("/security/**").hasRole(UserRole.USER.name())
+                .requestMatchers("/private-information").hasRole(UserRole.USER.name())
             .anyRequest().permitAll()
             .and()
             .logout()
@@ -61,6 +64,9 @@ public class SecurityConfig {
 
         http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), // 필터
             UsernamePasswordAuthenticationFilter.class);
+
+        http.addFilterBefore(exceptionHandlerFilter , // 필터 예외 처리
+                JwtAuthenticationFilter.class);
 
         return http.build();
     }

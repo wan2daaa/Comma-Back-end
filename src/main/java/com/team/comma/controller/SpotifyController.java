@@ -4,10 +4,6 @@ import com.team.comma.dto.ArtistResponse;
 import com.team.comma.dto.TrackResponse;
 import com.team.comma.service.SpotifyService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,21 +29,13 @@ public class SpotifyController {
         return ResponseEntity.ok().body(spotifyService.searchTrack_Sync(track));
     }
 
-    @Operation(summary = "Spotify에 존재하는 모든 장르 가져오기", description = "uri 요청 시 Spotify에 존재하는 모든 장르 가져옵니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200" , description = "조회 성공했을 때 배열에다가 담아 반환" , content = @Content(schema = @Schema(implementation = String [].class)))
-    })
     @GetMapping("/genre")
     public ResponseEntity<String[]> getGenres() {
         return ResponseEntity.ok().body(spotifyService.getGenres());
     }
 
-    @Operation(summary = "Spotify 연도 별 아티스트 가져오기", description = "쿼리 파라미터 offset 으로 페이지를 조절 \n 예시 : /spotify/artist?offset=0")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200" , description = "조회 성공했을 때 배열에다가 담아 반환" , content = @Content(schema = @Schema(implementation = ArrayList.class)))
-    })
     @GetMapping("/artist")
-    public ResponseEntity<ArrayList<String>> getArtistByYear(@RequestParam int offset) {
+    public ResponseEntity<String[]> getArtistByYear(@RequestParam int offset) {
         return ResponseEntity.ok().body(spotifyService.getArtistByYear(offset));
     }
 

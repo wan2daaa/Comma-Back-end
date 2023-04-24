@@ -19,17 +19,15 @@ public final class PlaylistResponse {
     private final Long playlistId;
     private final String playlistTitle;
     private final Boolean alarmFlag;
-    private final DayOfWeek alarmDay;
-    private final LocalTime alarmTime;
+    private final LocalTime alarmStartTime;
 
     private final List<PlaylistTrackResponse> tracks;
 
     private PlaylistResponse(Playlist playlist, List<PlaylistTrackResponse> tracks) {
         this.playlistId = playlist.getId();
         this.playlistTitle = playlist.getPlaylistTitle();
-        this.alarmFlag = playlist.isAlarmFlag();
-        this.alarmDay = playlist.getAlarmDay();
-        this.alarmTime = playlist.getAlarmTime();
+        this.alarmFlag = playlist.getAlarmFlag();
+        this.alarmStartTime = playlist.getAlarmStartTime();
         this.tracks = new ArrayList<>(tracks);
     }
 
