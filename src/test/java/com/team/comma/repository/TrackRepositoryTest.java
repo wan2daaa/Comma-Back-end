@@ -1,4 +1,5 @@
 package com.team.comma.repository;
+
 import com.team.comma.domain.Track;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ public class TrackRepositoryTest {
     private TrackRepository trackRepository;
 
     @Test
-    public void 곡조회_실패_데이터없음(){
+    public void 곡조회_실패_데이터없음() {
         // given
 
         // when
@@ -28,7 +29,7 @@ public class TrackRepositoryTest {
     }
 
     @Test
-    public void 곡조회_성공(){
+    public void 곡조회_성공() {
         // given
         final Track track = trackRepository.save(getTrack("track test"));
 
@@ -41,8 +42,8 @@ public class TrackRepositoryTest {
 
     private Track getTrack(String title) {
         return Track.builder()
-                .trackTitle(title)
-                .build();
+            .trackTitle(title)
+            .build();
     }
 
 }

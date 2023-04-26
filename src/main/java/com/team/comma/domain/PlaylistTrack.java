@@ -39,4 +39,6 @@ public class PlaylistTrack {
     @JoinColumn(name = "track_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Track track;
+
+
 }
