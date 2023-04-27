@@ -1,6 +1,5 @@
-package com.team.comma.user.domain;
+package com.team.comma.spotify.playlist.domain;
 
-import com.team.comma.spotify.track.domain.Track;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -9,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.DayOfWeek;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,22 +20,19 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "favorite_track_tb")
-public class FavoriteTrack {
+@Table(name = "alert_day_tb")
+public class AlertDay {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer playCount;
+    /**
+     * 1 ~ 7 : 월요일 ~ 일요일
+     */
+    private DayOfWeek alarmDay;
 
-    private Boolean favoriteFlag;
-
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "playlist_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
-
-    @JoinColumn(name = "track_id")
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Track track;
+    private Playlist playlist;
 }

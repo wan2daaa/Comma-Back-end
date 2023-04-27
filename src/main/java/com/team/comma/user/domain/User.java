@@ -1,7 +1,7 @@
 package com.team.comma.user.domain;
 
-import com.team.comma.constant.UserRole;
-import com.team.comma.constant.UserType;
+import com.team.comma.user.constant.UserRole;
+import com.team.comma.user.constant.UserType;
 import com.team.comma.util.converter.BooleanConverter;
 import jakarta.persistence.*;
 import lombok.*;

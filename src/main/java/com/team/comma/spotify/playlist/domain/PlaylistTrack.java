@@ -1,4 +1,4 @@
-package com.team.comma.user.domain;
+package com.team.comma.spotify.playlist.domain;
 
 import com.team.comma.spotify.track.domain.Track;
 import jakarta.persistence.Entity;
@@ -20,20 +20,22 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "favorite_track_tb")
-public class FavoriteTrack {
+@Table(name = "playlist_track_tb")
+public class PlaylistTrack {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer playCount;
+    private Integer playSequence;
 
-    private Boolean favoriteFlag;
+    private Boolean playFlag;
 
-    @JoinColumn(name = "user_id")
+    private Boolean trackAlarmFlag;
+
+    @JoinColumn(name = "playlist_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
+    private Playlist playlist;
 
     @JoinColumn(name = "track_id")
     @ManyToOne(fetch = FetchType.LAZY)

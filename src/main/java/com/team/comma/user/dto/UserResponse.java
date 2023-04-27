@@ -1,6 +1,6 @@
 package com.team.comma.user.dto;
 
-import com.team.comma.constant.UserRole;
+import com.team.comma.user.constant.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

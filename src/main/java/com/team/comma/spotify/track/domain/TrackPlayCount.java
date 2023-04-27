@@ -1,6 +1,6 @@
-package com.team.comma.user.domain;
+package com.team.comma.spotify.track.domain;
 
-import com.team.comma.spotify.track.domain.Track;
+import com.team.comma.user.domain.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -14,28 +14,28 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 
 @Entity
 @Getter
 @Builder
+@DynamicInsert
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "favorite_track_tb")
-public class FavoriteTrack {
+@Table(name = "track_play_count_tb")
+public class TrackPlayCount {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ColumnDefault("1")
     private Integer playCount;
 
-    private Boolean favoriteFlag;
+    private String spotifyTrackId;
 
     @JoinColumn(name = "user_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
-
-    @JoinColumn(name = "track_id")
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Track track;
 }

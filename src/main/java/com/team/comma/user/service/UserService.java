@@ -1,19 +1,19 @@
 package com.team.comma.user.service;
 
-import com.team.comma.constant.UserRole;
-import com.team.comma.constant.UserType;
-import com.team.comma.security.jwt.service.JwtService;
+import com.team.comma.user.constant.UserRole;
+import com.team.comma.user.constant.UserType;
+import com.team.comma.util.jwt.service.JwtService;
 import com.team.comma.user.dto.UserDetailRequest;
 import com.team.comma.user.dto.UserResponse;
-import com.team.comma.confused.dto.LoginRequest;
-import com.team.comma.confused.dto.MessageResponse;
-import com.team.comma.confused.dto.RegisterRequest;
-import com.team.comma.confused.security.Token;
+import com.team.comma.user.dto.LoginRequest;
+import com.team.comma.common.dto.MessageResponse;
+import com.team.comma.user.dto.RegisterRequest;
+import com.team.comma.util.security.domain.Token;
 import com.team.comma.user.domain.User;
 import com.team.comma.user.domain.UserDetail;
-import com.team.comma.user.UserRepository;
-import com.team.comma.util.CreationCookie;
-import com.team.comma.util.JwtTokenProvider;
+import com.team.comma.user.repository.UserRepository;
+import com.team.comma.util.jwt.support.CreationCookie;
+import com.team.comma.util.jwt.support.JwtTokenProvider;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 
 import javax.security.auth.login.AccountException;
 
-import static com.team.comma.constant.ResponseCode.*;
+import static com.team.comma.common.constant.ResponseCode.*;
 import static org.apache.http.cookie.SM.SET_COOKIE;
 
 @Service

@@ -1,6 +1,7 @@
-package com.team.comma.user.domain;
+package com.team.comma.spotify.history.domain;
 
-import com.team.comma.spotify.track.domain.Track;
+import com.team.comma.user.domain.User;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -20,22 +21,19 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "favorite_track_tb")
-public class FavoriteTrack {
+@Table(name = "history_tb")
+public class History {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer playCount;
+    @Column(length = 50)
+    private String searchHistory;
 
-    private Boolean favoriteFlag;
+    private Boolean delFlag;
 
     @JoinColumn(name = "user_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
-
-    @JoinColumn(name = "track_id")
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Track track;
 }
