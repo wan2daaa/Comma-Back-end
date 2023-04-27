@@ -1,3 +1,5 @@
+SET foreign_key_checks = 0;
+
 DROP TABLE IF EXISTS alert_day_tb;
 
 
@@ -44,6 +46,8 @@ DROP TABLE IF EXISTS user_detail_tb;
 
 
 DROP TABLE IF EXISTS user_tb;
+
+SET foreign_key_checks = 1;
 
 CREATE TABLE user_detail_tb
 (
