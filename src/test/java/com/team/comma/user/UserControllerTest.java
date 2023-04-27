@@ -9,7 +9,6 @@ import com.team.comma.user.dto.UserResponse;
 import com.team.comma.confused.dto.LoginRequest;
 import com.team.comma.confused.dto.MessageResponse;
 import com.team.comma.confused.dto.RegisterRequest;
-import com.team.comma.dto.*;
 import com.team.comma.exception.FalsifyTokenException;
 import com.team.comma.user.service.UserService;
 import com.team.comma.util.gson.GsonUtil;
@@ -60,15 +59,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(UserController.class)
 @MockBean(JpaMetamodelMappingContext.class)
 @WebAppConfiguration
-public class UserControllerTest {
+class UserControllerTest {
 
     @MockBean
     private UserService userService;
 
     MockMvc mockMvc;
     Gson gson;
-    private String userEmail = "email@naver.com";
-    private String userPassword = "password";
+    private final String userEmail = "email@naver.com";
+    private final String userPassword = "password";
 
     @BeforeEach
     public void init(WebApplicationContext webApplicationContext,
@@ -82,7 +81,7 @@ public class UserControllerTest {
 
     @Test
     @DisplayName("로그인 요청 성공")
-    public void loginUser() throws Exception {
+    void loginUser() throws Exception {
         // given
         final String api = "/login";
         final LoginRequest request = getLoginRequest();
@@ -145,7 +144,7 @@ public class UserControllerTest {
 
     @Test
     @DisplayName("로그인 요청 실패 _ 틀린 비밀번호 혹은 아이디")
-    public void notExistUser() throws Exception {
+    void notExistUser() throws Exception {
         // given
         final String api = "/login";
         LoginRequest request = getLoginRequest();
@@ -183,7 +182,7 @@ public class UserControllerTest {
 
     @Test
     @DisplayName("사용자 회원가입 성공")
-    public void registUser() throws Exception {
+    void registUser() throws Exception {
         // given
         final String api = "/register";
         LoginRequest request = getLoginRequest();
@@ -229,7 +228,7 @@ public class UserControllerTest {
 
     @Test
     @DisplayName("사용자 회원가입 실패 _ 이미 존재하는 회원")
-    public void existUserException() throws Exception {
+    void existUserException() throws Exception {
         // given
         final String api = "/register";
         LoginRequest request = getLoginRequest();
@@ -267,7 +266,7 @@ public class UserControllerTest {
 
     @Test
     @DisplayName("사용자 정보 저장하기 실패 _ 로그인 되지 않는 사용자")
-    public void createUserInformationFail_notExistToken() throws Exception {
+    void createUserInformationFail_notExistToken() throws Exception {
         // given
         String api = "/private-information";
         UserDetailRequest userDetail = getUserDetailRequest();
@@ -307,7 +306,7 @@ public class UserControllerTest {
 
     @Test
     @DisplayName("사용자 정보 저장하기 실패 _ 사용자를 찾을 수 없음")
-    public void createUserInformationFail_notExistUser() throws Exception {
+    void createUserInformationFail_notExistUser() throws Exception {
         // given
         String api = "/private-information";
         UserDetailRequest userDetail = getUserDetailRequest();
@@ -347,7 +346,7 @@ public class UserControllerTest {
 
     @Test
     @DisplayName("사용자 정보 저장하기")
-    public void createUserInformation() throws Exception {
+    void createUserInformation() throws Exception {
         // given
         String api = "/private-information";
         UserDetailRequest userDetail = getUserDetailRequest();
@@ -376,7 +375,7 @@ public class UserControllerTest {
 
     @Test
     @DisplayName("AccessToken 으로 사용자 정보 가져오기 실패 _ 존재하지 않는 회원")
-    public void getUserInfoByAccessTokenFail_NotExistUser() throws Exception {
+    void getUserInfoByAccessTokenFail_NotExistUser() throws Exception {
         // given
         final String api = "/user/information";
         doThrow(new AccountException("사용자를 찾을 수 없습니다.")).when(userService)
@@ -410,7 +409,7 @@ public class UserControllerTest {
 
     @Test
     @DisplayName("AccessToken 으로 사용자 정보 가져오기 실패 _ AccessToken이 없음")
-    public void getUserInfoByAccessTokenFail_NotExistToken() throws Exception {
+    void getUserInfoByAccessTokenFail_NotExistToken() throws Exception {
         // given
         final String api = "/user/information";
         doThrow(new FalsifyTokenException("알 수 없는 토큰이거나 , 변조되었습니다.")).when(userService)
@@ -444,7 +443,7 @@ public class UserControllerTest {
 
     @Test
     @DisplayName("AccessToken 으로 사용자 정보 가져오기")
-    public void getUserInfoByAccessToken_Success() throws Exception {
+    void getUserInfoByAccessToken_Success() throws Exception {
         // given
         final String api = "/user/information";
         UserResponse user = UserResponse.builder()

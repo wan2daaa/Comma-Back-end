@@ -11,7 +11,6 @@ import com.team.comma.confused.dto.RegisterRequest;
 import com.team.comma.confused.security.Token;
 import com.team.comma.user.domain.User;
 import com.team.comma.user.domain.UserDetail;
-import com.team.comma.dto.*;
 import com.team.comma.user.UserRepository;
 import com.team.comma.util.CreationCookie;
 import com.team.comma.util.JwtTokenProvider;
@@ -31,9 +30,9 @@ import static org.apache.http.cookie.SM.SET_COOKIE;
 @RequiredArgsConstructor
 public class UserService {
 
-    final private UserRepository userRepository;
-    final private JwtService jwtService;
-    final private JwtTokenProvider jwtTokenProvider;
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public ResponseEntity<MessageResponse> login(final LoginRequest loginRequest)
         throws AccountException {
@@ -127,7 +126,6 @@ public class UserService {
         for (String genre : userDetail.getGenres()) {
             user.addFavoriteGenre(genre);
         }
-        ;
 
         for (String artist : userDetail.getArtistNames()) {
             user.addFavoriteArtist(artist);
@@ -136,10 +134,10 @@ public class UserService {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    public User createUser(final RegisterRequest RegisterRequest, final UserType userType) {
+    public User createUser(final RegisterRequest registerRequest, final UserType userType) {
         return User.builder()
-            .email(RegisterRequest.getEmail())
-            .password(RegisterRequest.getPassword())
+            .email(registerRequest.getEmail())
+            .password(registerRequest.getPassword())
             .type(userType)
             .role(UserRole.USER)
             .build();

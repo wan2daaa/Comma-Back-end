@@ -10,7 +10,6 @@ import com.team.comma.confused.dto.MessageResponse;
 import com.team.comma.confused.dto.RegisterRequest;
 import com.team.comma.confused.security.Token;
 import com.team.comma.user.domain.User;
-import com.team.comma.dto.*;
 import com.team.comma.user.UserRepository;
 import com.team.comma.util.JwtTokenProvider;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +37,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
 
 @ExtendWith(MockitoExtension.class)
-public class UserServiceTest {
+class UserServiceTest {
 
     @InjectMocks
     private UserService userService;
@@ -53,21 +52,21 @@ public class UserServiceTest {
     private JwtTokenProvider jwtTokenProvider;
 
 
-    private String userEmail = "email@naver.com";
-    private String userPassword = "password";
-    private String userName = "userName";
+    private final String userEmail = "email@naver.com";
+    private final String userPassword = "password";
+    private final String userName = "userName";
 
     private MockHttpServletRequest request; // request mock
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
     }
 
     @Test
     @DisplayName("일반 사용자가 OAuth2.0 계정에 접근 시 오류")
-    public void deniedToGeralUserAccessOAuthUser() throws AccountException {
+    void deniedToGeralUserAccessOAuthUser() throws AccountException {
         // given
         LoginRequest login = getLoginRequest();
         User userEntity = getOauthUserEntity();
@@ -86,7 +85,7 @@ public class UserServiceTest {
 
     @Test
     @DisplayName("Oauth2.0 로그인 실패 _ 존재하는 일반 사용자")
-    public void existGeneralUser() {
+    void existGeneralUser() {
         // given
         RegisterRequest registerRequest = getRequestUser();
         User generalUserEntity = getGeneralUserEntity();
@@ -101,7 +100,7 @@ public class UserServiceTest {
 
     @Test
     @DisplayName("OAuth2.0 DB에 없을 때 회원가입 및 로그인")
-    public void registerOauthUser() throws AccountException {
+    void registerOauthUser() throws AccountException {
         // given
         RegisterRequest registerRequest = getRequestUser();
         User generalUserEntity = getGeneralUserEntity();
@@ -124,7 +123,7 @@ public class UserServiceTest {
 
     @Test
     @DisplayName("OAuth2.0 계정 중복 시 로그인 성공")
-    public void loginOauthUser() throws AccountException {
+    void loginOauthUser() throws AccountException {
         // given
         RegisterRequest registerRequest = getRequestUser();
         User userEntity = getOauthUserEntity();
@@ -146,7 +145,7 @@ public class UserServiceTest {
 
     @Test
     @DisplayName("사용자 로그인 예외 _ 일치하지 않은 비밀번호")
-    public void loginException_notEqualPassword() throws AccountException {
+    void loginException_notEqualPassword() throws AccountException {
         // given
         LoginRequest loginRequest = getLoginRequest();
         User userEntity = User.builder().email(userEmail).password("unknown").role(UserRole.USER)
@@ -163,7 +162,7 @@ public class UserServiceTest {
 
     @Test
     @DisplayName("사용자 로그인 예외 _ 존재하지 않은 사용자")
-    public void notExistUserLoginExceptionTest() {
+    void notExistUserLoginExceptionTest() {
         // given
         LoginRequest login = getLoginRequest();
         doReturn(null).when(userRepository).findByEmail(login.getEmail());
@@ -181,7 +180,7 @@ public class UserServiceTest {
 
     @Test
     @DisplayName("사용자 로그인 성공")
-    public void loginUserTest() throws AccountException {
+    void loginUserTest() throws AccountException {
         // given
         LoginRequest login = getLoginRequest();
         User userEntity = getUserEntity();
@@ -203,7 +202,7 @@ public class UserServiceTest {
 
     @Test
     @DisplayName("회원 가입 예외_존재하는 회원")
-    public void existUserException() {
+    void existUserException() {
         // given
         RegisterRequest registerRequest = getRegisterRequest();
         doReturn(getUserEntity()).when(userRepository).findByEmail(registerRequest.getEmail());
@@ -218,7 +217,7 @@ public class UserServiceTest {
 
     @Test
     @DisplayName("사용자 회원 가입 성공")
-    public void registUser() throws AccountException {
+    void registUser() throws AccountException {
         // given
         RegisterRequest registerRequest = getRegisterRequest();
         User userEntity = getUserEntity();
@@ -239,7 +238,7 @@ public class UserServiceTest {
 
     @Test
     @DisplayName("AccessToken 쿠키로 사용자 정보 가져오기 실패 _ 존재하지 않은 사용자")
-    public void getUserInfoByCookieButNotExistendUser() {
+    void getUserInfoByCookieButNotExistendUser() {
         // given
         User user = getUserEntity();
         String accessToken = userService.createJwtToken(user).getAccessToken();
@@ -252,7 +251,7 @@ public class UserServiceTest {
 
     @Test
     @DisplayName("AccessToken 쿠키로 사용자 정보 가져오기")
-    public void getUserInfoByCookie() throws AccountException {
+    void getUserInfoByCookie() throws AccountException {
         // given
         User user = getUserEntity();
         String accessToken = userService.createJwtToken(user).getAccessToken();
@@ -266,7 +265,7 @@ public class UserServiceTest {
 
     @Test
     @DisplayName("사용자 정보 저장 실패 _ 로그인 되어있지 않음")
-    public void saveUserInformationFail_notExistToken() {
+    void saveUserInformationFail_notExistToken() {
         // given
         UserDetailRequest userDetail = getUserDetailRequest();
         // when
@@ -278,7 +277,7 @@ public class UserServiceTest {
 
     @Test
     @DisplayName("사용자 정보 저장 실패 _ 존재하지 않는 사용자")
-    public void saveUserInfomationFail_notExistUser() {
+    void saveUserInfomationFail_notExistUser() {
         // given
         UserDetailRequest userDetail = getUserDetailRequest();
         User user = getUserEntity();
@@ -294,7 +293,7 @@ public class UserServiceTest {
 
     @Test
     @DisplayName("사용자 정보 저장 성공")
-    public void saveUserInfomation() throws AccountException {
+    void saveUserInfomation() throws AccountException {
         // given
         UserDetailRequest userDetail = getUserDetailRequest();
         User user = getUserEntity();

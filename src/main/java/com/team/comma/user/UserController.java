@@ -5,7 +5,6 @@ import com.team.comma.user.dto.UserResponse;
 import com.team.comma.confused.dto.LoginRequest;
 import com.team.comma.confused.dto.MessageResponse;
 import com.team.comma.confused.dto.RegisterRequest;
-import com.team.comma.dto.*;
 import com.team.comma.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +17,7 @@ import javax.security.auth.login.AccountException;
 @RequiredArgsConstructor
 public class UserController {
 
-    final private UserService userService;
+    private final UserService userService;
 
     @PostMapping("/login")
     public ResponseEntity<MessageResponse> loginUser(@RequestBody LoginRequest login)
