@@ -1,3 +1,5 @@
+SET FOREIGN_KEY_CHECKS = 0;
+
 DROP TABLE IF EXISTS alert_day_tb;
 
 DROP TABLE IF EXISTS archive_tb;
@@ -29,6 +31,8 @@ DROP TABLE IF EXISTS track_play_count_tb;
 DROP TABLE IF EXISTS user_detail_tb;
 
 DROP TABLE IF EXISTS user_tb;
+
+SET FOREIGN_KEY_CHECKS = 1;
 
 CREATE TABLE user_tb
 (
