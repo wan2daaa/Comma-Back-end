@@ -1,13 +1,20 @@
-package com.team.comma.playlist;
+package com.team.comma.spotify.playlist.controller;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.google.gson.Gson;
-import com.team.comma.playlist.domain.Playlist;
-import com.team.comma.track.domain.Track;
-import com.team.comma.track.domain.TrackArtist;
-import com.team.comma.playlist.dto.PlaylistResponse;
-import com.team.comma.playlist.dto.PlaylistTrackResponse;
-import com.team.comma.playlist.dto.PlaylistTrackArtistResponse;
-import com.team.comma.playlist.service.PlaylistService;
+import com.team.comma.spotify.playlist.controller.PlaylistController;
+import com.team.comma.spotify.playlist.domain.Playlist;
+import com.team.comma.spotify.playlist.dto.PlaylistResponse;
+import com.team.comma.spotify.playlist.dto.PlaylistTrackArtistResponse;
+import com.team.comma.spotify.playlist.dto.PlaylistTrackResponse;
+import com.team.comma.spotify.playlist.service.PlaylistService;
+import com.team.comma.spotify.track.domain.Track;
+import com.team.comma.spotify.track.domain.TrackArtist;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,13 +25,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.util.Arrays;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.doReturn;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 public class PlaylistControllerTest {

@@ -35,10 +35,23 @@ public class User implements UserDetails {
     @Column(length = 50)
     private String password;
 
+    /**
+     * OAuth 로그인 유저인지 , 기본 로그인 유저인지 확인
+     */
+    @Enumerated(EnumType.STRING)
+    private UserType type;
+
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
+
+    @Builder.Default
+    @Convert(converter = BooleanConverter.class)
+    private Boolean delFlag = false;
+
     @Setter
     @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "user_detail_tb")
+    @JoinColumn(name = "user_detail_id")
     private UserDetail userDetail;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
@@ -68,18 +81,6 @@ public class User implements UserDetails {
         favoriteArtist.add(artistData);
     }
 
-    /**
-     * OAuth 로그인 유저인지 , 기본 로그인 유저인지 확인
-     */
-    @Enumerated(EnumType.STRING)
-    private UserType type;
-
-    @Enumerated(EnumType.STRING)
-    private UserRole role;
-
-    @Builder.Default
-    @Convert(converter = BooleanConverter.class)
-    private Boolean delFlag = false;
 
     // JWT Security
     @Override

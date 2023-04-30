@@ -1,11 +1,11 @@
-package com.team.comma.confused;
+package com.team.comma.spotify.search.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.team.comma.confused.spotify.SpotifyController;
-import com.team.comma.confused.spotify.SpotifyService;
-import com.team.comma.confused.dto.ArtistResponse;
-import com.team.comma.track.dto.TrackResponse;
+import com.team.comma.spotify.search.controller.SpotifyController;
+import com.team.comma.spotify.search.dto.ArtistResponse;
+import com.team.comma.spotify.search.service.SpotifyService;
+import com.team.comma.spotify.track.dto.TrackResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,18 +1,18 @@
-package com.team.comma.playlist.domain;
+package com.team.comma.spotify.playlist.repository;
 
-import com.team.comma.constant.UserRole;
-import com.team.comma.constant.UserType;
-import com.team.comma.playlist.PlaylistRepository;
-import com.team.comma.user.UserRepository;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import com.team.comma.spotify.playlist.domain.Playlist;
+import com.team.comma.spotify.playlist.repository.PlaylistRepository;
+import com.team.comma.user.constant.UserRole;
+import com.team.comma.user.constant.UserType;
 import com.team.comma.user.domain.User;
+import com.team.comma.user.repository.UserRepository;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;  //자동 import되지 않음
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)

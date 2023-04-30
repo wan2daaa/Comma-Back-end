@@ -1,12 +1,12 @@
-package com.team.comma.confused;
+package com.team.comma.util.jwt.service;
 
-import com.team.comma.security.jwt.service.JwtService;
-import com.team.comma.confused.security.RefreshToken;
-import com.team.comma.confused.security.Token;
-import com.team.comma.exception.ExpireTokenException;
-import com.team.comma.exception.FalsifyTokenException;
-import com.team.comma.confused.security.RefreshTokenRepository;
-import com.team.comma.util.JwtTokenProvider;
+import com.team.comma.spotify.search.exception.ExpireTokenException;
+import com.team.comma.util.jwt.exception.FalsifyTokenException;
+import com.team.comma.util.jwt.service.JwtService;
+import com.team.comma.util.jwt.support.JwtTokenProvider;
+import com.team.comma.util.security.domain.RefreshToken;
+import com.team.comma.util.security.domain.Token;
+import com.team.comma.util.security.repository.RefreshTokenRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,17 +1,30 @@
 package com.team.comma.user.service;
 
-import com.team.comma.constant.UserRole;
-import com.team.comma.constant.UserType;
-import com.team.comma.security.jwt.service.JwtService;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.http.HttpHeaders.SET_COOKIE;
+
+import com.team.comma.common.dto.MessageResponse;
+import com.team.comma.user.constant.UserRole;
+import com.team.comma.user.constant.UserType;
+import com.team.comma.user.domain.User;
+import com.team.comma.user.dto.LoginRequest;
+import com.team.comma.user.dto.RegisterRequest;
 import com.team.comma.user.dto.UserDetailRequest;
 import com.team.comma.user.dto.UserResponse;
-import com.team.comma.confused.dto.LoginRequest;
-import com.team.comma.confused.dto.MessageResponse;
-import com.team.comma.confused.dto.RegisterRequest;
-import com.team.comma.confused.security.Token;
-import com.team.comma.user.domain.User;
-import com.team.comma.user.UserRepository;
-import com.team.comma.util.JwtTokenProvider;
+import com.team.comma.user.repository.UserRepository;
+import com.team.comma.user.service.UserService;
+import com.team.comma.util.jwt.service.JwtService;
+import com.team.comma.util.jwt.support.JwtTokenProvider;
+import com.team.comma.util.security.domain.Token;
+import java.time.LocalTime;
+import java.util.Arrays;
+import javax.security.auth.login.AccountException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,16 +38,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
-import javax.security.auth.login.AccountException;
-import java.time.LocalTime;
-import java.util.Arrays;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static org.springframework.http.HttpHeaders.SET_COOKIE;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {

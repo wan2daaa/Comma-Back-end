@@ -1,11 +1,11 @@
-package com.team.comma.user.domain;
+package com.team.comma.user.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.team.comma.constant.UserRole;
-import com.team.comma.constant.UserType;
-
-import com.team.comma.user.UserRepository;
+import com.team.comma.user.constant.UserRole;
+import com.team.comma.user.constant.UserType;
+import com.team.comma.user.domain.User;
+import com.team.comma.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

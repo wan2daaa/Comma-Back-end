@@ -1,9 +1,9 @@
-package com.team.comma.confused;
+package com.team.comma.spotify.search.service;
 
-import com.team.comma.confused.spotify.SpotifyService;
-import com.team.comma.confused.dto.ArtistResponse;
-import com.team.comma.track.dto.TrackResponse;
-import com.team.comma.util.spotify.CreationAccessToken;
+import com.team.comma.spotify.search.dto.ArtistResponse;
+import com.team.comma.spotify.search.service.SpotifyService;
+import com.team.comma.spotify.track.dto.TrackResponse;
+import com.team.comma.util.jwt.support.CreationAccessToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,13 +1,15 @@
-package com.team.comma.playlist.domain;
+package com.team.comma.spotify.playlist.repository;
 
-import com.team.comma.constant.UserRole;
-import com.team.comma.constant.UserType;
-import com.team.comma.playlist.PlaylistRepository;
-import com.team.comma.playlist.PlaylistTrackRepository;
-import com.team.comma.track.TrackRepository;
-import com.team.comma.track.domain.Track;
-import com.team.comma.user.UserRepository;
+import com.team.comma.spotify.playlist.domain.Playlist;
+import com.team.comma.spotify.playlist.domain.PlaylistTrack;
+import com.team.comma.spotify.playlist.repository.PlaylistRepository;
+import com.team.comma.spotify.playlist.repository.PlaylistTrackRepository;
+import com.team.comma.spotify.track.domain.Track;
+import com.team.comma.spotify.track.repository.TrackRepository;
+import com.team.comma.user.constant.UserRole;
+import com.team.comma.user.constant.UserType;
 import com.team.comma.user.domain.User;
+import com.team.comma.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;

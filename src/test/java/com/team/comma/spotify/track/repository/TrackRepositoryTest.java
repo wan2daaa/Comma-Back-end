@@ -1,6 +1,7 @@
-package com.team.comma.track.domain;
+package com.team.comma.spotify.track.repository;
 
-import com.team.comma.track.TrackRepository;
+import com.team.comma.spotify.track.domain.Track;
+import com.team.comma.spotify.track.repository.TrackRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;

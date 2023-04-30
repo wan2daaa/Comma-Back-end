@@ -1,20 +1,20 @@
-package com.team.comma.playlist.service;
+package com.team.comma.spotify.playlist.service;
 
-import com.team.comma.playlist.domain.Playlist;
-import com.team.comma.playlist.domain.PlaylistTrack;
-import com.team.comma.playlist.PlaylistRepository;
-import com.team.comma.playlist.PlaylistTrackRepository;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
+
+import com.team.comma.spotify.playlist.domain.Playlist;
+import com.team.comma.spotify.playlist.domain.PlaylistTrack;
+import com.team.comma.spotify.playlist.repository.PlaylistRepository;
+import com.team.comma.spotify.playlist.repository.PlaylistTrackRepository;
+import com.team.comma.spotify.playlist.service.PlaylistService;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Arrays;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MockitoExtension.class)
 public class PlaylistServiceTest {
