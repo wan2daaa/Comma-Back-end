@@ -1,5 +1,5 @@
 package com.team.comma.user.constant;
 
 public enum UserType {
-    GeneralUser, OAuthUser
+    GENERAL_USER, OAUTH_USER
 }

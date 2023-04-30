@@ -26,7 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class JwtServiceTest {
+class JwtServiceTest {
 
     @Mock
     RefreshTokenRepository refreshTokenRepository;
@@ -39,7 +39,7 @@ public class JwtServiceTest {
 
     @Test
     @DisplayName("토큰 생성")
-    public void createToken() {
+    void createToken() {
         // given
         Token token = getToken();
         RefreshToken refreshToken = getRefreshToken();
@@ -57,7 +57,7 @@ public class JwtServiceTest {
 
     @Test
     @DisplayName("새로운 AccessToken 반환")
-    public void createAccessToken() {
+    void createAccessToken() {
         // given
         RefreshToken refreshToken = getRefreshToken();
         Optional<RefreshToken> tokens = Optional.of(refreshToken);
@@ -74,7 +74,7 @@ public class JwtServiceTest {
 
     @Test
     @DisplayName("새로운 AccessToken 반환 예외 _ 만료된 RefreshToken")
-    public void expireToken() {
+    void expireToken() {
         // given
         RefreshToken refreshToken = getRefreshToken();
         Optional<RefreshToken> tokens = Optional.of(refreshToken);
@@ -93,7 +93,7 @@ public class JwtServiceTest {
     // testssss
     @Test
     @DisplayName("새로운 AccessToken 반환 예외 _ 변조된 RefreshToken")
-    public void falsifyToken() {
+    void falsifyToken() {
         // given
         RefreshToken refreshToken = getRefreshToken();
         doThrow(NoSuchElementException.class).when(refreshTokenRepository)

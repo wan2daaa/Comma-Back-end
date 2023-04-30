@@ -17,7 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class PlaylistServiceTest {
+class PlaylistServiceTest {
 
     @InjectMocks
     private PlaylistService playlistService;
@@ -29,7 +29,7 @@ public class PlaylistServiceTest {
     private String userEmail = "email@naver.com";
 
     @Test
-    public void 플레이리스트_조회_성공() {
+    void 플레이리스트_조회_성공() {
         // given
         doReturn(Arrays.asList(
             Playlist.builder().build(),
@@ -41,11 +41,11 @@ public class PlaylistServiceTest {
         final List<Playlist> result = playlistService.getPlaylist(userEmail);
 
         // then
-        assertThat(result.size()).isEqualTo(3);
+        assertThat(result).hasSize(3);
     }
 
     @Test
-    public void 플레이리스트_곡조회_성공() {
+    void 플레이리스트_곡조회_성공() {
         // given
         doReturn(Arrays.asList(
             PlaylistTrack.builder().build(),
@@ -57,11 +57,11 @@ public class PlaylistServiceTest {
         final List<PlaylistTrack> result = playlistService.getPlaylistTrack(123L);
 
         // then
-        assertThat(result.size()).isEqualTo(3);
+        assertThat(result).hasSize(3);
     }
 
     @Test
-    public void 사용자플레이리스트_조회_성공() {
+    void 사용자플레이리스트_조회_성공() {
         // given
         doReturn(Arrays.asList(
             Playlist.builder().build(),
@@ -73,6 +73,6 @@ public class PlaylistServiceTest {
         final List<PlaylistTrack> result = playlistService.getPlaylistTrack(123L);
 
         // then
-        assertThat(result.size()).isEqualTo(3);
+        assertThat(result).hasSize(3);
     }
 }

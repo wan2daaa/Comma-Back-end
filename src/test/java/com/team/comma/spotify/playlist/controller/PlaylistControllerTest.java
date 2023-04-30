@@ -27,7 +27,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(MockitoExtension.class)
-public class PlaylistControllerTest {
+class PlaylistControllerTest {
 
     @InjectMocks
     PlaylistController playlistController;
@@ -40,14 +40,14 @@ public class PlaylistControllerTest {
     private String userEmail = "email@naver.com";
 
     @BeforeEach
-    public void init() {
+    void init() {
         gson = new Gson();
         mockMvc = MockMvcBuilders.standaloneSetup(playlistController)
             .build();
     }
 
     @Test
-    public void 사용자플레이리스트조회_이메일없음() throws Exception {
+    void 사용자플레이리스트조회_이메일없음() throws Exception {
         // given
         final String url = "/userPlaylist";
 
@@ -61,7 +61,7 @@ public class PlaylistControllerTest {
     }
 
     @Test
-    public void 사용자플레이리스트조회_성공() throws Exception {
+    void 사용자플레이리스트조회_성공() throws Exception {
         // given
         final String url = "/userPlaylist";
         List<PlaylistTrackArtistResponse> trackArtistList = Arrays.asList(
@@ -87,6 +87,6 @@ public class PlaylistControllerTest {
         resultActions.andExpect(status().isOk());
 
         final List<PlaylistResponse> result = playlistService.getPlaylistResponse(userEmail);
-        assertThat(result.size()).isEqualTo(3);
+        assertThat(result).hasSize(3);
     }
 }

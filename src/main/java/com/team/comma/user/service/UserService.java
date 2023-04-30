@@ -42,7 +42,7 @@ public class UserService {
             throw new AccountException("정보가 올바르지 않습니다.");
         }
 
-        if (user.getType() == UserType.OAuthUser) {
+        if (user.getType() == UserType.OAUTH_USER) {
             throw new AccountException("일반 사용자는 OAuth 계정으로 로그인할 수 없습니다.");
         }
 
@@ -69,7 +69,7 @@ public class UserService {
             throw new AccountException("이미 존재하는 계정입니다.");
         }
 
-        User buildEntity = createUser(registerRequest, UserType.GeneralUser);
+        User buildEntity = createUser(registerRequest, UserType.GENERAL_USER);
 
         User user = userRepository.save(buildEntity);
 
@@ -81,10 +81,10 @@ public class UserService {
         User user = userRepository.findByEmail(registerRequest.getEmail());
 
         if (user == null) { // 정보가 없다면 회원가입
-            User createUser = createUser(registerRequest, UserType.OAuthUser);
+            User createUser = createUser(registerRequest, UserType.OAUTH_USER);
 
             user = userRepository.save(createUser);
-        } else if (user.getType() == UserType.GeneralUser) { // 일반 사용자가 존재한다면
+        } else if (user.getType() == UserType.GENERAL_USER) { // 일반 사용자가 존재한다면
             throw new AccountException("일반 사용자가 이미 존재합니다.");
         }
 

@@ -3,7 +3,6 @@ package com.team.comma.spotify.playlist.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.team.comma.spotify.playlist.domain.Playlist;
-import com.team.comma.spotify.playlist.repository.PlaylistRepository;
 import com.team.comma.user.constant.UserRole;
 import com.team.comma.user.constant.UserType;
 import com.team.comma.user.domain.User;
@@ -16,7 +15,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class PlaylistRepositoryTest {
+class PlaylistRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
@@ -27,18 +26,18 @@ public class PlaylistRepositoryTest {
     final String userEmail = "email@naver.com";
 
     @Test
-    public void 플레이리스트조회_실패_데이터없음() {
+    void 플레이리스트조회_실패_데이터없음() {
         // given
 
         // when
         final List<Playlist> result = playlistRepository.findAllByUser_Email(userEmail);
 
         // then
-        assertThat(result.size()).isEqualTo(0);
+        assertThat(result).isEmpty();
     }
 
     @Test
-    public void 플레이리스트조회_성공_2() {
+    void 플레이리스트조회_성공_2() {
         // given
         userRepository.save(getUser());
         final User user = userRepository.findByEmail(userEmail);
@@ -50,14 +49,14 @@ public class PlaylistRepositoryTest {
         final List<Playlist> result = playlistRepository.findAllByUser_Email(userEmail);
 
         // then
-        assertThat(result.size()).isEqualTo(2);
+        assertThat(result).hasSize(2);
     }
 
 
     private User getUser() {
         return User.builder()
             .email(userEmail)
-            .type(UserType.GeneralUser)
+            .type(UserType.GENERAL_USER)
             .role(UserRole.USER)
             .build();
     }

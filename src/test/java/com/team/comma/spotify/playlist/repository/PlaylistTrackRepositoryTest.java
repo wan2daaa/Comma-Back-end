@@ -2,8 +2,6 @@ package com.team.comma.spotify.playlist.repository;
 
 import com.team.comma.spotify.playlist.domain.Playlist;
 import com.team.comma.spotify.playlist.domain.PlaylistTrack;
-import com.team.comma.spotify.playlist.repository.PlaylistRepository;
-import com.team.comma.spotify.playlist.repository.PlaylistTrackRepository;
 import com.team.comma.spotify.track.domain.Track;
 import com.team.comma.spotify.track.repository.TrackRepository;
 import com.team.comma.user.constant.UserRole;
@@ -77,7 +75,7 @@ public class PlaylistTrackRepositoryTest {
     private User getUser() {
         return User.builder()
             .email(userEmail)
-            .type(UserType.GeneralUser)
+            .type(UserType.GENERAL_USER)
             .role(UserRole.USER)
             .build();
     }

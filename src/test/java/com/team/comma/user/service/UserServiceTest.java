@@ -18,7 +18,6 @@ import com.team.comma.user.dto.RegisterRequest;
 import com.team.comma.user.dto.UserDetailRequest;
 import com.team.comma.user.dto.UserResponse;
 import com.team.comma.user.repository.UserRepository;
-import com.team.comma.user.service.UserService;
 import com.team.comma.util.jwt.service.JwtService;
 import com.team.comma.util.jwt.support.JwtTokenProvider;
 import com.team.comma.util.security.domain.Token;
@@ -330,11 +329,11 @@ class UserServiceTest {
     }
 
     public User getOauthUserEntity() {
-        return User.builder().email(userEmail).type(UserType.OAuthUser).password(null).build();
+        return User.builder().email(userEmail).type(UserType.OAUTH_USER).password(null).build();
     }
 
     public User getGeneralUserEntity() {
-        return User.builder().email(userEmail).type(UserType.GeneralUser).password(userPassword)
+        return User.builder().email(userEmail).type(UserType.GENERAL_USER).password(userPassword)
             .build();
     }
 

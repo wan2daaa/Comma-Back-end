@@ -59,7 +59,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         if (user == null) { // 정보가 없을 때만
             User createUser = User.builder().email(attributes.getEmail())
-                .role(UserRole.USER).type(UserType.OAuthUser).build();
+                .role(UserRole.USER).type(UserType.OAUTH_USER).build();
             return userRepository.save(createUser);
         }
         return user;

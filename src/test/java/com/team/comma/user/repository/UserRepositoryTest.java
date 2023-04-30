@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.team.comma.user.constant.UserRole;
 import com.team.comma.user.constant.UserType;
 import com.team.comma.user.domain.User;
-import com.team.comma.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +52,7 @@ public class UserRepositoryTest {
     }
 
     private User getUserEntity() {
-        return User.builder().email(userEmail).password(userPassword).type(UserType.GeneralUser)
+        return User.builder().email(userEmail).password(userPassword).type(UserType.GENERAL_USER)
             .role(UserRole.USER).build();
     }
 
