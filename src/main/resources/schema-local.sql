@@ -30,20 +30,6 @@ DROP TABLE IF EXISTS user_detail_tb;
 
 DROP TABLE IF EXISTS user_tb;
 
-CREATE TABLE user_tb
-(
-    id       BIGINT NOT NULL AUTO_INCREMENT,
-    email    VARCHAR(100) not null,
-    password VARCHAR(50),
-    role     VARCHAR(255),
-    type     VARCHAR(255),
-    del_flag varchar(255),
-    user_detail_id BIGINT ,
-    FOREIGN KEY (user_detail_id) REFERENCES user_detail_tb (id),
-    PRIMARY KEY (id)
-);
-
-
 CREATE TABLE user_detail_tb
 (
     id                   BIGINT  NOT NULL AUTO_INCREMENT,
@@ -56,6 +42,20 @@ CREATE TABLE user_detail_tb
     favorite_public_flag VARCHAR(10) NOT NULL,
     calender_public_flag VARCHAR(10) NOT NULL,
     all_public_flag      VARCHAR(10) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+
+CREATE TABLE user_tb
+(
+    id       BIGINT NOT NULL AUTO_INCREMENT,
+    email    VARCHAR(100) not null,
+    password VARCHAR(50),
+    role     VARCHAR(255),
+    type     VARCHAR(255),
+    del_flag varchar(255),
+    user_detail_id BIGINT ,
+    FOREIGN KEY (user_detail_id) REFERENCES user_detail_tb (id),
     PRIMARY KEY (id)
 );
 
