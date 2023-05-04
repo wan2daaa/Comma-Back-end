@@ -3,28 +3,18 @@ package com.team.comma.spotify.playlist.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.team.comma.spotify.playlist.domain.Playlist;
+import com.team.comma.spotify.playlist.domain.PlaylistTrack;
+import com.team.comma.spotify.track.domain.Track;
+import com.team.comma.spotify.track.repository.TrackRepository;
 import com.team.comma.user.constant.UserRole;
 import com.team.comma.user.constant.UserType;
 import com.team.comma.user.domain.User;
 import com.team.comma.user.repository.UserRepository;
-import java.util.List;
-import com.team.comma.constant.UserRole;
-import com.team.comma.constant.UserType;
-import com.team.comma.domain.Playlist;
-import com.team.comma.domain.PlaylistTrack;
-import com.team.comma.domain.Track;
-import com.team.comma.domain.User;
-import jakarta.transaction.Transactional;
 import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-
-import java.util.List;
-
-
-import static org.assertj.core.api.Assertions.assertThat;  //자동 import되지 않음
 
 @DataJpaTest
 //@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -72,115 +62,71 @@ public class PlaylistRepositoryTest {
     }
 
     @Test
-    void 플레이리스트별_트랙의총재생시간() {
-//        //given
-//        Track track100 = buildTrackWithDurationTimeMs(100);
-//        Track track200 = buildTrackWithDurationTimeMs(100);
-//
-//        trackRepository.save(track100);
-//        trackRepository.save(track200);
-//
-//        Playlist playlist = Playlist.builder()
-//            .playlistTitle("테스트 플레이리스트")
-//            .alarmFlag(true)
-//            .user(getGeneralUser())
-//            .build();
-//
-//        playlistRepository.save(playlist);
-//
-//        PlaylistTrack playlistTrack1 = PlaylistTrack.builder()
-//            .track(track100)
-//            .playlist(playlist)
-//            .build();
-//
-//        PlaylistTrack playlistTrack2 = PlaylistTrack.builder()
-//            .track(track200)
-//            .playlist(playlist)
-//            .build();
-//
-//        playlistTrackRepository.save(playlistTrack1);
-//        playlistTrackRepository.save(playlistTrack2);
-
-        // given
-//        Playlist playlist = Playlist.builder()
-//            .playlistTitle("My Playlist")
-//            .alarmFlag(true)
-//            .alarmStartTime(LocalTime.of(6, 0))
-//            .listSequence(1)
-//            .build();
-//        playlistRepository.save(playlist);
-//
-//        Track track1 = Track.builder()
-//            .trackTitle("Track 1")
-//            .durationTimeMs(1000)
-//            .build();
-//        trackRepository.save(track1);
-//
-//        Track track2 = Track.builder()
-//            .trackTitle("Track 2")
-//            .durationTimeMs(2000)
-//            .build();
-//        trackRepository.save(track2);
-//
-//        PlaylistTrack playlistTrack1 = PlaylistTrack.builder()
-//            .playlist(playlist)
-//            .track(track1)
-//            .build();
-//        playlistTrackRepository.save(playlistTrack1);
-//
-//        PlaylistTrack playlistTrack2 = PlaylistTrack.builder()
-//            .playlist(playlist)
-//            .track(track2)
-//            .build();
-//        playlistTrackRepository.save(playlistTrack2);
-
-        Playlist playlist = Playlist.builder()
-            .playlistTitle("My Playlist")
-            .alarmFlag(false)
-            .build();
+    void 특정_플리에_트랙이_없다면_플리의_총재생시간은_0으로_리턴() {
+        //given
+        Playlist playlist = buildPlaylist();
         playlistRepository.save(playlist);
 
-        Track track1 = Track.builder()
-            .trackTitle("Track 1")
-            .durationTimeMs(100000)
-            .build();
-        Track track2 = Track.builder()
-            .trackTitle("Track 2")
-            .durationTimeMs(200000)
-            .build();
+        //when
+        int durationTimeSum = playlistRepository.getTotalDurationTimeMsWithPlaylistId(
+            playlist.getId());
+
+        //then
+        assertThat(durationTimeSum).isEqualTo(0);
+    }
+
+    @Test
+    void 하나의_플리의_총재생시간을_리턴() {
+        // given
+        Playlist playlist = buildPlaylist();
+        playlistRepository.save(playlist);
+
+        Track track1 = buildTrackWithDurationTimeMs(1000);
+        Track track2 = buildTrackWithDurationTimeMs(2000);
         trackRepository.save(track1);
         trackRepository.save(track2);
 
-        PlaylistTrack playlistTrack1 = PlaylistTrack.builder()
-            .playlist(playlist)
-            .track(track1)
-            .build();
-        PlaylistTrack playlistTrack2 = PlaylistTrack.builder()
-            .playlist(playlist)
-            .track(track2)
-            .build();
+        PlaylistTrack playlistTrack1 = buildPlaylistTrackWithPlaylistAndTrack(playlist, track1);
+        PlaylistTrack playlistTrack2 = buildPlaylistTrackWithPlaylistAndTrack(playlist, track2);
         playlistTrackRepository.save(playlistTrack1);
         playlistTrackRepository.save(playlistTrack2);
 
         playlist.addPlaylistTrack(track1);
         playlist.addPlaylistTrack(track2);
         playlistRepository.save(playlist);
-
         // when
-        Long durationSum = playlistRepository.getDurationSumByPlaylistId(playlist.getId());
+        int durationSum = playlistRepository.getTotalDurationTimeMsWithPlaylistId(playlist.getId());
 
         // then
-        assertThat(durationSum).isEqualTo(300000L);
+        assertThat(durationSum).isEqualTo(3000L);
     }
 
-    private static Track buildTrackWithDurationTimeMs(int durationTimeMs) {
+
+    private PlaylistTrack buildPlaylistTrackWithPlaylistAndTrack(Playlist playlist,
+        Track track1) {
+        PlaylistTrack playlistTrack1 = PlaylistTrack.builder()
+            .playlist(playlist)
+            .track(track1)
+            .build();
+        return playlistTrack1;
+    }
+
+    private Playlist buildPlaylist() {
+        Playlist playlist = Playlist.builder()
+            .playlistTitle("My Playlist")
+            .alarmFlag(false)
+            .build();
+        return playlist;
+    }
+
+    private Track buildTrackWithDurationTimeMs(int durationTimeMs) {
         return Track.builder().durationTimeMs(durationTimeMs).build();
     }
 
     private User getGeneralUser() {
         return User.builder()
             .email(userEmail)
-            .type(UserType.GeneralUser)
+            .type(UserType.GENERAL_USER)
             .role(UserRole.USER)
             .build();
     }
@@ -192,5 +138,6 @@ public class PlaylistRepositoryTest {
             .user(user)
             .build();
     }
+
 
 }

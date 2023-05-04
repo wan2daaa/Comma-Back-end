@@ -2,12 +2,14 @@ package com.team.comma.spotify.playlist.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
+import com.team.comma.common.dto.MessageResponse;
 import com.team.comma.spotify.playlist.domain.Playlist;
 import com.team.comma.spotify.playlist.domain.PlaylistTrack;
+import com.team.comma.spotify.playlist.dto.PlaylistIdRequest;
 import com.team.comma.spotify.playlist.repository.PlaylistRepository;
 import com.team.comma.spotify.playlist.repository.PlaylistTrackRepository;
-import com.team.comma.spotify.playlist.service.PlaylistService;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -74,5 +76,22 @@ class PlaylistServiceTest {
 
         // then
         assertThat(result).hasSize(3);
+    }
+
+    @Test
+    void 플레이리스트의_총재생시간을_리턴한다() {
+        //given
+        final long PLAYLIST_ID = 1L;
+        final int TOTAL_DURATION_TIME = 100;
+
+        doReturn(TOTAL_DURATION_TIME)
+            .when(playlistRepository).getTotalDurationTimeMsWithPlaylistId(PLAYLIST_ID);
+
+        //when
+        MessageResponse<Integer> totalDurationTimeMsDto = playlistService.getTotalDurationTimeMsByPlaylist(
+            PLAYLIST_ID);
+
+        //then
+        assertThat(totalDurationTimeMsDto.getData()).isEqualTo(TOTAL_DURATION_TIME);
     }
 }
