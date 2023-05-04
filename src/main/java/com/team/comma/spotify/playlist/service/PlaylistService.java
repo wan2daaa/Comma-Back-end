@@ -1,5 +1,8 @@
 package com.team.comma.spotify.playlist.service;
 
+import static com.team.comma.common.constant.ResponseCodeTest.REQUEST_SUCCESS;
+
+import com.team.comma.common.dto.MessageResponse;
 import com.team.comma.spotify.playlist.domain.Playlist;
 import com.team.comma.spotify.playlist.domain.PlaylistTrack;
 import com.team.comma.spotify.playlist.dto.PlaylistResponse;
@@ -62,4 +65,13 @@ public class PlaylistService {
         }
         return result;
     }
+
+    public MessageResponse<Integer> getTotalDurationTimeMsByPlaylist(Long playlistId) {
+        return MessageResponse.of(
+            REQUEST_SUCCESS.getCode(),
+            REQUEST_SUCCESS.getMessage(),
+            playlistRepository.getTotalDurationTimeMsWithPlaylistId(playlistId)
+        );
+    }
+
 }

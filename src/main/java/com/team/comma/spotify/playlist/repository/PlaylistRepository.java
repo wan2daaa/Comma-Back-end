@@ -11,9 +11,13 @@ public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
 
     List<Playlist> findAllByUser_Email(String email);
 
-    @Query("SELECT SUM(t.durationTimeMs) FROM Playlist p "
+    @Query("SELECT COALESCE(SUM(t.durationTimeMs),0) FROM Playlist p "
         + "JOIN p.playlistTrackList pt "
         + "JOIN pt.track t "
         + "WHERE p.id = :playlistId")
-    Long getDurationSumByPlaylistId(@Param("playlistId") Long playlistId);
+    int getTotalDurationTimeMsWithPlaylistId(@Param("playlistId") Long playlistId);
+
+    //listSequence중 가장 큰 값 리턴
+    @Query("SELECT COALESCE(MAX(p.listSequence),0) FROM Playlist p")
+    int findMaxListSequence();
 }
