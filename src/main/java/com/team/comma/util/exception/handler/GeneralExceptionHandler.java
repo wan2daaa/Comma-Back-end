@@ -1,19 +1,22 @@
 package com.team.comma.util.exception.handler;
 
-import com.team.comma.common.dto.MessageResponse;
+import static com.team.comma.common.constant.ResponseCodeTest.*;
+
 import com.team.comma.common.constant.ResponseCode;
-import com.team.comma.util.jwt.exception.FalsifyTokenException;
+import com.team.comma.common.constant.ResponseCodeTest;
+import com.team.comma.common.dto.MessageResponse;
 import com.team.comma.spotify.search.exception.ExpireTokenException;
 import com.team.comma.spotify.search.exception.SpotifyException;
+import com.team.comma.util.jwt.exception.FalsifyTokenException;
+import javax.security.auth.login.AccountException;
+import javax.security.auth.login.AccountNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import se.michaelthelin.spotify.exceptions.detailed.UnauthorizedException;
-
-import javax.security.auth.login.AccountException;
-import javax.security.auth.login.AccountNotFoundException;
 
 
 @RestControllerAdvice
@@ -72,4 +75,18 @@ public class GeneralExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(message);
     }
+
+    /**
+     * PathVariable에 잘못된 타입이 들어오는 경우
+     */
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class})
+    public ResponseEntity<MessageResponse> handleMethodArgumentTypeMismatchException(Exception e) {
+        MessageResponse message = MessageResponse.of(
+            REQUEST_TYPE_MISMATCH.getCode(),
+            REQUEST_TYPE_MISMATCH.getMessage()
+        );
+        
+        return ResponseEntity.badRequest().body(message);
+    }
+
 }
