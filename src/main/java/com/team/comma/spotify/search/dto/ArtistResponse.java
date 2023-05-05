@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import se.michaelthelin.spotify.model_objects.specification.Artist;
 import se.michaelthelin.spotify.model_objects.specification.Image;
 
 @Builder
@@ -29,4 +30,16 @@ public class ArtistResponse {
     private Image[] image;
     @Schema(description = "아티스트의 세부정보를 제공하는 Spotify api 정보")
     private String href;
+
+    public static ArtistResponse createArtistResponse(Artist artist) {
+        return ArtistResponse.builder()
+                .id(artist.getId())
+                .uri(artist.getUri())
+                .name(artist.getName())
+                .externalUrls(artist.getExternalUrls().getExternalUrls().get("spotify"))
+                .genres(artist.getGenres())
+                .image(artist.getImages())
+                .href(artist.getHref())
+                .build();
+    }
 }

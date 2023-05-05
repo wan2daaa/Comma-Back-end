@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import se.michaelthelin.spotify.model_objects.specification.ArtistSimplified;
+import se.michaelthelin.spotify.model_objects.specification.Track;
 
 @Builder
 @Data
@@ -26,4 +27,15 @@ public class TrackResponse {
     private String previewUrl;
     @Schema(description = "트랙의 재생 주소 ( 토큰 필요 ) ")
     private String href;
+
+    public static TrackResponse createTrackResponse(Track track) {
+        return TrackResponse.builder()
+                .id(track.getId())
+                .name(track.getName())
+                .uri(track.getUri())
+                .artists(track.getArtists())
+                .previewUrl(track.getPreviewUrl())
+                .href(track.getHref())
+                .build();
+    }
 }
