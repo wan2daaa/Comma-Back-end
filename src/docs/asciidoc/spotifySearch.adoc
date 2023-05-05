@@ -14,6 +14,8 @@ link:main.html[main 화면]
 ==== Request
 
 include::{snippets}/spotify/searchArtist/http-request.adoc[]
+include::{snippets}/spotify/searchArtist/path-parameters.adoc[]
+include::{snippets}/spotify/searchArtist/request-cookies.adoc[]
 
 ==== Response
 
@@ -25,6 +27,8 @@ include::{snippets}/spotify/searchArtist/response-fields.adoc[]
 ==== Request
 
 include::{snippets}/spotify/searchTrack/http-request.adoc[]
+include::{snippets}/spotify/searchTrack/path-parameters.adoc[]
+include::{snippets}/spotify/searchTrack/request-cookies.adoc[]
 
 ==== Response
 
@@ -47,6 +51,7 @@ include::{snippets}/spotify/genreList/response-fields.adoc[]
 ==== Request
 
 include::{snippets}/spotify/searchArtistByYear/http-request.adoc[]
+include::{snippets}/spotify/searchArtistByYear/query-parameters.adoc[]
 
 ==== Response
 
