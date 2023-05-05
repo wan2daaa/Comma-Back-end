@@ -1,0 +1,34 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+== 메인 화면
+
+link:main.html[main 화면]
+
+== 플레이리스트 API
+
+=== 플레이리스트 총재생시간 리턴 API
+
+==== Request
+
+include::{snippets}/spotify/selectPlaylistTotalDurationTime/http-request.adoc[]
+include::{snippets}/spotify/selectPlaylistTotalDurationTime/path-parameters.adoc[]
+
+==== Response
+
+include::{snippets}/spotify/selectPlaylistTotalDurationTime/http-response.adoc[]
+include::{snippets}/spotify/selectPlaylistTotalDurationTime/response-fields.adoc[]
+
+=== 플레이리스트 총재생시간 리턴 실패 (타입 에러)
+
+==== Request
+
+include::{snippets}/spotify/selectPlaylistTotalDurationTimeFail/http-request.adoc[]
+
+==== Response
+
+include::{snippets}/spotify/selectPlaylistTotalDurationTimeFail/http-response.adoc[]
+
