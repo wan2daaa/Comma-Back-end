@@ -1,8 +1,7 @@
 package com.team.comma.util.jwt.service;
 
-import com.team.comma.spotify.search.exception.ExpireTokenException;
-import com.team.comma.util.jwt.exception.FalsifyTokenException;
-import com.team.comma.util.jwt.service.JwtService;
+import com.team.comma.spotify.search.exception.TokenExpirationException;
+import com.team.comma.util.jwt.exception.TokenForgeryException;
 import com.team.comma.util.jwt.support.JwtTokenProvider;
 import com.team.comma.util.security.domain.RefreshToken;
 import com.team.comma.util.security.domain.Token;
@@ -86,7 +85,7 @@ class JwtServiceTest {
             () -> jwtService.validateRefreshToken(refreshToken.getToken()));
 
         // then
-        assertThat(thrown).isInstanceOf(ExpireTokenException.class)
+        assertThat(thrown).isInstanceOf(TokenExpirationException.class)
             .hasMessage("Refresh 토큰이 만료되었습니다. 로그인이 필요합니다.");
     }
 
@@ -104,7 +103,7 @@ class JwtServiceTest {
             () -> jwtService.validateRefreshToken(refreshToken.getToken()));
 
         // then
-        assertThat(thrown).isInstanceOf(FalsifyTokenException.class)
+        assertThat(thrown).isInstanceOf(TokenForgeryException.class)
             .hasMessage("변조되거나, 알 수 없는 RefreshToken 입니다.");
 
     }

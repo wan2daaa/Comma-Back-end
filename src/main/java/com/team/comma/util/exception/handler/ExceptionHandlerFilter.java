@@ -3,7 +3,7 @@ package com.team.comma.util.exception.handler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team.comma.common.dto.MessageResponse;
 import com.team.comma.common.constant.ResponseCode;
-import com.team.comma.util.jwt.exception.FalsifyTokenException;
+import com.team.comma.util.jwt.exception.TokenForgeryException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +25,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
 
         try {
             filterChain.doFilter(request, response);
-        } catch (FalsifyTokenException e) {
+        } catch (TokenForgeryException e) {
             setErrorResponse(response, ResponseCode.AUTHORIZATION_ERROR, e.getMessage());
         }
     }

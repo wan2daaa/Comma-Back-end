@@ -1,10 +1,10 @@
 package com.team.comma.spotify.search.service;
 
 import com.neovisionaries.i18n.CountryCode;
+import com.team.comma.common.dto.MessageResponse;
 import com.team.comma.spotify.history.dto.HistoryRequest;
 import com.team.comma.spotify.history.service.HistoryService;
 import com.team.comma.spotify.search.dto.ArtistResponse;
-import com.team.comma.spotify.search.dto.RequestResponse;
 import com.team.comma.spotify.search.support.SpotifyAuthorization;
 import com.team.comma.spotify.search.support.SpotifySearchCommand;
 import com.team.comma.spotify.track.dto.TrackResponse;
@@ -26,13 +26,13 @@ import static com.team.comma.common.constant.ResponseCode.REQUEST_SUCCESS;
 
 @Service
 @RequiredArgsConstructor
-public class SpotifySearchService {
+public class SearchService {
 
     private final SpotifyAuthorization spotifyAuthorization;
     private final SpotifySearchCommand spotifySearchCommand;
     private final HistoryService historyService;
 
-    public RequestResponse searchArtistList(String artistName , String token) throws AccountException {
+    public MessageResponse searchArtistList(String artistName , String token) throws AccountException {
         SpotifyApi spotifyApi = spotifyAuthorization.getSpotifyApi();
         SearchArtistsRequest searchArtistsRequest = spotifyApi.searchArtists(artistName).build();
         Object executeResult = spotifySearchCommand.executeCommand(searchArtistsRequest);
@@ -50,10 +50,10 @@ public class SpotifySearchService {
 
         addHistory(artistName , token);
 
-        return RequestResponse.of(REQUEST_SUCCESS , result);
+        return MessageResponse.of(REQUEST_SUCCESS , "요청이 성공적으로 수행되었습니다." , result);
     }
 
-    public RequestResponse searchTrackList(String trackName , String token) throws AccountException {
+    public MessageResponse searchTrackList(String trackName , String token) throws AccountException {
         SpotifyApi spotifyApi = spotifyAuthorization.getSpotifyApi();
         SearchTracksRequest searchTrackRequest = spotifyApi.searchTracks(trackName).build();
 
@@ -70,10 +70,10 @@ public class SpotifySearchService {
 
         addHistory(trackName , token);
 
-        return RequestResponse.of(REQUEST_SUCCESS , result);
+        return MessageResponse.of(REQUEST_SUCCESS , "요청이 성공적으로 수행되었습니다." , result);
     }
 
-    public RequestResponse searchGenreList() {
+    public MessageResponse searchGenreList() {
         SpotifyApi spotifyApi = spotifyAuthorization.getSpotifyApi();
         GetAvailableGenreSeedsRequest genres = spotifyApi.getAvailableGenreSeeds().build();
 
@@ -83,10 +83,10 @@ public class SpotifySearchService {
         }
 
         String[] result = (String[]) executeResult;
-        return RequestResponse.of(REQUEST_SUCCESS, result);
+        return MessageResponse.of(REQUEST_SUCCESS, "요청이 성공적으로 수행되었습니다." , result);
     }
 
-    public RequestResponse searchArtistListByYear(int offset) {
+    public MessageResponse searchArtistListByYear(int offset) {
         int year = LocalDate.now().getYear();
         SpotifyApi spotifyApi = spotifyAuthorization.getSpotifyApi();
         SearchArtistsRequest artists = spotifyApi.searchArtists(String.format("year:%d", year))
@@ -106,7 +106,7 @@ public class SpotifySearchService {
             artistNames.add(artist.getName());
         }
 
-        return RequestResponse.of(REQUEST_SUCCESS, artistNames);
+        return MessageResponse.of(REQUEST_SUCCESS, "요청이 성공적으로 수행되었습니다." ,artistNames);
     }
 
     public void addHistory(String history , String token) throws AccountException {

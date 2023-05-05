@@ -2,8 +2,8 @@ package com.team.comma.util.exception.handler;
 
 import com.team.comma.common.dto.MessageResponse;
 import com.team.comma.common.constant.ResponseCode;
-import com.team.comma.util.jwt.exception.FalsifyTokenException;
-import com.team.comma.spotify.search.exception.ExpireTokenException;
+import com.team.comma.util.jwt.exception.TokenForgeryException;
+import com.team.comma.spotify.search.exception.TokenExpirationException;
 import com.team.comma.spotify.search.exception.SpotifyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +33,7 @@ public class GeneralExceptionHandler {
     /*
         토큰 변조
      */
-    @ExceptionHandler(FalsifyTokenException.class)
+    @ExceptionHandler(TokenForgeryException.class)
     public ResponseEntity<MessageResponse> handleForbiddenRequest(Exception e) {
         MessageResponse message = MessageResponse.of(ResponseCode.AUTHORIZATION_ERROR,
             e.getMessage());
@@ -45,7 +45,7 @@ public class GeneralExceptionHandler {
      * OAuth2.0 존재하지 않은 이메일
      */
     @ExceptionHandler({AccountNotFoundException.class})
-    public ResponseEntity<MessageResponse> handleAccountExcepteption(Exception e) {
+    public ResponseEntity<MessageResponse> handleAccountException(Exception e) {
         MessageResponse message = MessageResponse.of(ResponseCode.OAUTH_NO_EXISTENT_EMAIL,
             e.getMessage());
 
@@ -65,7 +65,7 @@ public class GeneralExceptionHandler {
     /*
         RefreshToken 만료
      */
-    @ExceptionHandler({ExpireTokenException.class})
+    @ExceptionHandler({TokenExpirationException.class})
     public ResponseEntity<MessageResponse> handleExpireTokenException(Exception e) {
         MessageResponse message = MessageResponse.of(ResponseCode.REFRESH_TOKEN_EXPIRED,
             e.getMessage());
