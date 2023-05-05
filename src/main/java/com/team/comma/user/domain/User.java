@@ -1,5 +1,6 @@
 package com.team.comma.user.domain;
 
+import com.team.comma.spotify.history.domain.History;
 import com.team.comma.user.constant.UserRole;
 import com.team.comma.user.constant.UserType;
 import com.team.comma.util.converter.BooleanConverter;
@@ -35,9 +36,6 @@ public class User implements UserDetails {
     @Column(length = 50)
     private String password;
 
-    /**
-     * OAuth 로그인 유저인지 , 기본 로그인 유저인지 확인
-     */
     @Enumerated(EnumType.STRING)
     private UserType type;
 
@@ -62,6 +60,10 @@ public class User implements UserDetails {
     @Builder.Default
     private List<FavoriteArtist> favoriteArtist = new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.PERSIST , mappedBy = "user")
+    @Builder.Default
+    private List<History> history = new ArrayList<>();
+
     // 연관관계 편의 메서드
     public void addFavoriteGenre(String genre) {
         FavoriteGenre genreData = FavoriteGenre.builder()
@@ -81,6 +83,14 @@ public class User implements UserDetails {
         favoriteArtist.add(artistData);
     }
 
+    public void addHistory(String history) {
+        History historyEntity = History.builder()
+                .searchHistory(history)
+                .user(this)
+                .build();
+
+        this.history.add(historyEntity);
+    }
 
     // JWT Security
     @Override

@@ -1,0 +1,54 @@
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+== 메인 화면
+
+link:main.html[main 화면]
+
+== Spotify API
+
+=== 아티스트 검색하기
+
+==== Request
+
+include::{snippets}/spotify/searchArtist/http-request.adoc[]
+
+==== Response
+
+include::{snippets}/spotify/searchArtist/http-response.adoc[]
+include::{snippets}/spotify/searchArtist/response-fields.adoc[]
+
+=== 트랙 검색하기
+
+==== Request
+
+include::{snippets}/spotify/searchTrack/http-request.adoc[]
+
+==== Response
+
+include::{snippets}/spotify/searchTrack/http-response.adoc[]
+include::{snippets}/spotify/searchTrack/response-fields.adoc[]
+
+=== 모든 장르 가져오기
+
+==== Request
+
+include::{snippets}/spotify/genreList/http-request.adoc[]
+
+==== Response
+
+include::{snippets}/spotify/genreList/http-response.adoc[]
+include::{snippets}/spotify/genreList/response-fields.adoc[]
+
+=== 연도별 아티스트 정보 가져오기
+
+==== Request
+
+include::{snippets}/spotify/searchArtistByYear/http-request.adoc[]
+
+==== Response
+
+include::{snippets}/spotify/searchArtistByYear/http-response.adoc[]
+include::{snippets}/spotify/searchArtistByYear/response-fields.adoc[]

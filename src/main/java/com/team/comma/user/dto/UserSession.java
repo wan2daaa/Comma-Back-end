@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 public final class UserSession implements Serializable {
 
-    final private String email;
+    private final String email;
 
     private UserSession(User user) {
         this.email = user.getEmail();
