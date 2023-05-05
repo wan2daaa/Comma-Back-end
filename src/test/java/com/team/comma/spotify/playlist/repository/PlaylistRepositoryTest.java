@@ -23,50 +23,75 @@ class PlaylistRepositoryTest {
     @Autowired
     private PlaylistRepository playlistRepository;
 
-    final String userEmail = "email@naver.com";
+    private final String userEmail = "email@naver.com";
+    private final String title = "test playlist";
 
     @Test
-    void 플레이리스트조회_실패_데이터없음() {
+    public void 플레이리스트_저장(){
         // given
+        final User user = userRepository.save(getUser());
 
         // when
-        final List<Playlist> result = playlistRepository.findAllByUser_Email(userEmail);
+        final Playlist result = playlistRepository.save(getPlaylist(user, title));
 
         // then
-        assertThat(result).isEmpty();
+        assertThat(result).isNotNull();
+        assertThat(result.getPlaylistTitle()).isEqualTo(title);
     }
 
     @Test
-    void 플레이리스트조회_성공_2() {
+    public void 플레이리스트_조회_0개(){
         // given
-        userRepository.save(getUser());
-        final User user = userRepository.findByEmail(userEmail);
-
-        playlistRepository.save(getPlaylist(user, "테스트 플레이리스트1"));
-        playlistRepository.save(getPlaylist(user, "테스트 플레이리스트2"));
+        final User user = userRepository.save(getUser());
 
         // when
-        final List<Playlist> result = playlistRepository.findAllByUser_Email(userEmail);
+        final List<Playlist> result = playlistRepository.findAllByUser(user);
 
         // then
-        assertThat(result).hasSize(2);
+        assertThat(result.size()).isEqualTo(0);
     }
 
+    @Test
+    public void 플레이리스트_조회_2개(){
+        // given
+        final User user = userRepository.save(getUser());
+        playlistRepository.save(getPlaylist(user, title));
+        playlistRepository.save(getPlaylist(user, title));
+
+        // when
+        final List<Playlist> result = playlistRepository.findAllByUser(user);
+
+        // then
+        assertThat(result.size()).isEqualTo(2);
+    }
+
+    @Test
+    public void 플레이리스트_알람설정변경(){
+        // given
+        final User user = userRepository.save(getUser());
+        final Playlist playlist = playlistRepository.save(getPlaylist(user, "test playlist"));
+
+        // when
+        int result = playlistRepository.updateAlarmFlag(playlist.getId(),false);
+
+        // then
+        assertThat(result).isEqualTo(1);
+    }
 
     private User getUser() {
         return User.builder()
-            .email(userEmail)
-            .type(UserType.GENERAL_USER)
-            .role(UserRole.USER)
-            .build();
+                .email(userEmail)
+                .type(UserType.GENERAL_USER)
+                .role(UserRole.USER)
+                .build();
     }
 
     private Playlist getPlaylist(User user, String title) {
         return Playlist.builder()
-            .playlistTitle(title)
-            .alarmFlag(true)
-            .user(user)
-            .build();
+                .playlistTitle(title)
+                .alarmFlag(true)
+                .user(user)
+                .build();
     }
 
 }

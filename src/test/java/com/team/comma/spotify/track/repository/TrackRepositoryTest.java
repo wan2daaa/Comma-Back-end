@@ -1,15 +1,15 @@
 package com.team.comma.spotify.track.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.team.comma.spotify.track.domain.Track;
-import com.team.comma.spotify.track.repository.TrackRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.util.List;
+import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;  //자동 import되지 않음
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -18,33 +18,47 @@ public class TrackRepositoryTest {
     @Autowired
     private TrackRepository trackRepository;
 
+    private final String title = "test track";
+
     @Test
-    public void 곡조회_실패_데이터없음() {
+    public void 곡_저장(){
         // given
 
         // when
-        final List<Track> result = trackRepository.findAllById(1234L);
+        final Track result = trackRepository.save(getTrack(title));
 
         // then
-        assertThat(result.size()).isEqualTo(0);
+        assertThat(result).isNotNull();
+        assertThat(result.getTrackTitle()).isEqualTo(title);
     }
 
     @Test
-    public void 곡조회_성공() {
+    public void 곡_조회_실패_곡정보없음(){
+        // given
+
+        // when
+        final Optional<Track> result = trackRepository.findById(123L);
+
+        // then
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    public void 곡_조회_성공(){
         // given
         final Track track = trackRepository.save(getTrack("track test"));
 
         // when
-        final List<Track> result = trackRepository.findAllById(track.getId());
+        final Optional<Track> result = trackRepository.findById(track.getId());
 
         // then
-        assertThat(result.size()).isNotNull();
+        assertThat(result).isNotEmpty();
     }
 
     private Track getTrack(String title) {
         return Track.builder()
-            .trackTitle(title)
-            .build();
+                .trackTitle(title)
+                .build();
     }
 
 }

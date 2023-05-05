@@ -13,9 +13,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class PlaylistResponse {
 
-    private final Long playlistId;
+    private final long playlistId;
     private final String playlistTitle;
-    private final Boolean alarmFlag;
+    private final boolean alarmFlag;
     private final LocalTime alarmStartTime;
 
     private final List<PlaylistTrackResponse> trackList;

@@ -22,3 +22,5 @@
 * link:spotifySearch.html[Search 탐색 문서]
 
 * link:spotifyHistory.html[History 문서]
+
+* link:playlist.html[Playlist 문서]
