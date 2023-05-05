@@ -17,7 +17,6 @@ public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
         + "WHERE p.id = :playlistId")
     int getTotalDurationTimeMsWithPlaylistId(@Param("playlistId") Long playlistId);
 
-    //listSequence중 가장 큰 값 리턴
     @Query("SELECT COALESCE(MAX(p.listSequence),0) FROM Playlist p")
     int findMaxListSequence();
 }

@@ -1,17 +1,25 @@
 package com.team.comma.spotify.playlist.controller;
 
+import static com.team.comma.common.constant.ResponseCodeTest.*;
+
+import com.team.comma.common.constant.ResponseCodeTest;
 import com.team.comma.common.dto.MessageResponse;
 import com.team.comma.spotify.playlist.dto.PlaylistResponse;
 import com.team.comma.spotify.playlist.service.PlaylistService;
+import com.team.comma.spotify.playlist.service.PlaylistTrackService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,6 +30,8 @@ import java.util.List;
 public class PlaylistController {
 
     private final PlaylistService playlistService;
+
+    private final PlaylistTrackService playlistTrackService;
 
     @Operation(summary = "사용자 플레이리스트 조회", description = "사용자 이메일로 플레이리스트 조회")
     @ApiResponses(value = {
@@ -41,4 +51,14 @@ public class PlaylistController {
             playlistService.getTotalDurationTimeMsByPlaylist(id));
     }
 
+    @DeleteMapping("/playlist/playlist-track/{playlistId}")
+    public MessageResponse<Integer> disconnectPlaylistAndTrack
+        (
+            @RequestBody final Set<Long> trackIdList,
+            @PathVariable("playlistId") final Long playlistId
+        ) {
+
+        return playlistTrackService.disconnectPlaylistAndTrack(trackIdList, playlistId);
+    }
+    
 }

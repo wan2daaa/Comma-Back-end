@@ -2,14 +2,18 @@ package com.team.comma.spotify.playlist.controller;
 
 import static com.team.comma.common.constant.ResponseCodeTest.REQUEST_SUCCESS;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.Mockito.doReturn;
+import static org.springframework.http.MediaType.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
@@ -20,9 +24,11 @@ import com.google.gson.Gson;
 import com.team.comma.common.dto.MessageResponse;
 import com.team.comma.spotify.playlist.domain.Playlist;
 import com.team.comma.spotify.playlist.service.PlaylistService;
+import com.team.comma.spotify.playlist.service.PlaylistTrackService;
 import com.team.comma.spotify.track.domain.Track;
 import com.team.comma.spotify.track.domain.TrackArtist;
 import java.time.LocalTime;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +36,7 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
+import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -47,6 +54,9 @@ class PlaylistControllerTest {
 
     @MockBean
     PlaylistService playlistService;
+
+    @MockBean
+    PlaylistTrackService playlistTrackService;
 
     MockMvc mockMvc;
     Gson gson;
@@ -196,6 +206,45 @@ class PlaylistControllerTest {
                     )
                 )
             );
+    }
+
+    @Test
+    void 플레이리스트의_트랙_삭제_성공() throws Exception {
+        //given
+        doReturn(
+            MessageResponse.of(
+                REQUEST_SUCCESS.getCode(),
+                REQUEST_SUCCESS.getMessage(),
+                10)
+        ).when(playlistTrackService)
+            .disconnectPlaylistAndTrack(anySet(), anyLong());
+
+        //when //then
+        mockMvc.perform(
+                delete("/playlist/playlist-track/{playlistId}", 1L)
+                    .contentType(APPLICATION_JSON)
+                    .content(gson.toJson(Set.of(1L, 2L, 3L)))
+            ).andDo(print())
+            .andExpect(status().isOk())
+            .andDo(
+                document(
+                    "spotify/deletePlaylistTrack",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    pathParameters(
+                        parameterWithName("playlistId").description("플레이리스트 id")
+                    ),
+                    requestFields(
+                        fieldWithPath("[]").description("삭제할 트랙 id 리스트")
+                    ),
+                    responseFields(
+                        fieldWithPath("code").description("응답 코드"),
+                        fieldWithPath("message").description("메세지"),
+                        fieldWithPath("data").description("삭제된 트랙 수")
+                    )
+                )
+            );
+
     }
 
 

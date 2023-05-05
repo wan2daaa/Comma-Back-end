@@ -10,6 +10,7 @@ import com.team.comma.user.constant.UserType;
 import com.team.comma.user.domain.User;
 import com.team.comma.user.repository.UserRepository;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -70,6 +71,57 @@ public class PlaylistTrackRepositoryTest {
 
         // then
         assertThat(result.size()).isEqualTo(2);
+    }
+
+    @Test
+    void 플리_트랙으로_TrackPlaylist_성공() {
+        //given
+        Track track = Track.builder().build();
+        trackRepository.save(track);
+
+        Playlist playlist = Playlist.builder().build();
+        playlistRepository.save(playlist);
+
+        PlaylistTrack playlistTrack = PlaylistTrack.builder()
+            .playlist(playlist)
+            .track(track)
+            .build();
+        playlistTrackRepository.save(playlistTrack);
+
+        //when
+        boolean isPresent = playlistTrackRepository
+            .findByTrackIdAndPlaylistId(track.getId(), playlist.getId())
+            .isPresent();
+
+        //then
+        assertThat(isPresent).isTrue();
+    }
+
+    @Test
+    void 플리_id_트랙_id로_삭제_성공() {
+        //given
+        Track track = Track.builder().build();
+        trackRepository.save(track);
+
+        Playlist playlist = Playlist.builder().build();
+        playlistRepository.save(playlist);
+
+        PlaylistTrack playlistTrack = PlaylistTrack.builder()
+            .playlist(playlist)
+            .track(track)
+            .build();
+        playlistTrackRepository.save(playlistTrack);
+        //when
+        int deleteCount = playlistTrackRepository.deletePlaylistTrackByTrackIdAndPlaylistId(
+            track.getId(),
+            playlist.getId());
+
+        Optional<PlaylistTrack> deletePlaylistTrack =
+            playlistTrackRepository.findByTrackIdAndPlaylistId(track.getId(), playlist.getId());
+        //then
+        assertThat(deleteCount).isEqualTo(1);
+
+        assertThat(deletePlaylistTrack).isEmpty();
     }
 
 

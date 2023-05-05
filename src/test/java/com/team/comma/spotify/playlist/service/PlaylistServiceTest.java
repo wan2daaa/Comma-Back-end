@@ -94,4 +94,5 @@ class PlaylistServiceTest {
         //then
         assertThat(totalDurationTimeMsDto.getData()).isEqualTo(TOTAL_DURATION_TIME);
     }
+
 }

@@ -101,6 +101,47 @@ public class PlaylistRepositoryTest {
         assertThat(durationSum).isEqualTo(3000L);
     }
 
+    @Test
+    void 플리_저장_성공() {
+        //given
+        Playlist playlist = buildPlaylist();
+        //when
+        Playlist savedPlaylist = playlistRepository.save(playlist);
+        //then
+        assertThat(playlist).isEqualTo(savedPlaylist);
+    }
+
+    @Test
+    void 플리간_순서중_제일_큰값을_리턴한다() {
+        //given
+        Playlist playlist1 = buildPlaylistWithListSequence(1);
+        playlistRepository.save(playlist1);
+
+        Playlist playlist2 = buildPlaylistWithListSequence(2);
+        playlistRepository.save(playlist2);
+
+        //when
+        int maxListSequence = playlistRepository.findMaxListSequence();
+        //then
+        assertThat(maxListSequence).isEqualTo(2);
+    }
+
+    @Test
+    void 플리가_존재하지않으면_플리간_순서_0_리턴() {
+        //given
+        //when
+        int maxListSequence = playlistRepository.findMaxListSequence();
+
+        //then
+        assertThat(maxListSequence).isZero();
+    }
+
+
+    private Playlist buildPlaylistWithListSequence(int listSequence) {
+        return Playlist.builder()
+            .listSequence(listSequence)
+            .build();
+    }
 
     private PlaylistTrack buildPlaylistTrackWithPlaylistAndTrack(Playlist playlist,
         Track track1) {
