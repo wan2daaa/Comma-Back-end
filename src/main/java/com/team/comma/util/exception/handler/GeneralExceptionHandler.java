@@ -8,11 +8,13 @@ import com.team.comma.common.dto.MessageResponse;
 import com.team.comma.spotify.search.exception.ExpireTokenException;
 import com.team.comma.spotify.search.exception.SpotifyException;
 import com.team.comma.util.jwt.exception.FalsifyTokenException;
+import jakarta.persistence.EntityNotFoundException;
 import javax.security.auth.login.AccountException;
 import javax.security.auth.login.AccountNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -27,8 +29,11 @@ public class GeneralExceptionHandler {
      */
     @ExceptionHandler({UsernameNotFoundException.class, AccountException.class})
     public ResponseEntity<MessageResponse> handleBadRequest(Exception e) {
-        MessageResponse message = MessageResponse.of(ResponseCode.SIMPLE_REQUEST_FAILURE,
-            e.getMessage());
+        MessageResponse message = MessageResponse.of
+            (
+                ResponseCode.SIMPLE_REQUEST_FAILURE,
+                e.getMessage()
+            );
 
         return ResponseEntity.badRequest().body(message);
     }
@@ -85,7 +90,29 @@ public class GeneralExceptionHandler {
             REQUEST_TYPE_MISMATCH.getCode(),
             REQUEST_TYPE_MISMATCH.getMessage()
         );
-        
+
+        return ResponseEntity.badRequest().body(message);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<MessageResponse> handleEntityNotFoundException(
+        EntityNotFoundException e) {
+        MessageResponse message = MessageResponse.of(
+            REQUEST_ENTITY_NOT_FOUND.getCode(),
+            e.getMessage()
+        );
+        return ResponseEntity.badRequest().body(message);
+    }
+
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<MessageResponse> handleMethodArgumentNotValidException(
+        MethodArgumentNotValidException e) {
+        MessageResponse message = MessageResponse.of(
+            REQUEST_TYPE_MISMATCH.getCode(),
+            e.getBindingResult().getFieldError().getDefaultMessage()
+        );
+
         return ResponseEntity.badRequest().body(message);
     }
 
