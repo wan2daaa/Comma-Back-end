@@ -18,9 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import static org.assertj.core.api.Assertions.assertThat;  //자동 import되지 않음
-
-import java.util.List;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -45,14 +42,15 @@ public class PlaylistTrackRepositoryTest {
     private final String trackTitle = "test track";
 
     @Test
-    public void 플레이리스트_곡_연관관계_저장(){
+    public void 플레이리스트_곡_연관관계_저장() {
         // given
         final User user = userRepository.save(getUser());
         final Playlist playlist = playlistRepository.save(getPlaylist(user, title));
         final Track track = trackRepository.save(getTrack(trackTitle));
 
         // when
-        final PlaylistTrack result = playlistTrackRepository.save(getPlaylistTrack(playlist,track));
+        final PlaylistTrack result = playlistTrackRepository.save(
+            getPlaylistTrack(playlist, track));
 
         // then
         assertThat(result).isNotNull();
@@ -61,7 +59,7 @@ public class PlaylistTrackRepositoryTest {
     }
 
     @Test
-    public void 플레이리스트_곡_연관관계_조회_0개(){
+    public void 플레이리스트_곡_연관관계_조회_0개() {
         // given
         final User user = userRepository.save(getUser());
         final Playlist playlist = playlistRepository.save(getPlaylist(user, title));
@@ -74,14 +72,14 @@ public class PlaylistTrackRepositoryTest {
     }
 
     @Test
-    public void 플레이리스트_곡_연관관계_조회_2개(){
+    public void 플레이리스트_곡_연관관계_조회_2개() {
         // given
         final User user = userRepository.save(getUser());
         final Playlist playlist = playlistRepository.save(getPlaylist(user, title));
         final Track track1 = trackRepository.save(getTrack(trackTitle));
         final Track track2 = trackRepository.save(getTrack(trackTitle));
-        playlistTrackRepository.save(getPlaylistTrack(playlist,track1));
-        playlistTrackRepository.save(getPlaylistTrack(playlist,track2));
+        playlistTrackRepository.save(getPlaylistTrack(playlist, track1));
+        playlistTrackRepository.save(getPlaylistTrack(playlist, track2));
 
         // when
         final List<PlaylistTrack> result = playlistTrackRepository.findAllByPlaylist(playlist);
@@ -141,33 +139,76 @@ public class PlaylistTrackRepositoryTest {
         assertThat(deletePlaylistTrack).isEmpty();
     }
 
+    @Test
+    void 트랙들간의_순서중_제일_높은_값을_리턴한다() {
+        //given
+        Track track1 = Track.builder().build();
+        trackRepository.save(track1);
+
+        Track track2 = Track.builder().build();
+        trackRepository.save(track2);
+
+        Track track3 = Track.builder().build();
+        trackRepository.save(track3);
+
+        Playlist playlist = Playlist.builder().build();
+        playlistRepository.save(playlist);
+
+        PlaylistTrack playlistTrack1 = PlaylistTrack.builder()
+            .playlist(playlist)
+            .track(track1)
+            .playSequence(1)
+            .build();
+        playlistTrackRepository.save(playlistTrack1);
+
+        PlaylistTrack playlistTrack2 = PlaylistTrack.builder()
+            .playlist(playlist)
+            .track(track2)
+            .playSequence(2)
+            .build();
+        playlistTrackRepository.save(playlistTrack2);
+
+        PlaylistTrack playlistTrack3 = PlaylistTrack.builder()
+            .playlist(playlist)
+            .track(track3)
+            .playSequence(3)
+            .build();
+        playlistTrackRepository.save(playlistTrack3);
+
+        //when
+        Integer maxPlaySequence = playlistTrackRepository.findMaxPlaySequenceByPlaylistId(
+            playlist.getId()).get();
+        //then
+        assertThat(maxPlaySequence).isEqualTo(3);
+    }
+
 
     private User getUser() {
         return User.builder()
-                .email(userEmail)
-                .type(UserType.GENERAL_USER)
-                .role(UserRole.USER)
-                .build();
+            .email(userEmail)
+            .type(UserType.GENERAL_USER)
+            .role(UserRole.USER)
+            .build();
     }
 
     private Playlist getPlaylist(User user, String title) {
         return Playlist.builder()
-                .playlistTitle(title)
-                .alarmFlag(true)
-                .user(user)
-                .build();
+            .playlistTitle(title)
+            .alarmFlag(true)
+            .user(user)
+            .build();
     }
 
     private Track getTrack(String title) {
         return Track.builder()
-                .trackTitle(title)
-                .build();
+            .trackTitle(title)
+            .build();
     }
 
-    private PlaylistTrack getPlaylistTrack(Playlist playlist,Track track) {
+    private PlaylistTrack getPlaylistTrack(Playlist playlist, Track track) {
         return PlaylistTrack.builder()
-                .playlist(playlist)
-                .track(track)
-                .build();
+            .playlist(playlist)
+            .track(track)
+            .build();
     }
 }

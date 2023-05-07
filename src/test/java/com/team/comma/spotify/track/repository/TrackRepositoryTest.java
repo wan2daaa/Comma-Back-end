@@ -21,7 +21,7 @@ public class TrackRepositoryTest {
     private final String title = "test track";
 
     @Test
-    public void 곡_저장(){
+    public void 곡_저장() {
         // given
 
         // when
@@ -33,7 +33,7 @@ public class TrackRepositoryTest {
     }
 
     @Test
-    public void 곡_조회_실패_곡정보없음(){
+    public void 곡_조회_실패_곡정보없음() {
         // given
 
         // when
@@ -44,7 +44,7 @@ public class TrackRepositoryTest {
     }
 
     @Test
-    public void 곡_조회_성공(){
+    public void 곡_조회_성공() {
         // given
         final Track track = trackRepository.save(getTrack("track test"));
 
@@ -55,10 +55,11 @@ public class TrackRepositoryTest {
         assertThat(result).isNotEmpty();
     }
 
+
     private Track getTrack(String title) {
         return Track.builder()
-                .trackTitle(title)
-                .build();
+            .trackTitle(title)
+            .build();
     }
 
 }

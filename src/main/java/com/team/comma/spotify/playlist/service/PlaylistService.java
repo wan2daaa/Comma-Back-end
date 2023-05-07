@@ -21,7 +21,6 @@ import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import javax.security.auth.login.AccountException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -87,30 +86,6 @@ public class PlaylistService {
             REQUEST_SUCCESS.getCode(),
             REQUEST_SUCCESS.getMessage(),
             playlistRepository.getTotalDurationTimeMsWithPlaylistId(playlistId)
-        );
-    }
-
-    public MessageResponse createPlaylist
-        (
-            PlaylistUpdateRequest playlistRequest,
-            String accessToken
-        ) throws AccountException {
-        String userEmail = jwtTokenProvider.getUserPk(accessToken);
-        User findUser = userRepository.findByEmail(userEmail);
-
-        if (findUser == null) {
-            throw new AccountException("사용자를 찾을 수 없습니다.");
-        }
-
-        playlistRequest.setUser(findUser);
-        playlistRequest.setListSequence(playlistRepository.findMaxListSequence() + 1);
-
-        Playlist playlist = playlistRequest.toEntity();
-
-        playlistRepository.save(playlist);
-        return MessageResponse.of(
-            REQUEST_SUCCESS.getCode(),
-            REQUEST_SUCCESS.getMessage()
         );
     }
 

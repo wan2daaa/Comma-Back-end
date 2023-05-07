@@ -2,10 +2,11 @@ package com.team.comma.spotify.playlist.repository;
 
 import com.team.comma.spotify.playlist.domain.Playlist;
 import com.team.comma.spotify.playlist.domain.PlaylistTrack;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface PlaylistTrackRepository extends JpaRepository<PlaylistTrack, Long> {
 
@@ -15,5 +16,8 @@ public interface PlaylistTrackRepository extends JpaRepository<PlaylistTrack, Lo
 
 
     Optional<PlaylistTrack> findByTrackIdAndPlaylistId(Long trackId, Long playlistId);
+
+    @Query("SELECT MAX(pt.playSequence) FROM PlaylistTrack pt WHERE pt.playlist.id = :playlistId")
+    Optional<Integer> findMaxPlaySequenceByPlaylistId(@Param("playlistId") Long playlistId);
 
 }

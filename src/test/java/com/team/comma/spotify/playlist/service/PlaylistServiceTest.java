@@ -2,19 +2,15 @@ package com.team.comma.spotify.playlist.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
 
 import com.team.comma.common.dto.MessageResponse;
 import com.team.comma.spotify.playlist.domain.Playlist;
 import com.team.comma.spotify.playlist.domain.PlaylistTrack;
-import com.team.comma.spotify.playlist.dto.PlaylistRequest;
 import com.team.comma.spotify.playlist.dto.PlaylistResponse;
 import com.team.comma.spotify.playlist.dto.PlaylistUpdateRequest;
 import com.team.comma.spotify.playlist.exception.PlaylistException;
 import com.team.comma.spotify.playlist.repository.PlaylistRepository;
-import com.team.comma.spotify.playlist.repository.PlaylistTrackRepository;
 import com.team.comma.spotify.track.domain.Track;
 import com.team.comma.spotify.track.domain.TrackArtist;
 import com.team.comma.user.constant.UserRole;
@@ -26,7 +22,6 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import javax.security.auth.login.AccountException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -132,38 +127,6 @@ public class PlaylistServiceTest {
 
         //then
         assertThat(totalDurationTimeMsDto.getData()).isEqualTo(TOTAL_DURATION_TIME);
-    }
-
-    @Test
-    void 플리를_저장하고_MessageResponse를_리턴한다() throws AccountException {
-        //given
-        String accessToken = "accessToken";
-
-        PlaylistUpdateRequest playlistRequest = PlaylistUpdateRequest.builder()
-            .playlistTitle("플리제목")
-            .alarmStartTime(LocalTime.now())
-            .build();
-
-        Playlist playlist = playlistRequest.toEntity();
-
-        doReturn(userEmail)
-            .when(jwtTokenProvider).getUserPk(accessToken);
-
-        doReturn(User.builder().email(userEmail).build())
-            .when(userRepository).findByEmail(userEmail);
-
-        doReturn(1)
-            .when(playlistRepository).findMaxListSequence();
-
-        doReturn(playlist)
-            .when(playlistRepository).save(any(Playlist.class));
-
-        //when
-        MessageResponse messageResponse = playlistService.createPlaylist(playlistRequest,
-            accessToken);
-        //then
-        assertThat(messageResponse.getCode()).isEqualTo(1);
-        assertThat(messageResponse.getMessage()).isEqualTo("요청에 성공적으로 응답하였습니다.");
     }
 
     @Test

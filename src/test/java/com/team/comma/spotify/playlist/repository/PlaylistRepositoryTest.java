@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.team.comma.spotify.playlist.domain.Playlist;
 import com.team.comma.spotify.playlist.domain.PlaylistTrack;
-import com.team.comma.spotify.playlist.dto.PlaylistRequest;
 import com.team.comma.spotify.playlist.dto.PlaylistUpdateRequest;
 import com.team.comma.spotify.track.domain.Track;
 import com.team.comma.spotify.track.repository.TrackRepository;
@@ -15,12 +14,10 @@ import com.team.comma.user.repository.UserRepository;
 import com.team.comma.util.config.TestConfig;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.transaction.annotation.Transactional;
 
 @DataJpaTest
 @Import(TestConfig.class)
