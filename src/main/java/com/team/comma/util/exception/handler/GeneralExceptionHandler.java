@@ -1,12 +1,14 @@
 package com.team.comma.util.exception.handler;
 
-import com.team.comma.common.dto.MessageResponse;
+import static com.team.comma.common.constant.ResponseCodeTest.REQUEST_ENTITY_NOT_FOUND;
+import static com.team.comma.common.constant.ResponseCodeTest.REQUEST_TYPE_MISMATCH;
+
 import com.team.comma.common.constant.ResponseCode;
-import com.team.comma.spotify.playlist.Exception.PlaylistException;
+import com.team.comma.common.dto.MessageResponse;
+import com.team.comma.spotify.playlist.exception.PlaylistException;
 import com.team.comma.spotify.search.exception.SpotifyException;
 import com.team.comma.spotify.search.exception.TokenExpirationException;
 import com.team.comma.util.jwt.exception.TokenForgeryException;
-import com.team.comma.util.jwt.exception.FalsifyTokenException;
 import jakarta.persistence.EntityNotFoundException;
 import javax.security.auth.login.AccountException;
 import javax.security.auth.login.AccountNotFoundException;
@@ -18,9 +20,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import se.michaelthelin.spotify.exceptions.detailed.UnauthorizedException;
-
-import javax.security.auth.login.AccountException;
-import javax.security.auth.login.AccountNotFoundException;
 
 
 @RestControllerAdvice
@@ -84,9 +83,9 @@ public class GeneralExceptionHandler {
         알람 설정 변경 시 플레이리스트 찾을 수 없음
      */
     @ExceptionHandler({PlaylistException.class})
-    public ResponseEntity<MessageResponse> handlePlaylistNotFoundException(Exception e){
+    public ResponseEntity<MessageResponse> handlePlaylistNotFoundException(Exception e) {
         MessageResponse message = MessageResponse.of(ResponseCode.ALARM_UPDATE_FAILURE,
-                e.getMessage());
+            e.getMessage());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
 
