@@ -19,4 +19,5 @@ public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
 
     @Query("SELECT COALESCE(MAX(p.listSequence),0) FROM Playlist p")
     int findMaxListSequence();
+
 }

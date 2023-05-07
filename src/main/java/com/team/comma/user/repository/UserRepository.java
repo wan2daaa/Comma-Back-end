@@ -6,6 +6,6 @@ import com.team.comma.user.domain.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    public User findByEmail(String id);
+    public User findByEmail(String email);
 
 }

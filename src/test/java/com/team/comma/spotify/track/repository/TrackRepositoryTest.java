@@ -1,12 +1,8 @@
 package com.team.comma.spotify.track.repository;
 
-import com.team.comma.spotify.playlist.domain.Playlist;
-import com.team.comma.spotify.playlist.domain.PlaylistTrack;
 import com.team.comma.spotify.playlist.repository.PlaylistRepository;
 import com.team.comma.spotify.playlist.repository.PlaylistTrackRepository;
 import com.team.comma.spotify.track.domain.Track;
-import com.team.comma.spotify.track.repository.TrackRepository;
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -43,7 +39,7 @@ public class TrackRepositoryTest {
     @Test
     public void 곡조회_성공() {
         // given
-        final Track track = trackRepository.save(getTrack("track test"));
+        final Track track = trackRepository.save(buildTrackWithTitle("track test"));
 
         // when
         final List<Track> result = trackRepository.findAllById(track.getId());
@@ -53,7 +49,7 @@ public class TrackRepositoryTest {
     }
 
 
-    private Track getTrack(String title) {
+    private Track buildTrackWithTitle(String title) {
         return Track.builder()
             .trackTitle(title)
             .build();

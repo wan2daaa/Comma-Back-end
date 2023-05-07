@@ -20,7 +20,7 @@ public class PlaylistTrackService {
 
         for (Long trackId : trackIdList) {
             playlistTrackRepository.findByTrackIdAndPlaylistId(trackId, playlistId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 플레이리스트에 존재하지 않는 트랙입니다."));
+                .orElseThrow(() -> new EntityNotFoundException("해당 트랙이 존재하지 않습니다."));
 
             deleteCount += playlistTrackRepository.
                 deletePlaylistTrackByTrackIdAndPlaylistId(trackId, playlistId);

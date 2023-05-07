@@ -15,7 +15,6 @@ public final class ResponseCode {
 
     public static final int REQUEST_SUCCESS = 1;
     public static final int ACCESS_TOKEN_CREATE = 7;
-    public static final int REQUEST_SUCCESS = 1;
 
 
     /**

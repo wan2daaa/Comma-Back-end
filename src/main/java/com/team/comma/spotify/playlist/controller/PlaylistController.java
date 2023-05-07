@@ -1,29 +1,26 @@
 package com.team.comma.spotify.playlist.controller;
 
-import static com.team.comma.common.constant.ResponseCodeTest.*;
-
-import com.team.comma.common.constant.ResponseCodeTest;
 import com.team.comma.common.dto.MessageResponse;
+import com.team.comma.spotify.playlist.dto.PlaylistRequest;
 import com.team.comma.spotify.playlist.dto.PlaylistResponse;
+import com.team.comma.spotify.playlist.dto.PlaylistTrackRequest;
 import com.team.comma.spotify.playlist.service.PlaylistService;
 import com.team.comma.spotify.playlist.service.PlaylistTrackService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import java.util.Set;
+import jakarta.validation.Valid;
+import java.util.List;
+import javax.security.auth.login.AccountException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,10 +30,6 @@ public class PlaylistController {
 
     private final PlaylistTrackService playlistTrackService;
 
-    @Operation(summary = "사용자 플레이리스트 조회", description = "사용자 이메일로 플레이리스트 조회")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = PlaylistResponse.class)))
-    })
     @GetMapping("/userPlaylist")
     public ResponseEntity<List<PlaylistResponse>> getUserPlaylist(
         @RequestHeader("email") final String email) {
@@ -51,14 +44,37 @@ public class PlaylistController {
             playlistService.getTotalDurationTimeMsByPlaylist(id));
     }
 
-    @DeleteMapping("/playlist/playlist-track/{playlistId}")
-    public MessageResponse<Integer> disconnectPlaylistAndTrack
+    @DeleteMapping("/playlist-track")
+    public ResponseEntity<MessageResponse> disconnectPlaylistAndTrack
         (
-            @RequestBody final Set<Long> trackIdList,
-            @PathVariable("playlistId") final Long playlistId
+            @Valid @RequestBody final PlaylistTrackRequest playlistTrackRequest
         ) {
-
-        return playlistTrackService.disconnectPlaylistAndTrack(trackIdList, playlistId);
+        return ResponseEntity.ok(
+            playlistTrackService.disconnectPlaylistAndTrack(
+                playlistTrackRequest.getTrackIdList(),
+                playlistTrackRequest.getPlaylistId()
+            )
+        );
     }
-    
+
+    @PostMapping("/playlist")
+    public ResponseEntity<MessageResponse> createPlaylist(
+        @CookieValue(value = "accessToken") String accessToken,
+        @RequestBody final PlaylistRequest playlistRequest
+    ) throws Exception {
+        return ResponseEntity.ok(
+            playlistService.createPlaylist(playlistRequest, accessToken)
+        );
+    }
+
+    @PatchMapping("/playlist")
+    public ResponseEntity<MessageResponse> patchPlaylist(
+        @RequestBody final PlaylistRequest playlistRequest
+    ) {
+        return ResponseEntity.ok(
+            playlistService.updatePlaylist(playlistRequest)
+        );
+    }
+
+
 }

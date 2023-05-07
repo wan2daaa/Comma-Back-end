@@ -4,19 +4,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.team.comma.spotify.playlist.domain.Playlist;
 import com.team.comma.spotify.playlist.domain.PlaylistTrack;
+import com.team.comma.spotify.playlist.dto.PlaylistRequest;
 import com.team.comma.spotify.track.domain.Track;
 import com.team.comma.spotify.track.repository.TrackRepository;
 import com.team.comma.user.constant.UserRole;
 import com.team.comma.user.constant.UserType;
 import com.team.comma.user.domain.User;
 import com.team.comma.user.repository.UserRepository;
+import com.team.comma.util.config.TestConfig;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.transaction.annotation.Transactional;
 
 @DataJpaTest
+@Import(TestConfig.class)
 //@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class PlaylistRepositoryTest {
 
@@ -101,15 +107,6 @@ public class PlaylistRepositoryTest {
         assertThat(durationSum).isEqualTo(3000L);
     }
 
-    @Test
-    void 플리_저장_성공() {
-        //given
-        Playlist playlist = buildPlaylist();
-        //when
-        Playlist savedPlaylist = playlistRepository.save(playlist);
-        //then
-        assertThat(playlist).isEqualTo(savedPlaylist);
-    }
 
     @Test
     void 플리간_순서중_제일_큰값을_리턴한다() {
@@ -127,7 +124,7 @@ public class PlaylistRepositoryTest {
     }
 
     @Test
-    void 플리가_존재하지않으면_플리간_순서_0_리턴() {
+    void 플리가_존재하지않으면_플리_listSequence_0_리턴() {
         //given
         //when
         int maxListSequence = playlistRepository.findMaxListSequence();
@@ -136,6 +133,54 @@ public class PlaylistRepositoryTest {
         assertThat(maxListSequence).isZero();
     }
 
+    @Test
+    void 플리를_PlaylistRequest_로_저장한다() {
+        //given
+        User user = User.builder().email("test@email.com").build();
+        userRepository.save(user);
+
+        PlaylistRequest playlistRequest = PlaylistRequest.builder()
+            .playlistTitle("플리제목")
+            .alarmStartTime(LocalTime.now())
+            .user(user)
+            .listSequence(1)
+            .build();
+
+        Playlist playlist = playlistRequest.toEntity();
+        //when
+        Playlist savedPlaylist = playlistRepository.save(playlist);
+
+        //then
+        assertThat(savedPlaylist.getPlaylistTitle()).isEqualTo(playlist.getPlaylistTitle());
+        assertThat(savedPlaylist.getAlarmStartTime()).isEqualTo(playlist.getAlarmStartTime());
+        assertThat(savedPlaylist.getUser()).isEqualTo(playlist.getUser());
+        assertThat(savedPlaylist.getListSequence()).isEqualTo(playlist.getListSequence());
+
+    }
+
+    @Test
+    void 플리의_내용을_수정한다() {
+        //given
+        Playlist playlist = buildPlaylist();
+        playlistRepository.save(playlist);
+
+        PlaylistRequest playlistRequest = PlaylistRequest.builder()
+            .id(1L)
+            .playlistTitle("플리제목변경")
+            .alarmStartTime(LocalTime.now())
+            .listSequence(2)
+            .build();
+
+        //when
+        playlist.updatePlaylist(playlistRequest);
+
+        Playlist updatedPlaylist = playlistRepository.findById(playlistRequest.getId()).get();
+
+        //then
+        assertThat(updatedPlaylist.getPlaylistTitle()).isEqualTo(
+            playlistRequest.getPlaylistTitle());
+        assertThat(updatedPlaylist.getListSequence()).isEqualTo(playlistRequest.getListSequence());
+    }
 
     private Playlist buildPlaylistWithListSequence(int listSequence) {
         return Playlist.builder()
