@@ -1,6 +1,8 @@
 package com.team.comma.spotify.playlist.repository;
 
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.team.comma.spotify.playlist.domain.Playlist;
 import com.team.comma.spotify.playlist.domain.PlaylistTrack;
 import com.team.comma.spotify.track.domain.Track;
@@ -18,6 +20,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import static org.assertj.core.api.Assertions.assertThat;  //자동 import되지 않음
 
+import java.util.List;
+
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class PlaylistTrackRepositoryTest {
@@ -34,40 +38,53 @@ public class PlaylistTrackRepositoryTest {
     @Autowired
     private PlaylistTrackRepository playlistTrackRepository;
 
-    final String userEmail = "email@naver.com";
+    private final String userEmail = "email@naver.com";
+
+    private final String title = "test playlist";
+
+    private final String trackTitle = "test track";
 
     @Test
-    public void 플레이리스트_곡조회_실패_데이터없음() {
+    public void 플레이리스트_곡_연관관계_저장(){
         // given
-        userRepository.save(getUser());
-        final User user = userRepository.findByEmail(userEmail);
-
-        Playlist playlist = playlistRepository.save(getPlaylist(user, "테스트 플레이리스트"));
+        final User user = userRepository.save(getUser());
+        final Playlist playlist = playlistRepository.save(getPlaylist(user, title));
+        final Track track = trackRepository.save(getTrack(trackTitle));
 
         // when
-        final List<PlaylistTrack> result = playlistTrackRepository.findAllByPlaylist_Id(
-            playlist.getId());
+        final PlaylistTrack result = playlistTrackRepository.save(getPlaylistTrack(playlist,track));
+
+        // then
+        assertThat(result).isNotNull();
+        assertThat(result.getPlaylist().getId()).isEqualTo(playlist.getId());
+        assertThat(result.getTrack().getId()).isEqualTo(track.getId());
+    }
+
+    @Test
+    public void 플레이리스트_곡_연관관계_조회_0개(){
+        // given
+        final User user = userRepository.save(getUser());
+        final Playlist playlist = playlistRepository.save(getPlaylist(user, title));
+
+        // when
+        final List<PlaylistTrack> result = playlistTrackRepository.findAllByPlaylist(playlist);
 
         // then
         assertThat(result.size()).isEqualTo(0);
     }
 
     @Test
-    public void 플레이리스트_곡조회_성공_2() {
+    public void 플레이리스트_곡_연관관계_조회_2개(){
         // given
-        userRepository.save(getUser());
-        final User user = userRepository.findByEmail(userEmail);
-
-        final Playlist playlist = playlistRepository.save(getPlaylist(user, "테스트 플레이리스트"));
-
-        final Track track1 = trackRepository.save(getTrack("track1"));
-        final Track track2 = trackRepository.save(getTrack("track2"));
-        playlistTrackRepository.save(getPlaylistTrack(playlist, track1));
-        playlistTrackRepository.save(getPlaylistTrack(playlist, track2));
+        final User user = userRepository.save(getUser());
+        final Playlist playlist = playlistRepository.save(getPlaylist(user, title));
+        final Track track1 = trackRepository.save(getTrack(trackTitle));
+        final Track track2 = trackRepository.save(getTrack(trackTitle));
+        playlistTrackRepository.save(getPlaylistTrack(playlist,track1));
+        playlistTrackRepository.save(getPlaylistTrack(playlist,track2));
 
         // when
-        final List<PlaylistTrack> result = playlistTrackRepository.findAllByPlaylist_Id(
-            playlist.getId());
+        final List<PlaylistTrack> result = playlistTrackRepository.findAllByPlaylist(playlist);
 
         // then
         assertThat(result.size()).isEqualTo(2);
@@ -127,30 +144,30 @@ public class PlaylistTrackRepositoryTest {
 
     private User getUser() {
         return User.builder()
-            .email(userEmail)
-            .type(UserType.GENERAL_USER)
-            .role(UserRole.USER)
-            .build();
+                .email(userEmail)
+                .type(UserType.GENERAL_USER)
+                .role(UserRole.USER)
+                .build();
     }
 
     private Playlist getPlaylist(User user, String title) {
         return Playlist.builder()
-            .playlistTitle(title)
-            .alarmFlag(true)
-            .user(user)
-            .build();
+                .playlistTitle(title)
+                .alarmFlag(true)
+                .user(user)
+                .build();
     }
 
     private Track getTrack(String title) {
         return Track.builder()
-            .trackTitle(title)
-            .build();
+                .trackTitle(title)
+                .build();
     }
 
-    private PlaylistTrack getPlaylistTrack(Playlist playlist, Track track) {
+    private PlaylistTrack getPlaylistTrack(Playlist playlist,Track track) {
         return PlaylistTrack.builder()
-            .playlist(playlist)
-            .track(track)
-            .build();
+                .playlist(playlist)
+                .track(track)
+                .build();
     }
 }

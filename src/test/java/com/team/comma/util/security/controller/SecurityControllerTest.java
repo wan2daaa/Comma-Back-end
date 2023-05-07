@@ -1,31 +1,10 @@
 package com.team.comma.util.security.controller;
 
-import static com.team.comma.common.constant.ResponseCode.ACCESS_TOKEN_CREATE;
-import static com.team.comma.common.constant.ResponseCode.AUTHORIZATION_ERROR;
-import static com.team.comma.common.constant.ResponseCode.LOGOUT_SUCCESS;
-import static org.apache.http.cookie.SM.SET_COOKIE;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
-import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
-import static org.springframework.restdocs.cookies.CookieDocumentation.responseCookies;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.google.gson.Gson;
 import com.team.comma.common.dto.MessageResponse;
-import com.team.comma.util.jwt.exception.FalsifyTokenException;
+import com.team.comma.util.jwt.exception.TokenForgeryException;
 import com.team.comma.util.jwt.service.JwtService;
-import com.team.comma.util.security.controller.SecurityController;
 import jakarta.servlet.http.Cookie;
-import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,6 +25,21 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
+import java.nio.charset.StandardCharsets;
+
+import static com.team.comma.common.constant.ResponseCode.*;
+import static org.apache.http.cookie.SM.SET_COOKIE;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.springframework.restdocs.cookies.CookieDocumentation.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureRestDocs
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
@@ -104,7 +98,7 @@ public class SecurityControllerTest {
     public void createAccessTokenFail_falsifiedToken() throws Exception {
         // given
         final String api = "/authentication/denied";
-        doThrow(new FalsifyTokenException("변조되거나, 알 수 없는 RefreshToken 입니다."))
+        doThrow(new TokenForgeryException("변조되거나, 알 수 없는 RefreshToken 입니다."))
             .when(jwtService).validateRefreshToken("token");
         // when
         final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get(api)

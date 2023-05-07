@@ -1,12 +1,11 @@
 package com.team.comma.util.exception.handler;
 
-import static com.team.comma.common.constant.ResponseCodeTest.*;
-
-import com.team.comma.common.constant.ResponseCode;
-import com.team.comma.common.constant.ResponseCodeTest;
 import com.team.comma.common.dto.MessageResponse;
-import com.team.comma.spotify.search.exception.ExpireTokenException;
+import com.team.comma.common.constant.ResponseCode;
+import com.team.comma.spotify.playlist.Exception.PlaylistException;
 import com.team.comma.spotify.search.exception.SpotifyException;
+import com.team.comma.spotify.search.exception.TokenExpirationException;
+import com.team.comma.util.jwt.exception.TokenForgeryException;
 import com.team.comma.util.jwt.exception.FalsifyTokenException;
 import jakarta.persistence.EntityNotFoundException;
 import javax.security.auth.login.AccountException;
@@ -20,6 +19,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import se.michaelthelin.spotify.exceptions.detailed.UnauthorizedException;
 
+import javax.security.auth.login.AccountException;
+import javax.security.auth.login.AccountNotFoundException;
+
 
 @RestControllerAdvice
 public class GeneralExceptionHandler {
@@ -29,11 +31,8 @@ public class GeneralExceptionHandler {
      */
     @ExceptionHandler({UsernameNotFoundException.class, AccountException.class})
     public ResponseEntity<MessageResponse> handleBadRequest(Exception e) {
-        MessageResponse message = MessageResponse.of
-            (
-                ResponseCode.SIMPLE_REQUEST_FAILURE,
-                e.getMessage()
-            );
+        MessageResponse message = MessageResponse.of(ResponseCode.SIMPLE_REQUEST_FAILURE,
+            e.getMessage());
 
         return ResponseEntity.badRequest().body(message);
     }
@@ -41,7 +40,7 @@ public class GeneralExceptionHandler {
     /*
         토큰 변조
      */
-    @ExceptionHandler(FalsifyTokenException.class)
+    @ExceptionHandler(TokenForgeryException.class)
     public ResponseEntity<MessageResponse> handleForbiddenRequest(Exception e) {
         MessageResponse message = MessageResponse.of(ResponseCode.AUTHORIZATION_ERROR,
             e.getMessage());
@@ -53,7 +52,7 @@ public class GeneralExceptionHandler {
      * OAuth2.0 존재하지 않은 이메일
      */
     @ExceptionHandler({AccountNotFoundException.class})
-    public ResponseEntity<MessageResponse> handleAccountExcepteption(Exception e) {
+    public ResponseEntity<MessageResponse> handleAccountException(Exception e) {
         MessageResponse message = MessageResponse.of(ResponseCode.OAUTH_NO_EXISTENT_EMAIL,
             e.getMessage());
 
@@ -73,12 +72,24 @@ public class GeneralExceptionHandler {
     /*
         RefreshToken 만료
      */
-    @ExceptionHandler({ExpireTokenException.class})
+    @ExceptionHandler({TokenExpirationException.class})
     public ResponseEntity<MessageResponse> handleExpireTokenException(Exception e) {
         MessageResponse message = MessageResponse.of(ResponseCode.REFRESH_TOKEN_EXPIRED,
             e.getMessage());
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(message);
+    }
+
+    /*
+        알람 설정 변경 시 플레이리스트 찾을 수 없음
+     */
+    @ExceptionHandler({PlaylistException.class})
+    public ResponseEntity<MessageResponse> handlePlaylistNotFoundException(Exception e){
+        MessageResponse message = MessageResponse.of(ResponseCode.ALARM_UPDATE_FAILURE,
+                e.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+
     }
 
     /**

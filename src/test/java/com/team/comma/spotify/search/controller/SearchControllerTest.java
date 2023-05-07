@@ -1,9 +1,9 @@
 package com.team.comma.spotify.search.controller;
 
 import com.google.gson.Gson;
+import com.team.comma.common.dto.MessageResponse;
 import com.team.comma.spotify.search.dto.ArtistResponse;
-import com.team.comma.spotify.search.dto.RequestResponse;
-import com.team.comma.spotify.search.service.SpotifySearchService;
+import com.team.comma.spotify.search.service.SearchService;
 import com.team.comma.spotify.track.dto.TrackResponse;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,13 +49,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureRestDocs
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
-@WebMvcTest(SearchControllerTest.class)
+@WebMvcTest(SearchController.class)
 @MockBean(JpaMetamodelMappingContext.class)
 @WebAppConfiguration
 public class SearchControllerTest {
 
     @MockBean
-    SpotifySearchService spotifyService;
+    SearchService spotifyService;
 
     MockMvc mockMvc;
     Gson gson;
@@ -75,13 +75,13 @@ public class SearchControllerTest {
     public void searchBySinger() throws Exception {
         // given
         final String api = "/spotify/artist/{artist}";
-        RequestResponse requestResponse = RequestResponse.of(REQUEST_SUCCESS,
-            new ArrayList<>(Arrays.asList(
-                ArtistResponse.builder().build(),
-                ArtistResponse.builder().build(),
-                ArtistResponse.builder().build())));
-        doReturn(requestResponse).when(spotifyService)
-            .searchArtistList(any(String.class), any(String.class));
+        MessageResponse messageResponse = MessageResponse.of(REQUEST_SUCCESS,
+                "요청이 성공적으로 수행되었습니다." ,
+                new ArrayList<>(Arrays.asList(
+                        ArtistResponse.builder().build(),
+                        ArtistResponse.builder().build(),
+                        ArtistResponse.builder().build())));
+        doReturn(messageResponse).when(spotifyService).searchArtistList(any(String.class) , any(String.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(
@@ -90,30 +90,31 @@ public class SearchControllerTest {
 
         // then
         resultActions.andExpect(status().isOk()).andDo(
-            document("spotify/searchArtist",
-                preprocessRequest(prettyPrint()),
-                preprocessResponse(prettyPrint()),
-                requestCookies(
-                    cookieWithName("accessToken").description("History 등록에 필요한 accessToken")
-                ),
-                pathParameters(
-                    parameterWithName("artist").description("아티스트 명")
-                ),
-                responseFields(
-                    fieldWithPath("code").description("결과 코드"),
-                    fieldWithPath("data[].id").description("Spotify 아티스트 아이디"),
-                    fieldWithPath("data[].uri").description("Spotify uri 에서의 아티스트 주소"),
-                    fieldWithPath("data[].name").description("가수 명"),
-                    fieldWithPath("data[].externalUrls").description("Spotify 아티스트 주소"),
-                    fieldWithPath("data[].genres").description("아티스트의 장르"),
-                    fieldWithPath("data[].image").description("아티스트 이미지 정보"),
-                    fieldWithPath("data[].href").description("아티스트의 세부정보를 제공하는 Spotify api 정보")
+                document("spotify/searchArtist",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestCookies(
+                                cookieWithName("accessToken").description("History 등록에 필요한 accessToken")
+                        ),
+                        pathParameters(
+                                parameterWithName("artist").description("아티스트 명")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메세지"),
+                                fieldWithPath("data[].id").description("Spotify 아티스트 아이디"),
+                                fieldWithPath("data[].uri").description("Spotify uri 에서의 아티스트 주소"),
+                                fieldWithPath("data[].name").description("가수 명"),
+                                fieldWithPath("data[].externalUrls").description("Spotify 아티스트 주소"),
+                                fieldWithPath("data[].genres").description("아티스트의 장르"),
+                                fieldWithPath("data[].image").description("아티스트 이미지 정보"),
+                                fieldWithPath("data[].href").description("아티스트의 세부정보를 제공하는 Spotify api 정보")
+                        )
                 )
-            )
         );
-        final RequestResponse result = gson.fromJson(
-            resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
-            RequestResponse.class);
+        final MessageResponse result = gson.fromJson(
+                resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
+                MessageResponse.class);
 
         assertThat(result.getCode()).isEqualTo(REQUEST_SUCCESS);
         assertThat(result.getData()).isNotNull();
@@ -124,15 +125,15 @@ public class SearchControllerTest {
     public void searchByTrack() throws Exception {
         // given
         final String api = "/spotify/track/{track}";
-        RequestResponse requestResponse = RequestResponse.of(REQUEST_SUCCESS,
-            new ArrayList<>(Arrays.asList(
-                TrackResponse.builder().build(),
-                TrackResponse.builder().build(),
-                TrackResponse.builder().build()
-            )));
+        MessageResponse messageResponse = MessageResponse.of(REQUEST_SUCCESS,
+                "요청이 성공적으로 수행되었습니다.",
+                new ArrayList<>(Arrays.asList(
+                        TrackResponse.builder().build(),
+                        TrackResponse.builder().build(),
+                        TrackResponse.builder().build()
+                )));
 
-        doReturn(requestResponse).when(spotifyService)
-            .searchTrackList(any(String.class), any(String.class));
+        doReturn(messageResponse).when(spotifyService).searchTrackList(any(String.class) , any(String.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(
@@ -141,29 +142,30 @@ public class SearchControllerTest {
 
         // then
         resultActions.andExpect(status().isOk()).andDo(
-            document("spotify/searchTrack",
-                preprocessRequest(prettyPrint()),
-                preprocessResponse(prettyPrint()),
-                requestCookies(
-                    cookieWithName("accessToken").description("History 등록에 필요한 accessToken")
-                ),
-                pathParameters(
-                    parameterWithName("track").description("트랙 이름")
-                ),
-                responseFields(
-                    fieldWithPath("code").description("결과 코드"),
-                    fieldWithPath("data[].id").description("Spotify 트랙 아이디"),
-                    fieldWithPath("data[].uri").description("Spotify uri 에서의 트랙 주소"),
-                    fieldWithPath("data[].name").description("트랙 명"),
-                    fieldWithPath("data[].artists").description("트랙의 아티스트 이름"),
-                    fieldWithPath("data[].previewUrl").description("1분 미리 듣기"),
-                    fieldWithPath("data[].href").description("트랙의 재생 주소 ( 토큰 필요 )")
+                document("spotify/searchTrack",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestCookies(
+                                cookieWithName("accessToken").description("History 등록에 필요한 accessToken")
+                        ),
+                        pathParameters(
+                                parameterWithName("track").description("트랙 이름")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메세지"),
+                                fieldWithPath("data[].id").description("Spotify 트랙 아이디"),
+                                fieldWithPath("data[].uri").description("Spotify uri 에서의 트랙 주소"),
+                                fieldWithPath("data[].name").description("트랙 명"),
+                                fieldWithPath("data[].artists").description("트랙의 아티스트 이름"),
+                                fieldWithPath("data[].previewUrl").description("1분 미리 듣기"),
+                                fieldWithPath("data[].href").description("트랙의 재생 주소 ( 토큰 필요 )")
+                        )
                 )
-            )
         );
-        final RequestResponse result = gson.fromJson(
-            resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
-            RequestResponse.class);
+        final MessageResponse result = gson.fromJson(
+                resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
+                MessageResponse.class);
 
         ArrayList<TrackResponse> trackResult = (ArrayList<TrackResponse>) result.getData();
 
@@ -176,27 +178,29 @@ public class SearchControllerTest {
     public void getGenresList() throws Exception {
         // given
         final String api = "/spotify/genre";
-        RequestResponse requestResponse = RequestResponse.of(REQUEST_SUCCESS,
-            new String[]{"hipPop", "sleep", "jazz"});
-        doReturn(requestResponse).when(spotifyService).searchGenreList();
+        MessageResponse messageResponse = MessageResponse.of(REQUEST_SUCCESS,
+                "요청이 성공적으로 수행되었습니다.",
+                new String[]{"hipPop", "sleep", "jazz"});
+        doReturn(messageResponse).when(spotifyService).searchGenreList();
 
         // when
         final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get(api));
 
         // then
         resultActions.andExpect(status().isOk()).andDo(
-            document("spotify/genreList",
-                preprocessRequest(prettyPrint()),
-                preprocessResponse(prettyPrint()),
-                responseFields(
-                    fieldWithPath("code").description("결과 코드"),
-                    fieldWithPath("data[]").description("장르 정보")
+                document("spotify/genreList",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        responseFields(
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메세지"),
+                                fieldWithPath("data[]").description("장르 정보")
+                        )
                 )
-            )
         );
-        final RequestResponse result = gson.fromJson(
-            resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
-            RequestResponse.class);
+        final MessageResponse result = gson.fromJson(
+                resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
+                MessageResponse.class);
 
         ArrayList<String> genreResult = (ArrayList<String>) result.getData();
 
@@ -209,29 +213,30 @@ public class SearchControllerTest {
     public void getArtistListByYear() throws Exception {
         // given
         final String api = "/spotify/artist?offset=0";
-        RequestResponse requestResponse = RequestResponse.of(REQUEST_SUCCESS,
-            new String[]{"artist1", "artist2", "artist3"});
-        doReturn(requestResponse)
-            .when(spotifyService).searchArtistListByYear(0);
+        MessageResponse messageResponse = MessageResponse.of(REQUEST_SUCCESS,
+                "요청이 성공적으로 수행되었습니다.",
+                new String[]{"artist1", "artist2", "artist3"});
+        doReturn(messageResponse)
+                .when(spotifyService).searchArtistListByYear(0);
         // when
         final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get(api));
         // then
         resultActions.andExpect(status().isOk()).andDo(
-            document("spotify/searchArtistByYear",
-                preprocessRequest(prettyPrint()),
-                preprocessResponse(prettyPrint()),
-                queryParameters(
-                    parameterWithName("offset").description("페이지 정보")
-                ),
-                responseFields(
-                    fieldWithPath("code").description("결과 코드"),
-                    fieldWithPath("data[]").description("아티스트 정보")
+                document("spotify/searchArtistByYear",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                                parameterWithName("offset").description("페이지 정보")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메세지"),
+                                fieldWithPath("data[]").description("아티스트 정보")
+                        )
                 )
-            )
         );
-        final RequestResponse result = gson.fromJson(
-            resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
-            RequestResponse.class);
+        final MessageResponse result = gson.fromJson(
+                resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8), MessageResponse.class);
 
         ArrayList<String> artistResult = (ArrayList<String>) result.getData();
 

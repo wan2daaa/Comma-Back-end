@@ -1,6 +1,6 @@
 package com.team.comma.util.jwt.support;
 
-import com.team.comma.util.jwt.exception.FalsifyTokenException;
+import com.team.comma.util.jwt.exception.TokenForgeryException;
 import com.team.comma.user.constant.UserRole;
 import com.team.comma.util.security.domain.RefreshToken;
 import com.team.comma.util.security.domain.Token;
@@ -110,7 +110,7 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(String token) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserPk(token));
         if (userDetails == null) {
-            throw new FalsifyTokenException("알 수 없는 토큰이거나 , 변조되었습니다.");
+            throw new TokenForgeryException("알 수 없는 토큰이거나 , 변조되었습니다.");
         }
         return new UsernamePasswordAuthenticationToken(userDetails, "",
             userDetails.getAuthorities());
@@ -132,7 +132,7 @@ public class JwtTokenProvider {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
             return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception e) {
-            throw new FalsifyTokenException("알 수 없는 토큰이거나 , 변조되었습니다.");
+            throw new TokenForgeryException("알 수 없는 토큰이거나 , 변조되었습니다.");
         }
     }
 }

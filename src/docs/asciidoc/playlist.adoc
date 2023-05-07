@@ -4,10 +4,37 @@
 :toc: left
 :toclevels: 2
 
+
+
 == 메인 화면
 
 link:main.html[main 화면]
 
+== Playlist API
+
+=== Playlist 조회
+
+==== Request
+
+include::{snippets}/spotify/getPlaylist/http-request.adoc[]
+include::{snippets}/spotify/getPlaylist/request-cookies.adoc[]
+
+==== Response
+
+include::{snippets}/spotify/getPlaylist/http-response.adoc[]
+include::{snippets}/spotify/getPlaylist/response-fields.adoc[]
+
+=== Playlist Update Alarm
+
+==== Request
+
+include::{snippets}/spotify/modifyPlaylist/http-request.adoc[]
+include::{snippets}/spotify/modifyPlaylist/request-fields.adoc[]
+
+==== Response
+
+include::{snippets}/spotify/modifyPlaylist/http-response.adoc[]
+include::{snippets}/spotify/modifyPlaylist/response-fields.adoc[]
 == 플레이리스트 API
 
 === 플레이리스트 총재생시간 리턴 API

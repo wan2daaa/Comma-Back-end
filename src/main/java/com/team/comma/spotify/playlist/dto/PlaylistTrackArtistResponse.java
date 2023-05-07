@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class PlaylistTrackArtistResponse {
 
-    private final Long artistId;
+    private final long artistId;
     private final String artistName;
 
     private PlaylistTrackArtistResponse(TrackArtist trackArtist) {

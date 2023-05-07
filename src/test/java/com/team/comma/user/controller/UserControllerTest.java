@@ -1,33 +1,9 @@
 package com.team.comma.user.controller;
 
-import static com.team.comma.common.constant.ResponseCode.AUTHORIZATION_ERROR;
-import static com.team.comma.common.constant.ResponseCode.LOGIN_SUCCESS;
-import static com.team.comma.common.constant.ResponseCode.REGISTER_SUCCESS;
-import static com.team.comma.common.constant.ResponseCode.SIMPLE_REQUEST_FAILURE;
-import static org.apache.http.cookie.SM.SET_COOKIE;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
-import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
-import static org.springframework.restdocs.cookies.CookieDocumentation.responseCookies;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.team.comma.common.dto.MessageResponse;
 import com.team.comma.user.constant.UserRole;
-import com.team.comma.user.controller.UserController;
 import com.team.comma.user.domain.User;
 import com.team.comma.user.dto.LoginRequest;
 import com.team.comma.user.dto.RegisterRequest;
@@ -35,12 +11,8 @@ import com.team.comma.user.dto.UserDetailRequest;
 import com.team.comma.user.dto.UserResponse;
 import com.team.comma.user.service.UserService;
 import com.team.comma.util.gson.GsonUtil;
-import com.team.comma.util.jwt.exception.FalsifyTokenException;
+import com.team.comma.util.jwt.exception.TokenForgeryException;
 import jakarta.servlet.http.Cookie;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalTime;
-import java.util.Arrays;
-import javax.security.auth.login.AccountException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -62,6 +34,25 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
+import javax.security.auth.login.AccountException;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalTime;
+import java.util.Arrays;
+
+import static com.team.comma.common.constant.ResponseCode.*;
+import static org.apache.http.cookie.SM.SET_COOKIE;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.springframework.restdocs.cookies.CookieDocumentation.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureRestDocs
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
@@ -421,7 +412,7 @@ class UserControllerTest {
     void getUserInfoByAccessTokenFail_NotExistToken() throws Exception {
         // given
         final String api = "/user/information";
-        doThrow(new FalsifyTokenException("알 수 없는 토큰이거나 , 변조되었습니다.")).when(userService)
+        doThrow(new TokenForgeryException("알 수 없는 토큰이거나 , 변조되었습니다.")).when(userService)
             .getUserByCookie(any(String.class));
         // when
         final ResultActions resultActions = mockMvc.perform(

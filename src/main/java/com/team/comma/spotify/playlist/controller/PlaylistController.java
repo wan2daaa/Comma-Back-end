@@ -1,24 +1,15 @@
 package com.team.comma.spotify.playlist.controller;
 
-import com.team.comma.common.dto.MessageResponse;
-import com.team.comma.spotify.playlist.dto.PlaylistRequest;
 import com.team.comma.spotify.playlist.dto.PlaylistResponse;
-import com.team.comma.spotify.playlist.dto.PlaylistTrackRequest;
 import com.team.comma.spotify.playlist.service.PlaylistService;
-import com.team.comma.spotify.playlist.service.PlaylistTrackService;
-import jakarta.validation.Valid;
-import java.util.List;
-import javax.security.auth.login.AccountException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,12 +19,19 @@ public class PlaylistController {
 
     private final PlaylistService playlistService;
 
+    @GetMapping("/playlist")
     private final PlaylistTrackService playlistTrackService;
 
     @GetMapping("/userPlaylist")
     public ResponseEntity<List<PlaylistResponse>> getUserPlaylist(
-        @RequestHeader("email") final String email) {
-        return ResponseEntity.ok(playlistService.getPlaylistResponse(email));
+            @CookieValue final String accessToken) {
+        return ResponseEntity.ok().body(playlistService.getPlaylist(accessToken));
+    }
+
+    @PatchMapping("/playlist/alert")
+    public ResponseEntity<MessageResponse> modifyAlarmState(
+            @RequestBody final PlaylistRequest request) throws PlaylistException {
+        return ResponseEntity.ok().body(playlistService.updateAlarmFlag(request.getPlaylistId(), request.isAlarmFlag()));
     }
 
     @GetMapping("/playlist/all-duration-time/{id}")

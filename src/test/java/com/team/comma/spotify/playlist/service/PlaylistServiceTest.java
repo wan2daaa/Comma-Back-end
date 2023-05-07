@@ -26,12 +26,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class PlaylistServiceTest {
-
+public class PlaylistServiceTest {
     @InjectMocks
     private PlaylistService playlistService;
     @Mock
-    private PlaylistTrackRepository playlistTrackRepository;
+    private PlaylistRepository playlistRepository;
+    @Mock
+    private UserRepository userRepository;
+
     @Mock
     private PlaylistRepository playlistRepository;
     @Mock
@@ -40,53 +42,73 @@ class PlaylistServiceTest {
     private UserRepository userRepository;
 
     private String userEmail = "email@naver.com";
+    private long playlistId = 123L;
+    private boolean flag = false;
+    private String token = "accessToken";
 
     @Test
-    void 플레이리스트_조회_성공() {
+    public void 플레이리스트_조회() {
         // given
+        final User user = User.builder()
+                .email(userEmail)
+                .type(UserType.GENERAL_USER)
+                .role(UserRole.USER)
+                .build();
+        doReturn(user).when(userRepository).findByEmail(user.getEmail());
+        doReturn(userEmail).when(jwtTokenProvider).getUserPk(token);
+
+        final List<TrackArtist> artistList = Arrays.asList(
+                TrackArtist.builder().id(123L).build()
+        );
+
+        final Track track = Track.builder()
+                .id(123L)
+                .trackArtistList(artistList)
+                .build();
+
+        final List<PlaylistTrack> playlistTrack = Arrays.asList(
+                PlaylistTrack.builder().track(track).trackAlarmFlag(true).build()
+        );
+
         doReturn(Arrays.asList(
-            Playlist.builder().build(),
-            Playlist.builder().build(),
-            Playlist.builder().build()
-        )).when(playlistRepository).findAllByUser_Email(userEmail);
+                Playlist.builder().id(1L).alarmFlag(true).playlistTrackList(playlistTrack).build(),
+                Playlist.builder().id(2L).alarmFlag(true).playlistTrackList(playlistTrack).build(),
+                Playlist.builder().id(3L).alarmFlag(true).playlistTrackList(playlistTrack).build()
+        )).when(playlistRepository).findAllByUser(user);
 
         // when
-        final List<Playlist> result = playlistService.getPlaylist(userEmail);
+        final List<PlaylistResponse> result = playlistService.getPlaylist(token);
 
         // then
-        assertThat(result).hasSize(3);
+        assertThat(result.size()).isEqualTo(3);
     }
 
     @Test
-    void 플레이리스트_곡조회_성공() {
+    public void 플레이리스트_알림설정변경_실패_존재하지않는플레이리스트() {
         // given
-        doReturn(Arrays.asList(
-            PlaylistTrack.builder().build(),
-            PlaylistTrack.builder().build(),
-            PlaylistTrack.builder().build()
-        )).when(playlistTrackRepository).findAllByPlaylist_Id(123L);
 
         // when
-        final List<PlaylistTrack> result = playlistService.getPlaylistTrack(123L);
+        final PlaylistException result = assertThrows(PlaylistException.class, () -> playlistService.updateAlarmFlag(playlistId, flag));
 
         // then
-        assertThat(result).hasSize(3);
+        assertThat(result.getMessage()).isEqualTo("알람 설정 변경에 실패했습니다. 플레이리스트를 찾을 수 없습니다.");
     }
 
     @Test
-    void 사용자플레이리스트_조회_성공() {
+    public void 플레이리스트_알림설정변경_성공() {
         // given
-        doReturn(Arrays.asList(
-            Playlist.builder().build(),
-            Playlist.builder().build(),
-            Playlist.builder().build()
-        )).when(playlistTrackRepository).findAllByPlaylist_Id(123L);
+        doReturn(Optional.of(Playlist.builder()
+                .id(playlistId)
+                .alarmFlag(false)
+                .build()
+        )).when(playlistRepository).findById(playlistId);
 
         // when
-        final List<PlaylistTrack> result = playlistService.getPlaylistTrack(123L);
+        final MessageResponse result = playlistService.updateAlarmFlag(playlistId,flag);
 
         // then
-        assertThat(result).hasSize(3);
+        assertThat(result.getCode()).isEqualTo(2);
+        assertThat(result.getMessage()).isEqualTo("알람 설정이 변경되었습니다.");
     }
 
     @Test

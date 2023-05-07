@@ -33,7 +33,7 @@ pipeline {
                     fi
 
                     echo "> comma 배포 작업 시작"
-                    JENKINS_NODE_COOKIE=dontKillMe nohup java -jar -Dspring.profiles.active={dev} api-0.0.1-SNAPSHOT.jar&
+                    JENKINS_NODE_COOKIE=dontKillMe nohup java -jar -Dspring.profiles.active={dev} comma-0.0.1-SNAPSHOT.jar&
                     '''
                 }
             }

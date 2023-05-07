@@ -1,7 +1,10 @@
 package com.team.comma.spotify.playlist.repository;
 
 import com.team.comma.spotify.playlist.domain.Playlist;
+import com.team.comma.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import org.springframework.data.jpa.repository.Query;
@@ -9,7 +12,11 @@ import org.springframework.data.repository.query.Param;
 
 public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
 
-    List<Playlist> findAllByUser_Email(String email);
+    List<Playlist> findAllByUser(User user);
+
+    @Modifying
+    @Query("update Playlist p set p.alarmFlag = :alarmFlag where p.id = :id")
+    int updateAlarmFlag(long id, boolean alarmFlag);
 
     @Query("SELECT COALESCE(SUM(t.durationTimeMs),0) FROM Playlist p "
         + "JOIN p.playlistTrackList pt "
