@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.team.comma.spotify.playlist.domain.Playlist;
 import com.team.comma.spotify.playlist.domain.PlaylistTrack;
 import com.team.comma.spotify.playlist.dto.PlaylistRequest;
+import com.team.comma.spotify.playlist.dto.PlaylistUpdateRequest;
 import com.team.comma.spotify.track.domain.Track;
 import com.team.comma.spotify.track.repository.TrackRepository;
 import com.team.comma.user.constant.UserRole;
@@ -42,7 +43,7 @@ public class PlaylistRepositoryTest {
     private final String title = "test playlist";
 
     @Test
-    public void 플레이리스트_저장(){
+    public void 플레이리스트_저장() {
         // given
         final User user = userRepository.save(getUser());
 
@@ -55,7 +56,7 @@ public class PlaylistRepositoryTest {
     }
 
     @Test
-    public void 플레이리스트_조회_0개(){
+    public void 플레이리스트_조회_0개() {
         // given
         final User user = userRepository.save(getUser());
 
@@ -67,7 +68,7 @@ public class PlaylistRepositoryTest {
     }
 
     @Test
-    public void 플레이리스트_조회_2개(){
+    public void 플레이리스트_조회_2개() {
         // given
         final User user = userRepository.save(getUser());
         playlistRepository.save(getPlaylist(user, title));
@@ -81,13 +82,13 @@ public class PlaylistRepositoryTest {
     }
 
     @Test
-    public void 플레이리스트_알람설정변경(){
+    public void 플레이리스트_알람설정변경() {
         // given
         final User user = userRepository.save(getUser());
         final Playlist playlist = playlistRepository.save(getPlaylist(user, "test playlist"));
 
         // when
-        int result = playlistRepository.updateAlarmFlag(playlist.getId(),false);
+        int result = playlistRepository.updateAlarmFlag(playlist.getId(), false);
 
         // then
         assertThat(result).isEqualTo(1);
@@ -165,14 +166,14 @@ public class PlaylistRepositoryTest {
         User user = User.builder().email("test@email.com").build();
         userRepository.save(user);
 
-        PlaylistRequest playlistRequest = PlaylistRequest.builder()
+        PlaylistUpdateRequest playlistUpdateRequest = PlaylistUpdateRequest.builder()
             .playlistTitle("플리제목")
             .alarmStartTime(LocalTime.now())
             .user(user)
             .listSequence(1)
             .build();
 
-        Playlist playlist = playlistRequest.toEntity();
+        Playlist playlist = playlistUpdateRequest.toEntity();
         //when
         Playlist savedPlaylist = playlistRepository.save(playlist);
 
@@ -190,22 +191,23 @@ public class PlaylistRepositoryTest {
         Playlist playlist = buildPlaylist();
         playlistRepository.save(playlist);
 
-        PlaylistRequest playlistRequest = PlaylistRequest.builder()
-            .id(1L)
+        PlaylistUpdateRequest playlistUpdateRequest = PlaylistUpdateRequest.builder()
+            .id(playlist.getId())
             .playlistTitle("플리제목변경")
             .alarmStartTime(LocalTime.now())
             .listSequence(2)
             .build();
 
         //when
-        playlist.updatePlaylist(playlistRequest);
+        playlist.updatePlaylist(playlistUpdateRequest);
 
-        Playlist updatedPlaylist = playlistRepository.findById(playlistRequest.getId()).get();
+        Playlist updatedPlaylist = playlistRepository.findById(playlistUpdateRequest.getId()).get();
 
         //then
         assertThat(updatedPlaylist.getPlaylistTitle()).isEqualTo(
-            playlistRequest.getPlaylistTitle());
-        assertThat(updatedPlaylist.getListSequence()).isEqualTo(playlistRequest.getListSequence());
+            playlistUpdateRequest.getPlaylistTitle());
+        assertThat(updatedPlaylist.getListSequence()).isEqualTo(
+            playlistUpdateRequest.getListSequence());
     }
 
     private Playlist buildPlaylistWithListSequence(int listSequence) {
@@ -237,18 +239,34 @@ public class PlaylistRepositoryTest {
 
     private User getGeneralUser() {
         return User.builder()
-                .email(userEmail)
-                .type(UserType.GENERAL_USER)
-                .role(UserRole.USER)
-                .build();
+            .email(userEmail)
+            .type(UserType.GENERAL_USER)
+            .role(UserRole.USER)
+            .build();
     }
 
     private Playlist getPlaylist(User user, String title, List<Track> trackList) {
         return Playlist.builder()
-                .playlistTitle(title)
-                .alarmFlag(true)
-                .user(user)
-                .build();
+            .playlistTitle(title)
+            .alarmFlag(true)
+            .user(user)
+            .build();
+    }
+
+    private User getUser() {
+        return User.builder()
+            .email(userEmail)
+            .type(UserType.GENERAL_USER)
+            .role(UserRole.USER)
+            .build();
+    }
+
+    private Playlist getPlaylist(User user, String title) {
+        return Playlist.builder()
+            .playlistTitle(title)
+            .alarmFlag(true)
+            .user(user)
+            .build();
     }
 
 

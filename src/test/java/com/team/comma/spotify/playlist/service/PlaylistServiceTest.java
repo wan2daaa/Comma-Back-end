@@ -1,6 +1,7 @@
 package com.team.comma.spotify.playlist.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
@@ -9,8 +10,15 @@ import com.team.comma.common.dto.MessageResponse;
 import com.team.comma.spotify.playlist.domain.Playlist;
 import com.team.comma.spotify.playlist.domain.PlaylistTrack;
 import com.team.comma.spotify.playlist.dto.PlaylistRequest;
+import com.team.comma.spotify.playlist.dto.PlaylistResponse;
+import com.team.comma.spotify.playlist.dto.PlaylistUpdateRequest;
+import com.team.comma.spotify.playlist.exception.PlaylistException;
 import com.team.comma.spotify.playlist.repository.PlaylistRepository;
 import com.team.comma.spotify.playlist.repository.PlaylistTrackRepository;
+import com.team.comma.spotify.track.domain.Track;
+import com.team.comma.spotify.track.domain.TrackArtist;
+import com.team.comma.user.constant.UserRole;
+import com.team.comma.user.constant.UserType;
 import com.team.comma.user.domain.User;
 import com.team.comma.user.repository.UserRepository;
 import com.team.comma.util.jwt.support.JwtTokenProvider;
@@ -27,6 +35,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 public class PlaylistServiceTest {
+
     @InjectMocks
     private PlaylistService playlistService;
     @Mock
@@ -35,11 +44,7 @@ public class PlaylistServiceTest {
     private UserRepository userRepository;
 
     @Mock
-    private PlaylistRepository playlistRepository;
-    @Mock
     private JwtTokenProvider jwtTokenProvider;
-    @Mock
-    private UserRepository userRepository;
 
     private String userEmail = "email@naver.com";
     private long playlistId = 123L;
@@ -50,30 +55,30 @@ public class PlaylistServiceTest {
     public void 플레이리스트_조회() {
         // given
         final User user = User.builder()
-                .email(userEmail)
-                .type(UserType.GENERAL_USER)
-                .role(UserRole.USER)
-                .build();
+            .email(userEmail)
+            .type(UserType.GENERAL_USER)
+            .role(UserRole.USER)
+            .build();
         doReturn(user).when(userRepository).findByEmail(user.getEmail());
         doReturn(userEmail).when(jwtTokenProvider).getUserPk(token);
 
         final List<TrackArtist> artistList = Arrays.asList(
-                TrackArtist.builder().id(123L).build()
+            TrackArtist.builder().id(123L).build()
         );
 
         final Track track = Track.builder()
-                .id(123L)
-                .trackArtistList(artistList)
-                .build();
+            .id(123L)
+            .trackArtistList(artistList)
+            .build();
 
         final List<PlaylistTrack> playlistTrack = Arrays.asList(
-                PlaylistTrack.builder().track(track).trackAlarmFlag(true).build()
+            PlaylistTrack.builder().track(track).trackAlarmFlag(true).build()
         );
 
         doReturn(Arrays.asList(
-                Playlist.builder().id(1L).alarmFlag(true).playlistTrackList(playlistTrack).build(),
-                Playlist.builder().id(2L).alarmFlag(true).playlistTrackList(playlistTrack).build(),
-                Playlist.builder().id(3L).alarmFlag(true).playlistTrackList(playlistTrack).build()
+            Playlist.builder().id(1L).alarmFlag(true).playlistTrackList(playlistTrack).build(),
+            Playlist.builder().id(2L).alarmFlag(true).playlistTrackList(playlistTrack).build(),
+            Playlist.builder().id(3L).alarmFlag(true).playlistTrackList(playlistTrack).build()
         )).when(playlistRepository).findAllByUser(user);
 
         // when
@@ -88,7 +93,8 @@ public class PlaylistServiceTest {
         // given
 
         // when
-        final PlaylistException result = assertThrows(PlaylistException.class, () -> playlistService.updateAlarmFlag(playlistId, flag));
+        final PlaylistException result = assertThrows(PlaylistException.class,
+            () -> playlistService.updateAlarmFlag(playlistId, flag));
 
         // then
         assertThat(result.getMessage()).isEqualTo("알람 설정 변경에 실패했습니다. 플레이리스트를 찾을 수 없습니다.");
@@ -98,13 +104,13 @@ public class PlaylistServiceTest {
     public void 플레이리스트_알림설정변경_성공() {
         // given
         doReturn(Optional.of(Playlist.builder()
-                .id(playlistId)
-                .alarmFlag(false)
-                .build()
+            .id(playlistId)
+            .alarmFlag(false)
+            .build()
         )).when(playlistRepository).findById(playlistId);
 
         // when
-        final MessageResponse result = playlistService.updateAlarmFlag(playlistId,flag);
+        final MessageResponse result = playlistService.updateAlarmFlag(playlistId, flag);
 
         // then
         assertThat(result.getCode()).isEqualTo(2);
@@ -133,7 +139,7 @@ public class PlaylistServiceTest {
         //given
         String accessToken = "accessToken";
 
-        PlaylistRequest playlistRequest = PlaylistRequest.builder()
+        PlaylistUpdateRequest playlistRequest = PlaylistUpdateRequest.builder()
             .playlistTitle("플리제목")
             .alarmStartTime(LocalTime.now())
             .build();
@@ -163,7 +169,7 @@ public class PlaylistServiceTest {
     @Test
     void 플리를_PlaylistRequest로_수정하고_MessageResponse를_반환한다() {
         //given
-        PlaylistRequest playlistRequest = PlaylistRequest.builder()
+        PlaylistUpdateRequest playlistRequest = PlaylistUpdateRequest.builder()
             .id(1L)
             .playlistTitle("플리제목수정")
             .alarmStartTime(LocalTime.now())

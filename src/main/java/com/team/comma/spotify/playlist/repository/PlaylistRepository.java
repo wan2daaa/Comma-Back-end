@@ -16,7 +16,7 @@ public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
 
     @Modifying
     @Query("update Playlist p set p.alarmFlag = :alarmFlag where p.id = :id")
-    int updateAlarmFlag(long id, boolean alarmFlag);
+    int updateAlarmFlag(@Param("id") long id, @Param("alarmFlag") boolean alarmFlag);
 
     @Query("SELECT COALESCE(SUM(t.durationTimeMs),0) FROM Playlist p "
         + "JOIN p.playlistTrackList pt "

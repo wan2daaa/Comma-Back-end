@@ -1,6 +1,7 @@
 package com.team.comma.spotify.playlist.domain;
 
 import com.team.comma.spotify.playlist.dto.PlaylistRequest;
+import com.team.comma.spotify.playlist.dto.PlaylistUpdateRequest;
 import com.team.comma.spotify.track.domain.Track;
 import com.team.comma.user.domain.User;
 import jakarta.persistence.*;
@@ -60,9 +61,9 @@ public class Playlist {
         playlistTrackList.add(playlistTrack);
     }
 
-    public void updatePlaylist(PlaylistRequest playlistRequest) {
-        this.playlistTitle = playlistRequest.getPlaylistTitle();
-        this.alarmStartTime = playlistRequest.getAlarmStartTime();
-        this.listSequence = playlistRequest.getListSequence();
+    public void updatePlaylist(PlaylistUpdateRequest playlistUpdateRequest) {
+        this.playlistTitle = playlistUpdateRequest.getPlaylistTitle();
+        this.alarmStartTime = playlistUpdateRequest.getAlarmStartTime();
+        this.listSequence = playlistUpdateRequest.getListSequence();
     }
 }
