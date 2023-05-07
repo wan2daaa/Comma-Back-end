@@ -24,3 +24,5 @@
 * link:spotifyHistory.html[History 문서]
 
 * link:playlist.html[Playlist 문서]
+
+* link:playlist-track.html[Playlist-Track 문서]

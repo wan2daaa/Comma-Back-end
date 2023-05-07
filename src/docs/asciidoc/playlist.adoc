@@ -50,49 +50,10 @@ include::{snippets}/spotify/selectPlaylistTotalDurationTime/response-fields.adoc
 
 === 플레이리스트 총재생시간 리턴 실패 (타입 에러)
 
-==== Request
-
-include::{snippets}/spotify/selectPlaylistTotalDurationTimeFail/http-request.adoc[]
-
 
 ==== Response
 
 include::{snippets}/spotify/selectPlaylistTotalDurationTimeFail/http-response.adoc[]
-
-=== 플레이리스트의 트랙 삭제 API
-
-==== Request
-
-include::{snippets}/spotify/deletePlaylistTrack/http-request.adoc[]
-include::{snippets}/spotify/deletePlaylistTrack/request-fields.adoc[]
-
-==== Response
-
-include::{snippets}/spotify/deletePlaylistTrack/http-response.adoc[]
-include::{snippets}/spotify/deletePlaylistTrack/response-fields.adoc[]
-
-=== 플레이리스트의 트랙 삭제 실패 (존재하지 않는 트랙)
-
-==== Request
-
-include::{snippets}/spotify/deletePlaylistTrackFail/http-request.adoc[]
-
-==== Response
-
-include::{snippets}/spotify/deletePlaylistTrackFail/http-response.adoc[]
-
-
-=== 플레이리스트 저장 API
-
-==== Request
-
-include::{snippets}/spotify/createPlaylist/http-request.adoc[]
-include::{snippets}/spotify/createPlaylist/request-fields.adoc[]
-
-==== Response
-
-include::{snippets}/spotify/createPlaylist/http-response.adoc[]
-include::{snippets}/spotify/createPlaylist/response-fields.adoc[]
 
 === 플레이리스트 수정 성공
 
@@ -108,10 +69,6 @@ include::{snippets}/spotify/updatePlaylist/http-response.adoc[]
 include::{snippets}/spotify/updatePlaylist/response-fields.adoc[]
 
 === 플레이리스트 수정 실패
-
-==== Request
-
-include::{snippets}/spotify/updatePlaylistFail/http-request.adoc[]
 
 ==== Response
 
