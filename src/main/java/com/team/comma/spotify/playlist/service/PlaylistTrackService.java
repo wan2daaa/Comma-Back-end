@@ -29,7 +29,7 @@ public class PlaylistTrackService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
 
-    public MessageResponse disconnectPlaylistAndTrack(Set<Long> trackIdList, Long playlistId) {
+    public MessageResponse removePlaylistAndTrack(Set<Long> trackIdList, Long playlistId) {
         int deleteCount = 0;
 
         for (Long trackId : trackIdList) {
