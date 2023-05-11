@@ -85,14 +85,14 @@ class PlaylistControllerTest {
 
         doReturn(Arrays.asList(
                 PlaylistResponse.of(createPlaylist(), trackList)
-        )).when(playlistService).getPlaylist("accessToken");
+        )).when(playlistService).getPlaylists("accessToken");
 
         // when
         final ResultActions resultActions = mockMvc.perform(
                 RestDocumentationRequestBuilders.get(url)
                         .cookie(new Cookie("accessToken","accessToken"))
                         .contentType(MediaType.APPLICATION_JSON));
-        final List<PlaylistResponse> result = playlistService.getPlaylist("accessToken");
+        final List<PlaylistResponse> result = playlistService.getPlaylists("accessToken");
 
         // then
         resultActions.andExpect(status().isOk()).andDo(

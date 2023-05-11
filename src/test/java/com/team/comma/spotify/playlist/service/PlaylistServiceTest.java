@@ -9,6 +9,7 @@ import com.team.comma.spotify.playlist.Exception.PlaylistException;
 import com.team.comma.spotify.playlist.domain.Playlist;
 import com.team.comma.spotify.playlist.domain.PlaylistTrack;
 import com.team.comma.spotify.playlist.dto.PlaylistResponse;
+import com.team.comma.spotify.playlist.dto.PlaylistTrackArtistResponse;
 import com.team.comma.spotify.playlist.repository.PlaylistRepository;
 import java.util.Arrays;
 import java.util.List;
@@ -16,12 +17,12 @@ import java.util.Optional;
 
 import com.team.comma.spotify.track.domain.Track;
 import com.team.comma.spotify.track.domain.TrackArtist;
+import com.team.comma.spotify.track.service.TrackService;
 import com.team.comma.user.constant.UserRole;
 import com.team.comma.user.constant.UserType;
 import com.team.comma.user.domain.User;
 import com.team.comma.user.repository.UserRepository;
 import com.team.comma.util.jwt.support.JwtTokenProvider;
-import com.team.comma.util.security.domain.Token;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -33,10 +34,11 @@ public class PlaylistServiceTest {
     @InjectMocks
     private PlaylistService playlistService;
     @Mock
+    private TrackService trackService;
+    @Mock
     private PlaylistRepository playlistRepository;
     @Mock
     private UserRepository userRepository;
-
     @Mock
     private JwtTokenProvider jwtTokenProvider;
 
@@ -48,35 +50,20 @@ public class PlaylistServiceTest {
     @Test
     public void 플레이리스트_조회() {
         // given
-        final User user = User.builder()
-                .email(userEmail)
-                .type(UserType.GENERAL_USER)
-                .role(UserRole.USER)
-                .build();
-        doReturn(user).when(userRepository).findByEmail(user.getEmail());
+        final User user = User.builder().email(userEmail).build();
+        final Playlist playlist = getPlaylistWithAlarmFlag(Arrays.asList(
+                getPlaylistTrackWithAlarmFlag(getTrack(Arrays.asList(getTrackArtist())),true)),true);
+        final List<Playlist> playlists = Arrays.asList(playlist, playlist, playlist);
+
         doReturn(userEmail).when(jwtTokenProvider).getUserPk(token);
-
-        final List<TrackArtist> artistList = Arrays.asList(
-                TrackArtist.builder().id(123L).build()
-        );
-
-        final Track track = Track.builder()
-                .id(123L)
-                .trackArtistList(artistList)
-                .build();
-
-        final List<PlaylistTrack> playlistTrack = Arrays.asList(
-                PlaylistTrack.builder().track(track).trackAlarmFlag(true).build()
-        );
-
+        doReturn(user).when(userRepository).findByEmail(userEmail);
+        doReturn(playlists).when(playlistRepository).findAllByUser(user);
         doReturn(Arrays.asList(
-                Playlist.builder().id(1L).alarmFlag(true).playlistTrackList(playlistTrack).build(),
-                Playlist.builder().id(2L).alarmFlag(true).playlistTrackList(playlistTrack).build(),
-                Playlist.builder().id(3L).alarmFlag(true).playlistTrackList(playlistTrack).build()
-        )).when(playlistRepository).findAllByUser(user);
+                PlaylistTrackArtistResponse.of(getTrackArtist())
+        )).when(trackService).getTrackArtistResponseList(any());
 
         // when
-        final List<PlaylistResponse> result = playlistService.getPlaylist(token);
+        final List<PlaylistResponse> result = playlistService.getPlaylists(token);
 
         // then
         assertThat(result.size()).isEqualTo(3);
@@ -110,4 +97,32 @@ public class PlaylistServiceTest {
         assertThat(result.getMessage()).isEqualTo("알람 설정이 변경되었습니다.");
     }
 
+    public Playlist getPlaylistWithAlarmFlag(List<PlaylistTrack> playlistTrackList, boolean alarmFlag) {
+        return Playlist.builder()
+                .id(123L)
+                .alarmFlag(alarmFlag)
+                .playlistTrackList(playlistTrackList)
+                .build();
+    }
+
+    public PlaylistTrack getPlaylistTrackWithAlarmFlag(Track track, boolean trackAlarmFlag) {
+        return PlaylistTrack.builder()
+                .trackAlarmFlag(trackAlarmFlag)
+                .track(track)
+                .build();
+    }
+
+    public Track getTrack(List<TrackArtist> trackArtistList) {
+        return Track.builder()
+                .id(123L)
+                .trackArtistList(trackArtistList)
+                .build();
+    }
+
+    public TrackArtist getTrackArtist(){
+        return TrackArtist.builder()
+                .id(123L)
+                .artistName("test artist")
+                .build();
+    }
 }

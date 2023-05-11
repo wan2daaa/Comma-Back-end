@@ -20,7 +20,7 @@ public class PlaylistController {
     @GetMapping("/playlist")
     public ResponseEntity<List<PlaylistResponse>> getUserPlaylist(
             @CookieValue final String accessToken) {
-        return ResponseEntity.ok().body(playlistService.getPlaylist(accessToken));
+        return ResponseEntity.ok().body(playlistService.getPlaylists(accessToken));
     }
 
     @PatchMapping("/playlist/alert")
