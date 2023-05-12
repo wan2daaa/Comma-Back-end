@@ -17,22 +17,22 @@ public class HistoryController {
 
     private final HistoryService historyService;
 
-    @GetMapping("/history")
+    @GetMapping("/histories")
     public ResponseEntity<MessageResponse> getHistoryListByToken(@CookieValue("accessToken") String token) throws AccountException {
         return ResponseEntity.ok().body(historyService.getHistoryList(token));
     }
 
-    @DeleteMapping("/history/{id}")
+    @DeleteMapping("/histories/{id}")
     public ResponseEntity<MessageResponse> deleteUserHistory(@PathVariable long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(historyService.deleteHistory(id));
+        return ResponseEntity.ok().body(historyService.deleteHistory(id));
     }
 
-    @DeleteMapping("/all-history")
+    @DeleteMapping("/all-histories")
     public ResponseEntity<MessageResponse> deleteUserAllHistory(@CookieValue("accessToken") String token) throws AccountException {
-        return ResponseEntity.status(HttpStatus.OK).body(historyService.deleteAllHistory(token));
+        return ResponseEntity.ok().body(historyService.deleteAllHistory(token));
     }
 
-    @PostMapping("/history")
+    @PostMapping("/histories")
     public ResponseEntity<MessageResponse> addHistory(@RequestBody HistoryRequest historyRequest
             , @CookieValue("accessToken") String token) throws AccountException {
         return ResponseEntity.status(HttpStatus.CREATED).body(historyService.addHistory(historyRequest , token));

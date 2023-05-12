@@ -1,5 +1,7 @@
 server:
   port: 8080
+client:
+  url: http://localhost:3000
 
 #logging
 logging:
@@ -13,3 +15,17 @@ logging:
 spring:
   profiles:
     include: oauth
+  servlet:
+    multipart:
+      max-request-size: 1MB
+      max-file-size: 1MB
+
+cloud:
+  aws:
+    s3:
+      bucket: comma-bucket
+    stack.auto: false
+    region.static: ap-northeast-2
+    credentials:
+      accessKey: AKIA375CYUSRFNOT3HHO
+      secretKey: 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

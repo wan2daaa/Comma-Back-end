@@ -57,3 +57,65 @@ include::{snippets}/spotify/searchArtistByYear/query-parameters.adoc[]
 
 include::{snippets}/spotify/searchArtistByYear/http-response.adoc[]
 include::{snippets}/spotify/searchArtistByYear/response-fields.adoc[]
+
+=== 추천 알고리즘 가져오기
+
+==== Request
+
+include::{snippets}/spotify/recommend/success/http-request.adoc[]
+include::{snippets}/spotify/recommend/success/request-cookies.adoc[]
+
+==== Response
+
+include::{snippets}/spotify/recommend/success/http-response.adoc[]
+include::{snippets}/spotify/recommend/success/response-fields.adoc[]
+
+=== 추천 알고리즘 가져오기 실패 _ 사용자 관심 아티스트 찾을 수 없음
+
+==== Request
+
+include::{snippets}/spotify/recommend/notFountFavoriteArtist/http-request.adoc[]
+include::{snippets}/spotify/recommend/notFountFavoriteArtist/request-cookies.adoc[]
+
+==== Response
+
+include::{snippets}/spotify/recommend/notFountFavoriteArtist/http-response.adoc[]
+include::{snippets}/spotify/recommend/notFountFavoriteArtist/response-fields.adoc[]
+
+=== 추천 알고리즘 가져오기 실패 _ 사용자 관심 장르 찾을 수 없음
+
+==== Request
+
+include::{snippets}/spotify/recommend/notFountFavoriteGenre/http-request.adoc[]
+include::{snippets}/spotify/recommend/notFountFavoriteGenre/request-cookies.adoc[]
+
+==== Response
+
+include::{snippets}/spotify/recommend/notFountFavoriteGenre/http-response.adoc[]
+include::{snippets}/spotify/recommend/notFountFavoriteGenre/response-fields.adoc[]
+
+=== 추천 알고리즘 가져오기 실패 _ 찾을 수 없는 사용자
+
+==== Request
+
+include::{snippets}/spotify/recommend/userNotExist/http-request.adoc[]
+include::{snippets}/spotify/recommend/userNotExist/request-cookies.adoc[]
+
+==== Response
+
+include::{snippets}/spotify/recommend/userNotExist/http-response.adoc[]
+include::{snippets}/spotify/recommend/userNotExist/response-fields.adoc[]
+
+=== 유저 탐색
+
+==== Request
+
+include::{snippets}/user/searchUser/http-request.adoc[]
+include::{snippets}/user/searchUser/query-parameters.adoc[]
+include::{snippets}/user/searchUser/request-cookies.adoc[]
+
+==== Resposne
+
+include::{snippets}/user/searchUser/http-response.adoc[]
+include::{snippets}/user/searchUser/response-fields.adoc[]
+

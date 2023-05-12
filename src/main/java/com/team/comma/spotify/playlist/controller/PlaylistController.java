@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.security.auth.login.AccountException;
 import java.util.List;
 
 @RestController
@@ -19,7 +20,7 @@ public class PlaylistController {
 
     @GetMapping("/playlist")
     public ResponseEntity<List<PlaylistResponse>> getUserPlaylist(
-            @CookieValue final String accessToken) {
+            @CookieValue final String accessToken) throws AccountException {
         return ResponseEntity.ok().body(playlistService.getPlaylists(accessToken));
     }
 

@@ -1,17 +1,18 @@
 package com.team.comma.util.security.repository;
 
-import static org.assertj.core.api.Assertions.*;
-
+import com.team.comma.util.config.TestConfig;
 import com.team.comma.util.security.domain.RefreshToken;
-import com.team.comma.util.security.repository.RefreshTokenRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
+@Import(TestConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 // EmbeddedDatabase 가 아닌 Mysql 에 테스트 사용됨
 public class RefreshTokenRepositoryTest {

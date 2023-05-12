@@ -3,19 +3,21 @@ package com.team.comma.util.auth.support;
 import com.team.comma.user.constant.UserRole;
 import com.team.comma.util.security.domain.Token;
 import com.team.comma.user.dto.UserSession;
-import com.team.comma.util.jwt.support.CreationCookie;
 import com.team.comma.util.jwt.support.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+
+import static com.team.comma.util.jwt.support.CreationCookie.*;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -25,26 +27,28 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     final private JwtTokenProvider jwtTokenProvider;
     final private HttpSession httpSession;
 
+    @Value("${client.url}")
+    private String clientUrl;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
         Authentication authentication) throws IOException {
         UserSession user = (UserSession) httpSession.getAttribute("user");
 
-        if (user == null) { // 이메일이 없을 때
+        if (user == null) {
             getRedirectStrategy().sendRedirect(request, response,
-                createRedirectUrl("http://43.201.188.96:3000/oauth2/disallowance"));
+                createRedirectUrl(clientUrl + "/oauth2/disallowance"));
             return;
         }
 
         Token token = jwtTokenProvider.createAccessToken(user.getEmail(), UserRole.USER);
 
-        response.addCookie(CreationCookie.createAccessToken(token.getAccessToken()));
-        response.addCookie(CreationCookie.createRefreshToken(token.getRefreshToken()));
+        response.addHeader("Set-Cookie" , createResponseAccessToken(token.getAccessToken()).toString());
+        response.addHeader("Set-Cookie" , createResponseRefreshToken(token.getRefreshToken()).toString());
 
-        httpSession.removeAttribute("user"); // 세션 삭제
+        httpSession.removeAttribute("user");
 
-        getRedirectStrategy().sendRedirect(request, response,
-            createRedirectUrl("http://43.201.188.96:3000"));
+        getRedirectStrategy().sendRedirect(request, response, createRedirectUrl(clientUrl));
     }
 
     public String createRedirectUrl(String url) {

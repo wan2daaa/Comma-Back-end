@@ -2,7 +2,6 @@ package com.team.comma.util.exception.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team.comma.common.dto.MessageResponse;
-import com.team.comma.common.constant.ResponseCode;
 import com.team.comma.util.jwt.exception.TokenForgeryException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -15,6 +14,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+import static com.team.comma.common.constant.ResponseCodeEnum.AUTHORIZATION_ERROR;
+
 @Component
 public class ExceptionHandlerFilter extends OncePerRequestFilter {
 
@@ -26,7 +27,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
         } catch (TokenForgeryException e) {
-            setErrorResponse(response, ResponseCode.AUTHORIZATION_ERROR, e.getMessage());
+            setErrorResponse(response, AUTHORIZATION_ERROR.getCode() , e.getMessage());
         }
     }
 

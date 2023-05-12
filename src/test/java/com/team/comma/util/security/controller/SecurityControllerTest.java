@@ -28,7 +28,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.nio.charset.StandardCharsets;
 
-import static com.team.comma.common.constant.ResponseCode.*;
+import static com.team.comma.common.constant.ResponseCodeEnum.*;
 import static org.apache.http.cookie.SM.SET_COOKIE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
@@ -89,7 +89,7 @@ public class SecurityControllerTest {
             resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
             MessageResponse.class);
 
-        assertThat(messageDTO.getCode()).isEqualTo(AUTHORIZATION_ERROR);
+        assertThat(messageDTO.getCode()).isEqualTo(AUTHENTICATION_ERROR.getCode());
         assertThat(messageDTO.getMessage()).isEqualTo("인증되지 않은 사용자입니다.");
     }
 
@@ -123,7 +123,7 @@ public class SecurityControllerTest {
             resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
             MessageResponse.class);
 
-        assertThat(messageResponse.getCode()).isEqualTo(AUTHORIZATION_ERROR);
+        assertThat(messageResponse.getCode()).isEqualTo(AUTHORIZATION_ERROR.getCode());
         assertThat(messageResponse.getMessage()).isEqualTo("변조되거나, 알 수 없는 RefreshToken 입니다.");
     }
 
@@ -136,7 +136,7 @@ public class SecurityControllerTest {
             .build();
         doReturn(
             ResponseEntity.status(HttpStatus.OK).header(SET_COOKIE, responseCookieData.toString())
-                .body(MessageResponse.of(ACCESS_TOKEN_CREATE, "AccessToken이 재발급되었습니다.")))
+                .body(MessageResponse.of(ACCESS_TOKEN_CREATE)))
             .when(jwtService).validateRefreshToken("token");
         Cookie cookie = new Cookie("refreshToken", "token");
 
@@ -166,7 +166,7 @@ public class SecurityControllerTest {
             resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
             MessageResponse.class);
 
-        assertThat(messageResponse.getCode()).isEqualTo(ACCESS_TOKEN_CREATE);
+        assertThat(messageResponse.getCode()).isEqualTo(ACCESS_TOKEN_CREATE.getCode());
         assertThat(messageResponse.getMessage()).isEqualTo("AccessToken이 재발급되었습니다.");
         String token = resultActions.andReturn().getResponse().getCookie("accessToken").toString();
 
@@ -198,7 +198,7 @@ public class SecurityControllerTest {
             resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
             MessageResponse.class);
 
-        assertThat(result.getCode()).isEqualTo(AUTHORIZATION_ERROR);
+        assertThat(result.getCode()).isEqualTo(AUTHORIZATION_ERROR.getCode());
         assertThat(result.getMessage()).isEqualTo("인가되지 않은 사용자입니다.");
     }
 
@@ -225,7 +225,7 @@ public class SecurityControllerTest {
             resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
             MessageResponse.class);
 
-        assertThat(result.getCode()).isEqualTo(LOGOUT_SUCCESS);
+        assertThat(result.getCode()).isEqualTo(LOGOUT_SUCCESS.getCode());
         assertThat(result.getMessage()).isEqualTo("로그아웃이 성공적으로 되었습니다.");
     }
 
