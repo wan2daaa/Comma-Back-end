@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import se.michaelthelin.spotify.model_objects.specification.ArtistSimplified;
+import se.michaelthelin.spotify.model_objects.specification.Image;
 import se.michaelthelin.spotify.model_objects.specification.Track;
 
 @Builder
@@ -16,26 +16,35 @@ import se.michaelthelin.spotify.model_objects.specification.Track;
 public class TrackResponse {
 
     @Schema(description = "곡 ID")
-    private String id;
+    private String trackId;
     @Schema(description = "곡 제목")
-    private String name;
-    @Schema(description = "Spotify uri 에서 Track의 주소")
-    private String uri;
+    private String trackName;
     @Schema(description = "가수 명")
-    private ArtistSimplified[] artists;
+    private String artist;
+    @Schema(description = "가수 ID")
+    private String artistId;
+    @Schema(description = "앨범 ID")
+    private String albumId;
     @Schema(description = "1분 미리 듣기 주소")
     private String previewUrl;
-    @Schema(description = "트랙의 재생 주소 ( 토큰 필요 ) ")
-    private String href;
+    @Schema(description = "트랙 이미지")
+    private Image[] images;
+    @Schema(description = "인기도")
+    private int popularity;
+    @Schema(description = "발매일")
+    private String releaseData;
 
     public static TrackResponse createTrackResponse(Track track) {
         return TrackResponse.builder()
-                .id(track.getId())
-                .name(track.getName())
-                .uri(track.getUri())
-                .artists(track.getArtists())
+                .trackId(track.getId())
+                .images(track.getAlbum().getImages())
+                .trackName(track.getName())
+                .artist(track.getArtists()[0].getName())
+                .artistId(track.getArtists()[0].getId())
+                .albumId(track.getAlbum().getId())
                 .previewUrl(track.getPreviewUrl())
-                .href(track.getHref())
+                .popularity(track.getPopularity())
+                .releaseData(track.getAlbum().getReleaseDate())
                 .build();
     }
 }

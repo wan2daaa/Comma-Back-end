@@ -1,12 +1,12 @@
 package com.team.comma.util.jwt.service;
 
+import com.team.comma.common.dto.MessageResponse;
+import com.team.comma.spotify.search.exception.TokenExpirationException;
+import com.team.comma.util.jwt.exception.TokenForgeryException;
+import com.team.comma.util.jwt.support.JwtTokenProvider;
 import com.team.comma.util.security.domain.RefreshToken;
 import com.team.comma.util.security.domain.Token;
-import com.team.comma.common.dto.MessageResponse;
-import com.team.comma.util.jwt.exception.TokenForgeryException;
-import com.team.comma.spotify.search.exception.TokenExpirationException;
 import com.team.comma.util.security.repository.RefreshTokenRepository;
-import com.team.comma.util.jwt.support.JwtTokenProvider;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static com.team.comma.common.constant.ResponseCode.ACCESS_TOKEN_CREATE;
+import static com.team.comma.common.constant.ResponseCodeEnum.ACCESS_TOKEN_CREATE;
 import static org.apache.http.cookie.SM.SET_COOKIE;
 
 @Service
@@ -73,7 +73,7 @@ public class JwtService {
             .build();
 
         return ResponseEntity.status(HttpStatus.OK).header(SET_COOKIE, cookie.toString())
-            .body(MessageResponse.of(ACCESS_TOKEN_CREATE, "AccessToken이 재발급되었습니다."));
+            .body(MessageResponse.of(ACCESS_TOKEN_CREATE));
     }
 
     public JwtService() {

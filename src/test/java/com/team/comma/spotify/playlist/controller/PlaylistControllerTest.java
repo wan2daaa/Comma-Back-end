@@ -107,16 +107,15 @@ class PlaylistControllerTest {
             PlaylistTrackResponse.of(createTrack(), true, trackArtistList));
 
         doReturn(Arrays.asList(
-            PlaylistResponse.of(createPlaylist(), trackList)
-        )).when(playlistService).getPlaylist("accessToken");
+                PlaylistResponse.of(createPlaylist(), trackList)
+        )).when(playlistService).getPlaylists("accessToken");
 
         // when
         final ResultActions resultActions = mockMvc.perform(
                 RestDocumentationRequestBuilders.get(url)
-                    .cookie(new Cookie("accessToken", "accessToken"))
-                    .contentType(MediaType.APPLICATION_JSON))
-            .andDo(print());
-        final List<PlaylistResponse> result = playlistService.getPlaylist("accessToken");
+                        .cookie(new Cookie("accessToken","accessToken"))
+                        .contentType(MediaType.APPLICATION_JSON));
+        final List<PlaylistResponse> result = playlistService.getPlaylists("accessToken");
 
         // then
         resultActions.andExpect(status().isOk()).andDo(
@@ -355,5 +354,4 @@ class PlaylistControllerTest {
             .alarmStartTime(LocalTime.now())
             .build();
     }
-
 }

@@ -13,13 +13,18 @@ import com.team.comma.user.domain.User;
 import com.team.comma.user.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
+import com.team.comma.util.config.TestConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
+@Import(TestConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class PlaylistTrackRepositoryTest {
 

@@ -1,5 +1,8 @@
 package com.team.comma.common.dto;
 
+import com.team.comma.common.constant.ResponseCodeEnum;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public final class MessageResponse<D> {
 
     final private int code;
@@ -14,6 +17,14 @@ public final class MessageResponse<D> {
 
     public static <D> MessageResponse of(int code, String message, D data) {
         return new MessageResponse(code, message, data);
+    }
+
+    public static <D> MessageResponse of(ResponseCodeEnum responseCodeEnum , D data) {
+        return new MessageResponse(responseCodeEnum.getCode() , responseCodeEnum.getMessage(), data);
+    }
+
+    public static <D> MessageResponse of(ResponseCodeEnum responseCodeEnum) {
+        return new MessageResponse(responseCodeEnum.getCode() , responseCodeEnum.getMessage(), null);
     }
 
     public static <D> MessageResponse of(int code, String message) {

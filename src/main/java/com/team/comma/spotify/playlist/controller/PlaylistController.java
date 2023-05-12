@@ -10,6 +10,10 @@ import com.team.comma.spotify.playlist.service.PlaylistTrackService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.security.auth.login.AccountException;
+import java.util.List;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -27,15 +31,14 @@ public class PlaylistController {
 
     @GetMapping("/userPlaylist")
     public ResponseEntity<List<PlaylistResponse>> getUserPlaylist(
-        @CookieValue final String accessToken) {
-        return ResponseEntity.ok().body(playlistService.getPlaylist(accessToken));
+            @CookieValue final String accessToken) throws AccountException {
+        return ResponseEntity.ok().body(playlistService.getPlaylists(accessToken));
     }
 
     @PatchMapping("/playlist/alert")
     public ResponseEntity<MessageResponse> modifyAlarmState(
-        @RequestBody final PlaylistRequest request) throws PlaylistException {
-        return ResponseEntity.ok()
-            .body(playlistService.updateAlarmFlag(request.getPlaylistId(), request.isAlarmFlag()));
+            @RequestBody final PlaylistRequest request) throws PlaylistException {
+        return ResponseEntity.ok().body(playlistService.updateAlarmFlag(request.getPlaylistId(), request.isAlarmFlag()));
     }
 
     @GetMapping("/playlist/all-duration-time/{id}")

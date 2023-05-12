@@ -1,5 +1,6 @@
 package com.team.comma.user.domain;
 
+import com.team.comma.user.dto.UserDetailRequest;
 import com.team.comma.util.converter.BooleanConverter;
 import jakarta.persistence.*;
 import lombok.*;
@@ -29,7 +30,10 @@ public class UserDetail {
     @Column(length = 10)
     private LocalTime recommendTime;
 
-    @Column(length = 10)
+    @Column(length = 45)
+    private String name;
+
+    @Column(length = 45)
     private String nickname;
 
     @Column(length = 50)
@@ -49,6 +53,16 @@ public class UserDetail {
     @Builder.Default
     @Convert(converter = BooleanConverter.class)
     private Boolean allPublicFlag = true;
+
+    public static UserDetail createUserDetail(UserDetailRequest userDetailRequest) {
+        return UserDetail.builder()
+                .age(userDetailRequest.getAge())
+                .sex(userDetailRequest.getSex())
+                .nickname(userDetailRequest.getNickName())
+                .recommendTime(userDetailRequest.getRecommendTime())
+                .build();
+    }
+
 }
 
 

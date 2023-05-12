@@ -28,6 +28,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.security.auth.login.AccountException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doReturn;
+
 @ExtendWith(MockitoExtension.class)
 public class PlaylistServiceTest {
 
@@ -47,37 +56,39 @@ public class PlaylistServiceTest {
     private String token = "accessToken";
 
     @Test
-    public void 플레이리스트_조회() {
+    public void 플레이리스트_조회() throws AccountException {
         // given
         final User user = User.builder()
-            .email(userEmail)
-            .type(UserType.GENERAL_USER)
-            .role(UserRole.USER)
-            .build();
-        doReturn(user).when(userRepository).findByEmail(user.getEmail());
+                .email(userEmail)
+                .type(UserType.GENERAL_USER)
+                .role(UserRole.USER)
+                .build();
+
+        Optional<User> optionalUser = Optional.of(user);
+        doReturn(optionalUser).when(userRepository).findByEmail(user.getEmail());
         doReturn(userEmail).when(jwtTokenProvider).getUserPk(token);
 
         final List<TrackArtist> artistList = Arrays.asList(
-            TrackArtist.builder().id(123L).build()
+                TrackArtist.builder().id(123L).build()
         );
 
         final Track track = Track.builder()
-            .id(123L)
-            .trackArtistList(artistList)
-            .build();
+                .id(123L)
+                .trackArtistList(artistList)
+                .build();
 
         final List<PlaylistTrack> playlistTrack = Arrays.asList(
-            PlaylistTrack.builder().track(track).trackAlarmFlag(true).build()
+                PlaylistTrack.builder().track(track).trackAlarmFlag(true).build()
         );
 
         doReturn(Arrays.asList(
-            Playlist.builder().id(1L).alarmFlag(true).playlistTrackList(playlistTrack).build(),
-            Playlist.builder().id(2L).alarmFlag(true).playlistTrackList(playlistTrack).build(),
-            Playlist.builder().id(3L).alarmFlag(true).playlistTrackList(playlistTrack).build()
+                Playlist.builder().id(1L).alarmFlag(true).playlistTrackList(playlistTrack).build(),
+                Playlist.builder().id(2L).alarmFlag(true).playlistTrackList(playlistTrack).build(),
+                Playlist.builder().id(3L).alarmFlag(true).playlistTrackList(playlistTrack).build()
         )).when(playlistRepository).findAllByUser(user);
 
         // when
-        final List<PlaylistResponse> result = playlistService.getPlaylist(token);
+        final List<PlaylistResponse> result = playlistService.getPlaylists(token);
 
         // then
         assertThat(result.size()).isEqualTo(3);

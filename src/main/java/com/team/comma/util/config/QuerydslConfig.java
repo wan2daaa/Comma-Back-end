@@ -1,4 +1,4 @@
-package com.team.comma.util.querydsl;
+package com.team.comma.util.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;

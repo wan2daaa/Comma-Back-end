@@ -17,29 +17,23 @@ import se.michaelthelin.spotify.model_objects.specification.Image;
 public class ArtistResponse {
 
     @Schema(description = "아티스트 ID")
-    private String id;
-    @Schema(description = "Spotify uri 에서 artist의 주소")
-    private String uri;
+    private String artistId;
     @Schema(description = "가수 명")
-    private String name;
-    @Schema(description = "spotify 가수 주소")
-    private String externalUrls;
-    @Schema(description = "장르")
+    private String artistName;
+    @Schema(description = "가수의 장르")
     private String[] genres;
     @Schema(description = "아티스트 이미지와 크기")
-    private Image[] image;
-    @Schema(description = "아티스트의 세부정보를 제공하는 Spotify api 정보")
-    private String href;
+    private Image[] images;
+    @Schema(description = "인기도")
+    private int popularity;
 
     public static ArtistResponse createArtistResponse(Artist artist) {
         return ArtistResponse.builder()
-                .id(artist.getId())
-                .uri(artist.getUri())
-                .name(artist.getName())
-                .externalUrls(artist.getExternalUrls().getExternalUrls().get("spotify"))
+                .artistId(artist.getId())
+                .artistName(artist.getName())
                 .genres(artist.getGenres())
-                .image(artist.getImages())
-                .href(artist.getHref())
+                .images(artist.getImages())
+                .popularity(artist.getPopularity())
                 .build();
     }
 }
