@@ -27,18 +27,17 @@ public class PlaylistController {
 
     private final PlaylistService playlistService;
 
-    private final PlaylistTrackService playlistTrackService;
-
     @GetMapping("/userPlaylist")
     public ResponseEntity<List<PlaylistResponse>> getUserPlaylist(
-            @CookieValue final String accessToken) throws AccountException {
+        @CookieValue final String accessToken) throws AccountException {
         return ResponseEntity.ok().body(playlistService.getPlaylists(accessToken));
     }
 
     @PatchMapping("/playlist/alert")
     public ResponseEntity<MessageResponse> modifyAlarmState(
-            @RequestBody final PlaylistRequest request) throws PlaylistException {
-        return ResponseEntity.ok().body(playlistService.updateAlarmFlag(request.getPlaylistId(), request.isAlarmFlag()));
+        @RequestBody final PlaylistRequest request) throws PlaylistException {
+        return ResponseEntity.ok()
+            .body(playlistService.updateAlarmFlag(request.getPlaylistId(), request.isAlarmFlag()));
     }
 
     @GetMapping("/playlist/all-duration-time/{id}")

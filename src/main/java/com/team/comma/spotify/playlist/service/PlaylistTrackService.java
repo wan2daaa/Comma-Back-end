@@ -1,6 +1,6 @@
 package com.team.comma.spotify.playlist.service;
 
-import static com.team.comma.common.constant.ResponseCodeTest.REQUEST_SUCCESS;
+import static com.team.comma.common.constant.ResponseCodeEnum.REQUEST_SUCCESS;
 
 import com.team.comma.common.dto.MessageResponse;
 import com.team.comma.spotify.playlist.domain.Playlist;
@@ -17,6 +17,7 @@ import jakarta.persistence.EntityNotFoundException;
 import java.util.Set;
 import javax.security.auth.login.AccountException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,8 +34,8 @@ public class PlaylistTrackService {
         int deleteCount = 0;
 
         for (Long trackId : trackIdList) {
-            playlistTrackRepository.findByTrackIdAndPlaylistId(trackId, playlistId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 트랙이 존재하지 않습니다."));
+            playlistTrackRepository.findByTrackIdAndPlaylistId(
+                trackId, playlistId);
 
             deleteCount += playlistTrackRepository.
                 deletePlaylistTrackByTrackIdAndPlaylistId(trackId, playlistId);
@@ -51,7 +52,8 @@ public class PlaylistTrackService {
         throws AccountException {
 
         String userEmail = jwtTokenProvider.getUserPk(accessToken);
-        User findUser = userRepository.findByEmail(userEmail);
+        User findUser = userRepository.findByEmail(userEmail)
+            .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
         if (findUser == null) {
             throw new AccountException("사용자를 찾을 수 없습니다.");

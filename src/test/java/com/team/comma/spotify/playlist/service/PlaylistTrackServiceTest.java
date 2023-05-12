@@ -1,8 +1,9 @@
 package com.team.comma.spotify.playlist.service;
 
-import static com.team.comma.common.constant.ResponseCodeTest.REQUEST_SUCCESS;
-import static org.assertj.core.api.Assertions.*;
+import static com.team.comma.common.constant.ResponseCodeEnum.REQUEST_SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
@@ -30,6 +31,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 /**
  * @author: wan2daaa
@@ -82,13 +84,16 @@ class PlaylistTrackServiceTest {
     @Test
     void 플리에_없는_트랙과의_관계를_끊을려고하면_에러_발생() {
         //given
+        long playlistId = 1L;
         doThrow(EntityNotFoundException.class)
             .when(playlistTrackRepository)
             .findByTrackIdAndPlaylistId(anyLong(), anyLong());
         //when //then
-        assertThatThrownBy(
-            () -> playlistTrackService.removePlaylistAndTrack(Set.of(1L, 2L, 3L), 1L))
-            .isInstanceOf(EntityNotFoundException.class);
+        assertThrows(EntityNotFoundException.class,
+            () -> {
+                playlistTrackService.removePlaylistAndTrack(Set.of(1L, 2L, 3L), playlistId);
+            });
+
     }
 
     @Test
@@ -109,7 +114,7 @@ class PlaylistTrackServiceTest {
         doReturn(userEmail)
             .when(jwtTokenProvider).getUserPk(accessToken);
 
-        doReturn(User.builder().email(userEmail).build())
+        doReturn(Optional.of(User.builder().email(userEmail).build()))
             .when(userRepository).findByEmail(userEmail);
 
         doReturn(Optional.of(1))
@@ -141,7 +146,6 @@ class PlaylistTrackServiceTest {
         final String userEmail = "test@email.com";
 
         User user = User.builder().email(userEmail).build();
-        userRepository.save(user);
 
         PlaylistTrackSaveRequestDto requestDto = PlaylistTrackSaveRequestDto.builder()
             .playlistTitle("플리 타이틀")
@@ -154,7 +158,7 @@ class PlaylistTrackServiceTest {
 
         doReturn(userEmail)
             .when(jwtTokenProvider).getUserPk(accessToken);
-        doReturn(user)
+        doReturn(Optional.of(user))
             .when(userRepository).findByEmail(userEmail);
 
         //when
@@ -165,7 +169,7 @@ class PlaylistTrackServiceTest {
     }
 
     @Test
-    void 사용자가_존재하지않으면_AccountException() {
+    void 사용자가_존재하지않으면_UsernameNotFoundException() {
         //given
         final String accessToken = "accessToken";
 
@@ -175,12 +179,11 @@ class PlaylistTrackServiceTest {
             .listSequence(1)
             .trackIdList(List.of(1L, 2L, 3L))
             .build();
-        ;
 
         //when
         //then
         assertThatThrownBy(
             () -> playlistTrackService.savePlaylistTrackList(requestDto, accessToken))
-            .isInstanceOf(AccountException.class);
+            .isInstanceOf(UsernameNotFoundException.class);
     }
 }

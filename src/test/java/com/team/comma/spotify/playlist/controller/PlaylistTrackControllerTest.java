@@ -1,6 +1,6 @@
 package com.team.comma.spotify.playlist.controller;
 
-import static com.team.comma.common.constant.ResponseCodeTest.REQUEST_SUCCESS;
+import static com.team.comma.common.constant.ResponseCodeEnum.REQUEST_SUCCESS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anySet;

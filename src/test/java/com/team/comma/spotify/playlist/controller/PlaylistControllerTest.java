@@ -1,7 +1,7 @@
 package com.team.comma.spotify.playlist.controller;
 
 import static com.team.comma.common.constant.ResponseCode.PLAYLIST_ALARM_UPDATED;
-import static com.team.comma.common.constant.ResponseCodeTest.REQUEST_SUCCESS;
+import static com.team.comma.common.constant.ResponseCodeEnum.REQUEST_SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -96,7 +96,7 @@ class PlaylistControllerTest {
 
 
     @Test
-    public void 플레이리스트_조회_성공() throws Exception {
+    void 플레이리스트_조회_성공() throws Exception {
         // given
         final String url = "/userPlaylist";
 
@@ -107,14 +107,14 @@ class PlaylistControllerTest {
             PlaylistTrackResponse.of(createTrack(), true, trackArtistList));
 
         doReturn(Arrays.asList(
-                PlaylistResponse.of(createPlaylist(), trackList)
+            PlaylistResponse.of(createPlaylist(), trackList)
         )).when(playlistService).getPlaylists("accessToken");
 
         // when
         final ResultActions resultActions = mockMvc.perform(
-                RestDocumentationRequestBuilders.get(url)
-                        .cookie(new Cookie("accessToken","accessToken"))
-                        .contentType(MediaType.APPLICATION_JSON));
+            RestDocumentationRequestBuilders.get(url)
+                .cookie(new Cookie("accessToken", "accessToken"))
+                .contentType(MediaType.APPLICATION_JSON));
         final List<PlaylistResponse> result = playlistService.getPlaylists("accessToken");
 
         // then
@@ -143,11 +143,11 @@ class PlaylistControllerTest {
                 )
             )
         );
-        assertThat(result.size()).isEqualTo(1);
+        assertThat(result).hasSize(1);
     }
 
     @Test
-    public void 플레이리스트_알람설정변경_성공() throws Exception {
+    void 플레이리스트_알람설정변경_성공() throws Exception {
         // given
         final String url = "/playlist/alert";
         doReturn(MessageResponse.of(PLAYLIST_ALARM_UPDATED, "알람 설정이 변경되었습니다.")
