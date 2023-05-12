@@ -17,12 +17,15 @@ import java.io.IOException;
 @RequestMapping("/s3")
 @RequiredArgsConstructor
 public class FileUploadController {
-    final private FileUploadService fileUploadService;
+
+    private final FileUploadService fileUploadService;
 
     @PostMapping("/resources")
-    public ResponseEntity<MessageResponse> uploadFileToS3(@RequestParam("file") MultipartFile multipartFile)
-            throws IOException {
-        return ResponseEntity.status(HttpStatus.CREATED).body(fileUploadService.uploadFileToS3(multipartFile));
+    public ResponseEntity<MessageResponse> uploadFileToS3(
+        @RequestParam("file") MultipartFile multipartFile)
+        throws IOException {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(fileUploadService.uploadFileToS3(multipartFile));
     }
 
 }

@@ -24,8 +24,8 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
-    final private UserRepository userRepository;
-    final private HttpSession httpSession;
+    private final UserRepository userRepository;
+    private final HttpSession httpSession;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -34,16 +34,16 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
-                .getUserInfoEndpoint().getUserNameAttributeName();
+            .getUserInfoEndpoint().getUserNameAttributeName();
 
         OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName,
-                oAuth2User.getAttributes());
+            oAuth2User.getAttributes());
 
         User user = saveOrUpdateUser(attributes);
         httpSession.setAttribute("user", UserSession.of(user));
 
         return new DefaultOAuth2User(Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
-                attributes.getAttributes(), attributes.getNameAttributeKey());
+            attributes.getAttributes(), attributes.getNameAttributeKey());
     }
 
     public User saveOrUpdateUser(OAuthAttributes attributes) {
@@ -52,12 +52,12 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         }
 
         return userRepository.findByEmail(attributes.getEmail())
-                .orElseGet(() -> createAndSaveUser(attributes));
+            .orElseGet(() -> createAndSaveUser(attributes));
     }
 
     public User createAndSaveUser(OAuthAttributes attributes) {
         User createUser = User.builder().email(attributes.getEmail())
-                .role(UserRole.USER).type(UserType.OAUTH_USER).build();
+            .role(UserRole.USER).type(UserType.OAUTH_USER).build();
         return userRepository.save(createUser);
     }
 }
