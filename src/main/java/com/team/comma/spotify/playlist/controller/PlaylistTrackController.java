@@ -29,7 +29,7 @@ public class PlaylistTrackController {
             @Valid @RequestBody final PlaylistTrackRequest playlistTrackRequest
         ) {
         return ResponseEntity.ok(
-            playlistTrackService.disconnectPlaylistAndTrack(
+            playlistTrackService.removePlaylistAndTrack(
                 playlistTrackRequest.getTrackIdList(),
                 playlistTrackRequest.getPlaylistId()
             )

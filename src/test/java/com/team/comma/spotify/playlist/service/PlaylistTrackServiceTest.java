@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
@@ -26,8 +25,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import javax.security.auth.login.AccountException;
-import javax.swing.text.html.Option;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -74,7 +71,7 @@ class PlaylistTrackServiceTest {
             .when(playlistTrackRepository)
             .findByTrackIdAndPlaylistId(anyLong(), anyLong());
         //when
-        int deleteCount = (int) playlistTrackService.disconnectPlaylistAndTrack(trackIdList,
+        int deleteCount = (int) playlistTrackService.removePlaylistAndTrack(trackIdList,
                 playlistId)
             .getData();
 
@@ -90,7 +87,7 @@ class PlaylistTrackServiceTest {
             .findByTrackIdAndPlaylistId(anyLong(), anyLong());
         //when //then
         assertThatThrownBy(
-            () -> playlistTrackService.disconnectPlaylistAndTrack(Set.of(1L, 2L, 3L), 1L))
+            () -> playlistTrackService.removePlaylistAndTrack(Set.of(1L, 2L, 3L), 1L))
             .isInstanceOf(EntityNotFoundException.class);
     }
 

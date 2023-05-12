@@ -21,7 +21,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.team.comma.common.dto.MessageResponse;
@@ -96,7 +95,7 @@ class PlaylistTrackControllerTest {
                 REQUEST_SUCCESS.getMessage(),
                 trackIdList.size())
         ).when(playlistTrackService)
-            .disconnectPlaylistAndTrack(anySet(), anyLong());
+            .removePlaylistAndTrack(anySet(), anyLong());
 
         //when //then
         ResultActions resultActions = mockMvc.perform(
@@ -137,7 +136,7 @@ class PlaylistTrackControllerTest {
                 REQUEST_SUCCESS.getMessage(),
                 trackIdListSize)
         ).when(playlistTrackService)
-            .disconnectPlaylistAndTrack(anySet(), anyLong());
+            .removePlaylistAndTrack(anySet(), anyLong());
 
         //when
         ResultActions resultActions = mockMvc.perform(
@@ -159,7 +158,7 @@ class PlaylistTrackControllerTest {
         Set<Long> trackIdList = Set.of();
 
         doThrow(new EntityNotFoundException("해당 트랙이 존재하지 않습니다."))
-            .when(playlistTrackService).disconnectPlaylistAndTrack(anySet(), anyLong());
+            .when(playlistTrackService).removePlaylistAndTrack(anySet(), anyLong());
 
         //when
         ResultActions resultActions = mockMvc.perform(
