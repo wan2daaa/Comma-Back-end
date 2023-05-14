@@ -36,3 +36,46 @@ include::{snippets}/spotify/modifyPlaylist/request-fields.adoc[]
 include::{snippets}/spotify/modifyPlaylist/http-response.adoc[]
 include::{snippets}/spotify/modifyPlaylist/response-fields.adoc[]
 
+=== 플레이리스트 총재생시간 리턴 API
+
+==== Request
+
+include::{snippets}/spotify/selectPlaylistTotalDurationTime/http-request.adoc[]
+include::{snippets}/spotify/selectPlaylistTotalDurationTime/path-parameters.adoc[]
+
+==== Response
+
+include::{snippets}/spotify/selectPlaylistTotalDurationTime/http-response.adoc[]
+include::{snippets}/spotify/selectPlaylistTotalDurationTime/response-fields.adoc[]
+
+=== 플레이리스트 총재생시간 리턴 실패 (타입 에러)
+
+
+==== Response
+
+include::{snippets}/spotify/selectPlaylistTotalDurationTimeFail/http-response.adoc[]
+
+=== 플레이리스트 수정 성공
+
+==== Request
+
+include::{snippets}/spotify/updatePlaylist/http-request.adoc[]
+include::{snippets}/spotify/updatePlaylist/request-fields.adoc[]
+
+
+==== Response
+
+include::{snippets}/spotify/updatePlaylist/http-response.adoc[]
+include::{snippets}/spotify/updatePlaylist/response-fields.adoc[]
+
+=== 플레이리스트 수정 실패
+
+==== Response
+
+include::{snippets}/spotify/updatePlaylistFail/http-response.adoc[]
+include::{snippets}/spotify/updatePlaylistFail/response-fields.adoc[]
+
+
+
+
+

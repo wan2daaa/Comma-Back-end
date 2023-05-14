@@ -12,6 +12,6 @@ public final class ResponseCode {
     /**
      * FAILURE
      */
-
+    public static final int REQUEST_TYPE_MISMATCH = -1;
     public static final int ALARM_UPDATE_FAILURE = -5;
 }

@@ -67,10 +67,10 @@ public class SearchControllerTest {
 
     @BeforeEach
     public void init(RestDocumentationContextProvider restDocumentation,
-                     WebApplicationContext webApplicationContext) {
+        WebApplicationContext webApplicationContext) {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-                .apply(documentationConfiguration(restDocumentation))
-                .build();
+            .apply(documentationConfiguration(restDocumentation))
+            .build();
 
         gson = new Gson();
     }
@@ -88,7 +88,8 @@ public class SearchControllerTest {
 
         // when
         final ResultActions resultActions = mockMvc.perform(
-                RestDocumentationRequestBuilders.get(api, "{artistName}").cookie(new Cookie("accessToken" , "token")));
+            RestDocumentationRequestBuilders.get(api, "{artistName}")
+                .cookie(new Cookie("accessToken", "token")));
 
         // then
         resultActions.andExpect(status().isOk()).andDo(
@@ -137,7 +138,8 @@ public class SearchControllerTest {
 
         // when
         final ResultActions resultActions = mockMvc.perform(
-                RestDocumentationRequestBuilders.get(api, "{trackName}").cookie(new Cookie("accessToken" , "token")));
+            RestDocumentationRequestBuilders.get(api, "{trackName}")
+                .cookie(new Cookie("accessToken", "token")));
 
         // then
         resultActions.andExpect(status().isOk()).andDo(

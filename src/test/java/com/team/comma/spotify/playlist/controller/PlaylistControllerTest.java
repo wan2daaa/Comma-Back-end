@@ -1,37 +1,53 @@
 package com.team.comma.spotify.playlist.controller;
 
 import static com.team.comma.common.constant.ResponseCode.PLAYLIST_ALARM_UPDATED;
+import static com.team.comma.common.constant.ResponseCodeEnum.REQUEST_SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.team.comma.common.dto.MessageResponse;
 import com.team.comma.spotify.playlist.domain.Playlist;
+import com.team.comma.spotify.playlist.dto.PlaylistRequest;
 import com.team.comma.spotify.playlist.dto.PlaylistResponse;
 import com.team.comma.spotify.playlist.dto.PlaylistTrackArtistResponse;
 import com.team.comma.spotify.playlist.dto.PlaylistTrackResponse;
-import com.team.comma.spotify.playlist.dto.PlaylistRequest;
+import com.team.comma.spotify.playlist.dto.PlaylistUpdateRequest;
 import com.team.comma.spotify.playlist.service.PlaylistService;
+import com.team.comma.spotify.playlist.service.PlaylistTrackService;
 import com.team.comma.spotify.track.domain.Track;
 import com.team.comma.spotify.track.domain.TrackArtist;
-
+import com.team.comma.util.gson.GsonUtil;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.Cookie;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
-
-import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -55,8 +71,14 @@ import org.springframework.web.context.WebApplicationContext;
 @WebAppConfiguration
 class PlaylistControllerTest {
 
+    @Autowired
+    ObjectMapper objectMapper;
+
     @MockBean
     PlaylistService playlistService;
+
+    @MockBean
+    PlaylistTrackService playlistTrackService;
 
     MockMvc mockMvc;
     Gson gson;
@@ -64,115 +86,272 @@ class PlaylistControllerTest {
 
     @BeforeEach
     public void init(WebApplicationContext webApplicationContext,
-                     RestDocumentationContextProvider restDocumentation) {
+        RestDocumentationContextProvider restDocumentation) {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-                .apply(documentationConfiguration(restDocumentation))
-                .build();
+            .apply(documentationConfiguration(restDocumentation))
+            .build();
 
-        gson = new Gson();
+        gson = GsonUtil.getGsonInstance();
     }
 
+
     @Test
-    public void 플레이리스트_조회_성공() throws Exception {
+    void 플레이리스트_조회_성공() throws Exception {
         // given
         final String url = "/playlist";
 
         final List<PlaylistTrackArtistResponse> trackArtistList = Arrays.asList(
-                PlaylistTrackArtistResponse.of(createTrackArtist()));
+            PlaylistTrackArtistResponse.of(createTrackArtist()));
 
         final List<PlaylistTrackResponse> trackList = Arrays.asList(
-                PlaylistTrackResponse.of(createTrack(), true, trackArtistList));
+            PlaylistTrackResponse.of(createTrack(), true, trackArtistList));
 
         doReturn(Arrays.asList(
-                PlaylistResponse.of(createPlaylist(), trackList)
+            PlaylistResponse.of(createPlaylist(), trackList)
         )).when(playlistService).getPlaylists("accessToken");
 
         // when
         final ResultActions resultActions = mockMvc.perform(
-                RestDocumentationRequestBuilders.get(url)
-                        .cookie(new Cookie("accessToken","accessToken"))
-                        .contentType(MediaType.APPLICATION_JSON));
+            RestDocumentationRequestBuilders.get(url)
+                .cookie(new Cookie("accessToken", "accessToken"))
+                .contentType(MediaType.APPLICATION_JSON));
         final List<PlaylistResponse> result = playlistService.getPlaylists("accessToken");
 
         // then
         resultActions.andExpect(status().isOk()).andDo(
-                document("spotify/getPlaylist",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        requestCookies(
-                                cookieWithName("accessToken").description("사용자 access token 값")
-                        ),
-                        responseFields(
-                                fieldWithPath("[].playlistId").description("플레이리스트 id"),
-                                fieldWithPath("[].playlistTitle").description("플레이리스트 제목"),
-                                fieldWithPath("[].alarmFlag").description("알람 설정 여부, true = on / false = off"),
-                                fieldWithPath("[].alarmStartTime").description("알람 시작 시간"),
-                                fieldWithPath("[].trackList.[].trackId").description("트랙 id"),
-                                fieldWithPath("[].trackList.[].trackTitle").description("트랙 제목"),
-                                fieldWithPath("[].trackList.[].durationTimeMs").description("재생시간"),
-                                fieldWithPath("[].trackList.[].albumImageUrl").description("앨범 이미지 URL"),
-                                fieldWithPath("[].trackList.[].trackAlarmFlag").description("알람 설정 여부, 플레이리스트 알람 설정과 관계 없이 개별로 설정 가능"),
-                                fieldWithPath("[].trackList.[].trackArtistList.[].artistId").description("가수 id"),
-                                fieldWithPath("[].trackList.[].trackArtistList.[].artistName").description("가수 이름")
-                        )
+            document("spotify/getPlaylist",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestCookies(
+                    cookieWithName("accessToken").description("사용자 access token 값")
+                ),
+                responseFields(
+                    fieldWithPath("[].playlistId").description("플레이리스트 id"),
+                    fieldWithPath("[].playlistTitle").description("플레이리스트 제목"),
+                    fieldWithPath("[].alarmFlag").description("알람 설정 여부, true = on / false = off"),
+                    fieldWithPath("[].alarmStartTime").description("알람 시작 시간"),
+                    fieldWithPath("[].trackList.[].trackId").description("트랙 id"),
+                    fieldWithPath("[].trackList.[].trackTitle").description("트랙 제목"),
+                    fieldWithPath("[].trackList.[].durationTimeMs").description("재생시간"),
+                    fieldWithPath("[].trackList.[].albumImageUrl").description("앨범 이미지 URL"),
+                    fieldWithPath("[].trackList.[].trackAlarmFlag").description(
+                        "알람 설정 여부, 플레이리스트 알람 설정과 관계 없이 개별로 설정 가능"),
+                    fieldWithPath("[].trackList.[].trackArtistList.[].artistId").description(
+                        "가수 id"),
+                    fieldWithPath("[].trackList.[].trackArtistList.[].artistName").description(
+                        "가수 이름")
                 )
+            )
         );
-        assertThat(result.size()).isEqualTo(1);
+        assertThat(result).hasSize(1);
     }
 
     @Test
-    public void 플레이리스트_알람설정변경_성공() throws Exception {
+    void 플레이리스트_알람설정변경_성공() throws Exception {
         // given
         final String url = "/playlist/alert";
-        doReturn(MessageResponse.of(PLAYLIST_ALARM_UPDATED,"알람 설정이 변경되었습니다.")
+        doReturn(MessageResponse.of(PLAYLIST_ALARM_UPDATED, "알람 설정이 변경되었습니다.")
         ).when(playlistService).updateAlarmFlag(123L, false);
 
         // when
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.patch(url)
-                        .content(gson.toJson(PlaylistRequest.builder().playlistId(123L).alarmFlag(false).build()))
-                        .contentType(MediaType.APPLICATION_JSON)
+            MockMvcRequestBuilders.patch(url)
+                .content(gson.toJson(
+                    PlaylistRequest.builder().playlistId(123L).alarmFlag(false).build()))
+                .contentType(MediaType.APPLICATION_JSON)
         );
 
         // then
         resultActions.andExpect(status().isOk()).andDo(
-                document("spotify/modifyPlaylist",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        requestFields(
-                                fieldWithPath("playlistId").description("플레이리스트 id"),
-                                fieldWithPath("alarmFlag").description("변경 될 알람 상태, true = on / false = off")
-                        ),
-                        responseFields(
-                                fieldWithPath("code").description("응답 코드"),
-                                fieldWithPath("message").description("메세지"),
-                                fieldWithPath("data").description("데이터")
-                        )
+            document("spotify/modifyPlaylist",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestFields(
+                    fieldWithPath("playlistId").description("플레이리스트 id"),
+                    fieldWithPath("alarmFlag").description("변경 될 알람 상태, true = on / false = off")
+                ),
+                responseFields(
+                    fieldWithPath("code").description("응답 코드"),
+                    fieldWithPath("message").description("메세지"),
+                    fieldWithPath("data").description("데이터")
                 )
+            )
         );
     }
 
-    public TrackArtist createTrackArtist(){
-        return TrackArtist.builder()
-                .id(123L)
-                .artistName("test artist")
-                .build();
-    }
-    public Track createTrack(){
-        return Track.builder()
-                .id(123L)
-                .trackTitle("test track")
-                .durationTimeMs(3000)
-                .albumImageUrl("url/test/image")
-                .build();
+
+    @Test
+    void 플레이리스트의_총재생시간_조회_성공() throws Exception {
+        //given
+        doReturn(
+            MessageResponse.of(
+                REQUEST_SUCCESS.getCode(),
+                REQUEST_SUCCESS.getMessage(),
+                1000)
+        ).when(playlistService)
+            .getTotalDurationTimeMsByPlaylist(anyLong());
+
+        ResultActions resultActions = mockMvc.perform(
+            get("/playlist/all-duration-time/{id}", 1L)
+        ).andDo(print());
+
+        resultActions.andExpect(status().isOk())
+            .andDo(
+                document("spotify/selectPlaylistTotalDurationTime",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    pathParameters(
+                        parameterWithName("id").description("플레이리스트 id")
+                    ),
+                    responseFields(
+                        fieldWithPath("code").description("응답 코드"),
+                        fieldWithPath("message").description("메세지"),
+                        fieldWithPath("data").description("총재생시간(ms)")
+                    )
+                ));
     }
 
-    public Playlist createPlaylist(){
+    //    MethodArgumentTypeMismatchException
+    @Test
+    void 잘못된타입_들어오면_플레이리스트의_총재생시간_조회_실패() throws Exception {
+        ResultActions resultActions = mockMvc.perform(
+                get("/playlist/all-duration-time/{id}", "wrongType")
+            )
+            .andDo(print());
+
+        resultActions.andExpect(status().isBadRequest())
+            .andDo(
+                document(
+                    "spotify/selectPlaylistTotalDurationTimeFail",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    pathParameters(
+                        parameterWithName("id").description("플레이리스트 id")
+                    ),
+                    responseFields(
+                        fieldWithPath("code").description("응답 코드"),
+                        fieldWithPath("message").description("메세지"),
+                        fieldWithPath("data").description("데이터")
+                    )
+                )
+            );
+    }
+
+    @Test
+    void 플레이리스트_수정_성공() throws Exception {
+        //given
+        doReturn(
+            MessageResponse.of
+                (
+                    REQUEST_SUCCESS.getCode(),
+                    REQUEST_SUCCESS.getMessage()
+                ))
+            .when(playlistService).updatePlaylist(any(PlaylistUpdateRequest.class));
+
+        //when
+        ResultActions resultActions = mockMvc.perform(
+            patch("/playlist")
+                .contentType(APPLICATION_JSON)
+                .content(gson.toJson(PlaylistUpdateRequest.builder()
+                    .id(1L)
+                    .playlistTitle("test playlist")
+                    .alarmStartTime(LocalTime.of(10, 10))
+                    .build()))
+        ).andDo(print());
+
+        //then
+        resultActions.andExpect(status().isOk())
+            .andDo(
+                document(
+                    "spotify/updatePlaylist",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("id").description("플레이리스트 id"),
+                        fieldWithPath("playlistTitle").description("플레이리스트 제목"),
+                        fieldWithPath("alarmStartTime").description("알람 시작 시간"),
+                        fieldWithPath("listSequence").ignored()
+                    ),
+                    responseFields(
+                        fieldWithPath("code").description("응답 코드"),
+                        fieldWithPath("message").description("메세지"),
+                        fieldWithPath("data").ignored()
+                    )
+
+                )
+            );
+
+    }
+
+    @Test
+    void 플레이리스트_수정_실패() throws Exception {
+        //given
+        doThrow(
+            new EntityNotFoundException("해당 플레이리스트가 없습니다")
+        ).when(playlistService).updatePlaylist(any(PlaylistUpdateRequest.class));
+
+        //when
+        ResultActions resultActions = mockMvc.perform(
+            patch("/playlist")
+                .contentType(APPLICATION_JSON)
+                .content(gson.toJson(PlaylistUpdateRequest.builder()
+                    .id(1L)
+                    .playlistTitle("test playlist")
+                    .alarmStartTime(LocalTime.of(10, 10))
+                    .build()))
+        ).andDo(print());
+
+        //then
+        resultActions.andExpect(status().isBadRequest())
+            .andDo(
+                document(
+                    "spotify/updatePlaylistFail",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("id").description("플레이리스트 id"),
+                        fieldWithPath("playlistTitle").description("플레이리스트 제목"),
+                        fieldWithPath("alarmStartTime").description("알람 시작 시간"),
+                        fieldWithPath("listSequence").ignored()
+                    ),
+                    responseFields(
+                        fieldWithPath("code").description("응답 코드"),
+                        fieldWithPath("message").description("메세지"),
+                        fieldWithPath("data").ignored()
+                    )
+
+                )
+            );
+
+    }
+
+    public TrackArtist createTrackArtist() {
+        return TrackArtist.builder()
+            .id(123L)
+            .artistName("test ar{\n"
+                + "        return TrackArtist.builder()\n"
+                + "            .id(123L)\n"
+                + "            .artistName(\"test artist\")\n"
+                + "            .build();\n"
+                + "    }tist")
+            .build();
+    }
+
+    public Track createTrack() {
+        return Track.builder()
+            .id(123L)
+            .trackTitle("test track")
+            .durationTimeMs(3000)
+            .albumImageUrl("url/test/image")
+            .build();
+    }
+
+    public Playlist createPlaylist() {
         return Playlist.builder()
-                .id(123L)
-                .playlistTitle("test playlist")
-                .alarmFlag(true)
-                .alarmStartTime(LocalTime.now())
-                .build();
+            .id(123L)
+            .playlistTitle("test playlist")
+            .alarmFlag(true)
+            .alarmStartTime(LocalTime.now())
+            .build();
     }
 }

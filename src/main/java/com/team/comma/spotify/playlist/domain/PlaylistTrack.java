@@ -14,11 +14,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 
 @Entity
 @Getter
 @Builder
 @AllArgsConstructor
+@DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "playlist_track_tb")
 public class PlaylistTrack {
@@ -29,8 +32,9 @@ public class PlaylistTrack {
 
     private Integer playSequence;
 
+    @ColumnDefault("false")
     private Boolean playFlag;
-
+    @ColumnDefault("false")
     private Boolean trackAlarmFlag;
 
     @JoinColumn(name = "playlist_id")
@@ -40,4 +44,6 @@ public class PlaylistTrack {
     @JoinColumn(name = "track_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Track track;
+
+
 }

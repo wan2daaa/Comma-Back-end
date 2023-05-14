@@ -5,11 +5,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public final class MessageResponse<D> {
 
-    @Schema(description = "응답 코드")
     final private int code;
-    @Schema(description = "응답 메세지")
     final private String message;
-    @Schema(description = "응답 데이터로 보낼 데이터가 없다면 null")
     final private D data;
 
     private MessageResponse(int code, String message, D data) {
