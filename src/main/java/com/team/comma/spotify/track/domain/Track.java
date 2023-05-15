@@ -30,7 +30,7 @@ public class Track {
     private String spotifyTrackId;
 
     @Column(length = 50)
-    private String spotifyTrackHref;
+    private String spotifyTrackUri;
 
     @OneToMany(mappedBy = "track")
     private List<TrackArtist> trackArtistList;
