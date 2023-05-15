@@ -1,0 +1,44 @@
+doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+
+
+== 메인 화면
+
+link:main.html[main 화면]
+
+== Player API
+
+=== 음악 재생 API
+
+==== Request
+
+include::{snippets}/spotify/player/start/success/http-request.adoc[]
+include::{snippets}/spotify/player/start/success/path-parameters.adoc[]
+
+==== Response
+include::{snippets}/spotify/player/start/success/http-response.adoc[]
+
+=== 음악 재생 API 실패 (스포티파이 에러)
+
+==== Response
+include::{snippets}/spotify/player/start/fail/http-response.adoc[]
+
+=== 음악 재생 API 실패 (존재하지 않는 트랙)
+
+==== Response
+include::{snippets}/spotify/player/start/fail2/http-response.adoc[]
+
+
+=== 음악 정지 API
+
+==== Request
+include::{snippets}/spotify/player/pause/success/http-request.adoc[]
+
+==== Response
+include::{snippets}/spotify/player/pause/success/http-response.adoc[]
+
+

@@ -1,0 +1,28 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+
+
+== 메인 화면
+
+link:main.html[main 화면]
+
+== Track API
+
+=== Track 알람 설정 변경 API
+
+==== Request
+include::{snippets}/spotify/track/updateAlarmFlag/success/http-request.adoc[]
+include::{snippets}/spotify/track/updateAlarmFlag/success/path-parameters.adoc[]
+
+==== Response
+include::{snippets}/spotify/track/updateAlarmFlag/success/http-response.adoc[]
+
+=== Track 알람 설정 변경 실패 (존재하지 않는 트랙)
+
+==== Response
+include::{snippets}/spotify/track/updateAlarmFlag/fail/http-response.adoc[]
+
