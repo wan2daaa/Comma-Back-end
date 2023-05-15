@@ -96,16 +96,13 @@ public class PlaylistTrackRepositoryTest {
     @Test
     void 플리_트랙으로_TrackPlaylist_성공() {
         //given
-        Track track = Track.builder().build();
+        Track track = buildTrack();
         trackRepository.save(track);
 
         Playlist playlist = Playlist.builder().build();
         playlistRepository.save(playlist);
 
-        PlaylistTrack playlistTrack = PlaylistTrack.builder()
-            .playlist(playlist)
-            .track(track)
-            .build();
+        PlaylistTrack playlistTrack = buildPlaylistTrack(track, playlist);
         playlistTrackRepository.save(playlistTrack);
 
         //when
@@ -120,16 +117,13 @@ public class PlaylistTrackRepositoryTest {
     @Test
     void 플리_id_트랙_id로_삭제_성공() {
         //given
-        Track track = Track.builder().build();
+        Track track = buildTrack();
         trackRepository.save(track);
 
         Playlist playlist = Playlist.builder().build();
         playlistRepository.save(playlist);
 
-        PlaylistTrack playlistTrack = PlaylistTrack.builder()
-            .playlist(playlist)
-            .track(track)
-            .build();
+        PlaylistTrack playlistTrack = buildPlaylistTrack(track, playlist);
         playlistTrackRepository.save(playlistTrack);
         //when
         int deleteCount = playlistTrackRepository.deletePlaylistTrackByTrackIdAndPlaylistId(
@@ -147,13 +141,13 @@ public class PlaylistTrackRepositoryTest {
     @Test
     void 트랙들간의_순서중_제일_높은_값을_리턴한다() {
         //given
-        Track track1 = Track.builder().build();
+        Track track1 = buildTrack();
         trackRepository.save(track1);
 
-        Track track2 = Track.builder().build();
+        Track track2 = buildTrack();
         trackRepository.save(track2);
 
-        Track track3 = Track.builder().build();
+        Track track3 = buildTrack();
         trackRepository.save(track3);
 
         Playlist playlist = Playlist.builder().build();
@@ -187,6 +181,66 @@ public class PlaylistTrackRepositoryTest {
         assertThat(maxPlaySequence).isEqualTo(3);
     }
 
+    @Test
+    void 트랙의_알림설정값을_트랙ID로_가져온다(){
+        //given
+        Track track = buildTrack();
+        trackRepository.save(track);
+
+        Playlist playlist = Playlist.builder().build();
+        playlistRepository.save(playlist);
+
+        PlaylistTrack playlistTrack = buildPlaylistTrack(track, playlist);
+        playlistTrackRepository.save(playlistTrack);
+
+        //when
+        Boolean trackAlarmFlag = playlistTrackRepository.findTrackAlarmFlagByTrackId(track.getId()).get();
+
+        //then
+        assertThat(trackAlarmFlag).isFalse();
+
+    }
+
+    @Test
+    void 트랙의_알림설정을_변경한다(){
+        //given
+        Track track = buildTrack();
+        trackRepository.save(track);
+
+        Playlist playlist = Playlist.builder().build();
+        playlistRepository.save(playlist);
+
+        PlaylistTrack playlistTrack = buildPlaylistTrack(track, playlist);
+        playlistTrackRepository.save(playlistTrack);
+
+        //when
+        boolean primaryAlarmState = playlistTrackRepository
+            .findTrackAlarmFlagByTrackId(track.getId())
+            .get();
+
+        long updateCount = playlistTrackRepository.changeAlarmFlagWithTrackId(track.getId());
+
+        boolean afterAlarmState = playlistTrackRepository
+            .findTrackAlarmFlagByTrackId(track.getId())
+            .get();
+
+        //then
+        assertThat(updateCount).isEqualTo(1);
+        assertThat(primaryAlarmState).isNotEqualTo(afterAlarmState);
+    }
+
+
+    private static PlaylistTrack buildPlaylistTrack(Track track, Playlist playlist) {
+        return PlaylistTrack.builder()
+            .playlist(playlist)
+            .track(track)
+            .build();
+    }
+
+    private static Track buildTrack() {
+        return Track.builder().build();
+    }
+
 
     private User getUser() {
         return User.builder()
@@ -211,9 +265,6 @@ public class PlaylistTrackRepositoryTest {
     }
 
     private PlaylistTrack getPlaylistTrack(Playlist playlist, Track track) {
-        return PlaylistTrack.builder()
-            .playlist(playlist)
-            .track(track)
-            .build();
+        return buildPlaylistTrack(track, playlist);
     }
 }
