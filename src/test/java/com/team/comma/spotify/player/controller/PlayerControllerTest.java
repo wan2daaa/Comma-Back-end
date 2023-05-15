@@ -1,10 +1,11 @@
 package com.team.comma.spotify.player.controller;
 
-import static com.team.comma.common.constant.ResponseCodeEnum.*;
+import static com.team.comma.common.constant.ResponseCodeEnum.REQUEST_SUCCESS;
+import static com.team.comma.common.constant.ResponseCodeEnum.SPOTIFY_FAILURE;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import static org.springframework.http.MediaType.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -19,11 +20,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.google.gson.Gson;
-import com.team.comma.common.constant.ResponseCodeEnum;
 import com.team.comma.common.dto.MessageResponse;
 import com.team.comma.spotify.player.service.PlayerService;
 import com.team.comma.spotify.search.exception.SpotifyException;
-import com.team.comma.spotify.search.service.SearchService;
 import com.team.comma.util.gson.GsonUtil;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +32,6 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
-import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -81,7 +79,7 @@ class PlayerControllerTest {
         //then
         resultActions.andExpect(status().isOk())
             .andDo(
-                document("player/start",
+                document("spotify/player/start/success",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     pathParameters(
@@ -111,7 +109,7 @@ class PlayerControllerTest {
         //then
         resultActions.andExpect(status().isInternalServerError())
             .andDo(
-                document("player/start",
+                document("spotify/player/start/fail",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     pathParameters(
@@ -141,7 +139,7 @@ class PlayerControllerTest {
         //then
         resultActions.andExpect(status().isBadRequest())
             .andDo(
-                document("player/start",
+                document("spotify/player/start/fail2",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     pathParameters(
@@ -154,6 +152,33 @@ class PlayerControllerTest {
                     )
                 )
             );
+    }
+
+    @Test
+    void 플레이어의_트랙을_정지시킨다() throws Exception {
+        //given
+        doReturn(MessageResponse.of(REQUEST_SUCCESS))
+            .when(playerService).pausePlayer();
+
+        //when
+        ResultActions resultActions = mockMvc.perform(
+            get("/player/pause")
+        ).andDo(print());
+
+        //then
+        resultActions.andExpect(status().isOk())
+            .andDo(
+                document("spotify/player/pause/success",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    responseFields(
+                        fieldWithPath("code").description("응답 코드"),
+                        fieldWithPath("message").description("응답 메시지"),
+                        fieldWithPath("data").ignored()
+                    )
+                )
+            );
+
     }
 
 }
