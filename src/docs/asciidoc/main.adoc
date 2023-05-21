@@ -17,6 +17,10 @@
 
 * link:security.html[Security 문서]
 
+== Follow 문서
+
+* link:follow.html[Follow 문서]
+
 == Spotify 문서
 
 * link:spotifySearch.html[Search 탐색 문서]
@@ -24,5 +28,9 @@
 * link:spotifyHistory.html[History 문서]
 
 * link:playlist.html[Playlist 문서]
+
+* link:archive.html[Archive 문서]
+
+* link:favoriteArtist.html[관심 아티스트 문서]
 
 * link:playlist-track.html[Playlist-Track 문서]

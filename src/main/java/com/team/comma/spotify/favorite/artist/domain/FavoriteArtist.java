@@ -1,5 +1,7 @@
-package com.team.comma.user.domain;
+package com.team.comma.spotify.favorite.artist.domain;
 
+import com.team.comma.user.domain.User;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -19,20 +21,21 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "following_tb")
-public class Following {
+@Table(name = "favorite_artist_tb")
+public class FavoriteArtist {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Boolean blockFlag;
 
-    @JoinColumn(name = "user_from")
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User userFrom;
+    @Column(length = 50)
+    private String artistName;
 
-    @JoinColumn(name = "user_to")
+    @Column(length = 50)
+    private String artistImageUrl;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    private User userTo;
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }

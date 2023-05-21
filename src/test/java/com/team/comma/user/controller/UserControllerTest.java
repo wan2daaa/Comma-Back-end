@@ -83,23 +83,24 @@ class UserControllerTest {
 
     @Test
     @DisplayName("로그인 요청 성공")
-    void loginUser() throws Exception {
+    void loginRequestSuccess() throws Exception {
         // given
-        final String api = "/login";
-        final LoginRequest request = getLoginRequest();
-        final UserResponse response = getUserResponse();
-        final MessageResponse message = MessageResponse.of(LOGIN_SUCCESS , response);
-        final ResponseCookie cookie1 = ResponseCookie.from("accessToken", "accessTokenData1564")
-                .build();
-        final ResponseCookie cookie2 = ResponseCookie.from("refreshToken", "refreshTokenData4567")
-                .build();
-        doReturn(ResponseEntity.ok().header(SET_COOKIE, cookie1.toString())
+        String api = "/login";
+        LoginRequest request = getLoginRequest();
+        UserResponse response = getUserResponse();
+        MessageResponse message = MessageResponse.of(LOGIN_SUCCESS, response);
+        ResponseCookie cookie1 = ResponseCookie.from("accessToken", "accessTokenData1564").build();
+        ResponseCookie cookie2 = ResponseCookie.from("refreshToken", "refreshTokenData4567").build();
+        doReturn(ResponseEntity.ok()
+                .header(SET_COOKIE, cookie1.toString())
                 .header(SET_COOKIE, cookie2.toString())
                 .body(message)).when(userService).login(any(LoginRequest.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.post(api).content(gson.toJson(request))
+                MockMvcRequestBuilders
+                        .post(api)
+                        .content(gson.toJson(request))
                         .contentType(MediaType.APPLICATION_JSON));
 
         // then
@@ -132,17 +133,15 @@ class UserControllerTest {
                         )
                 )
         );
-        String accessToken = resultActions.andReturn().getResponse().getCookie("accessToken")
-                .toString();
-        String refreshToken = resultActions.andReturn().getResponse().getCookie("refreshToken")
-                .toString();
+        String accessToken = resultActions.andReturn().getResponse().getCookie("accessToken").toString();
+        String refreshToken = resultActions.andReturn().getResponse().getCookie("refreshToken").toString();
         assertThat(accessToken).contains("accessTokenData1564");
         assertThat(refreshToken).contains("refreshTokenData4567");
 
         final MessageResponse responseResult = gson.fromJson(
                 resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
-                new TypeToken<MessageResponse<UserResponse>>() {
-                }.getType());
+                new TypeToken<MessageResponse<UserResponse>>() {}.getType());
+
         UserResponse userResponseResult = (UserResponse) responseResult.getData();
         assertThat(responseResult.getCode()).isEqualTo(LOGIN_SUCCESS.getCode());
         assertThat(responseResult.getMessage()).isEqualTo("로그인이 성공적으로 되었습니다.");
@@ -151,16 +150,17 @@ class UserControllerTest {
 
     @Test
     @DisplayName("로그인 요청 실패 _ 틀린 비밀번호 혹은 아이디")
-    void notExistUser() throws Exception {
+    void loginRequestFail_notExistUser() throws Exception {
         // given
-        final String api = "/login";
+        String api = "/login";
         LoginRequest request = getLoginRequest();
-        doThrow(new AccountException("정보가 올바르지 않습니다.")).when(userService)
-                .login(any(LoginRequest.class));
+        doThrow(new AccountException("정보가 올바르지 않습니다.")).when(userService).login(any(LoginRequest.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.post(api).content(gson.toJson(request))
+                MockMvcRequestBuilders
+                        .post(api)
+                        .content(gson.toJson(request))
                         .contentType(MediaType.APPLICATION_JSON));
 
         // then
@@ -189,17 +189,18 @@ class UserControllerTest {
 
     @Test
     @DisplayName("사용자 회원가입 성공")
-    void registUser() throws Exception {
+    void registUserSuccess() throws Exception {
         // given
         final String api = "/register";
         LoginRequest request = getLoginRequest();
         UserResponse response = getUserResponse();
-        doReturn(MessageResponse.of(REGISTER_SUCCESS , response)).when(userService)
-                .register(any(RegisterRequest.class));
+        doReturn(MessageResponse.of(REGISTER_SUCCESS, response)).when(userService).register(any(RegisterRequest.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.post(api).content(gson.toJson(request))
+                MockMvcRequestBuilders
+                        .post(api)
+                        .content(gson.toJson(request))
                         .contentType(MediaType.APPLICATION_JSON));
 
         // then
@@ -230,8 +231,7 @@ class UserControllerTest {
         );
         final MessageResponse responseResult = gson.fromJson(
                 resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
-                new TypeToken<MessageResponse<UserResponse>>() {
-                }.getType());
+                new TypeToken<MessageResponse<UserResponse>>() {}.getType());
 
         UserResponse userResponse = (UserResponse) responseResult.getData();
         assertThat(responseResult.getCode()).isEqualTo(REGISTER_SUCCESS.getCode());
@@ -241,16 +241,17 @@ class UserControllerTest {
 
     @Test
     @DisplayName("사용자 회원가입 실패 _ 이미 존재하는 회원")
-    void existUserException() throws Exception {
+    void registUserFail_existUserException() throws Exception {
         // given
         final String api = "/register";
         LoginRequest request = getLoginRequest();
-        doThrow(new AccountException("이미 존재하는 계정입니다.")).when(userService)
-                .register(any(RegisterRequest.class));
+        doThrow(new AccountException("이미 존재하는 계정입니다.")).when(userService).register(any(RegisterRequest.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.post(api).content(gson.toJson(request))
+                MockMvcRequestBuilders
+                        .post(api)
+                        .content(gson.toJson(request))
                         .contentType(MediaType.APPLICATION_JSON));
 
         // then
@@ -285,10 +286,14 @@ class UserControllerTest {
         UserDetailRequest userDetail = getUserDetailRequest();
         doThrow(new AccountException("로그인이 되어있지 않습니다.")).when(userService)
                 .createUserInformation(any(UserDetailRequest.class), eq(null));
+
         // when
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.post(api).content(gson.toJson(userDetail))
+                MockMvcRequestBuilders
+                        .post(api)
+                        .content(gson.toJson(userDetail))
                         .contentType(MediaType.APPLICATION_JSON));
+
         // then
         resultActions.andExpect(status().isBadRequest()).andDo(
                 document("user/private-information-Fail/notLogin",
@@ -325,10 +330,15 @@ class UserControllerTest {
         UserDetailRequest userDetail = getUserDetailRequest();
         doThrow(new AccountException("사용자를 찾을 수 없습니다.")).when(userService)
                 .createUserInformation(any(UserDetailRequest.class), eq("token"));
+
         // when
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.post(api).cookie(new Cookie("accessToken", "token"))
-                        .content(gson.toJson(userDetail)).contentType(MediaType.APPLICATION_JSON));
+                MockMvcRequestBuilders
+                        .post(api)
+                        .cookie(new Cookie("accessToken", "token"))
+                        .content(gson.toJson(userDetail))
+                        .contentType(MediaType.APPLICATION_JSON));
+
         // then
         resultActions.andExpect(status().isBadRequest()).andDo(
                 document("user/private-information-Fail/notExistUser",
@@ -365,10 +375,15 @@ class UserControllerTest {
         UserDetailRequest userDetail = getUserDetailRequest();
         doReturn(MessageResponse.of(REQUEST_SUCCESS)).when(userService)
                 .createUserInformation(any(UserDetailRequest.class), eq("token"));
+
         // when
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.post(api).cookie(new Cookie("accessToken", "token"))
-                        .content(gson.toJson(userDetail)).contentType(MediaType.APPLICATION_JSON));
+                MockMvcRequestBuilders
+                        .post(api)
+                        .cookie(new Cookie("accessToken", "token"))
+                        .content(gson.toJson(userDetail))
+                        .contentType(MediaType.APPLICATION_JSON));
+
         // then
         resultActions.andExpect(status().isCreated()).andDo(
                 document("user/private-information",
@@ -397,12 +412,14 @@ class UserControllerTest {
     void getUserInfoByAccessTokenFail_NotExistUser() throws Exception {
         // given
         final String api = "/user/information";
-        doThrow(new AccountException("사용자를 찾을 수 없습니다.")).when(userService)
-                .getUserByCookie(any(String.class));
+        doThrow(new AccountException("사용자를 찾을 수 없습니다.")).when(userService).getUserByCookie(any(String.class));
+
         // when
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.get(api).cookie(new Cookie("accessToken", "token"))
-        );
+                MockMvcRequestBuilders
+                        .get(api)
+                        .cookie(new Cookie("accessToken", "token")));
+
         // then
         resultActions.andExpect(status().isBadRequest()).andDo(
                 document("user/getUserInfoByToken-Fail/notExistUser",
@@ -431,12 +448,16 @@ class UserControllerTest {
     void getUserInfoByAccessTokenFail_NotExistToken() throws Exception {
         // given
         final String api = "/user/information";
-        doThrow(new TokenForgeryException("알 수 없는 토큰이거나 , 변조되었습니다.")).when(userService)
-                .getUserByCookie(any(String.class));
+        doThrow(new TokenForgeryException("알 수 없는 토큰이거나 , 변조되었습니다."))
+                .when(userService).getUserByCookie(any(String.class));
+
         // when
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.get(api).cookie(new Cookie("accessToken", "token"))
+                MockMvcRequestBuilders
+                        .get(api)
+                        .cookie(new Cookie("accessToken", "token"))
         );
+
         // then
         resultActions.andExpect(status().isForbidden()).andDo(
                 document("user/getUserInfoByToken-Fail/notExistToken",
@@ -471,12 +492,16 @@ class UserControllerTest {
                 .delFlag(false)
                 .role(UserRole.USER)
                 .build();
-        MessageResponse messageResponse = MessageResponse.of(REQUEST_SUCCESS , user);
+        MessageResponse messageResponse = MessageResponse.of(REQUEST_SUCCESS, user);
         doReturn(messageResponse).when(userService).getUserByCookie(any(String.class));
+
         // when
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.get(api).cookie(new Cookie("accessToken", "token"))
+                MockMvcRequestBuilders
+                        .get(api)
+                        .cookie(new Cookie("accessToken", "token"))
         );
+
         // then
         resultActions.andExpect(status().isOk()).andDo(
                 document("user/getUserInfoByToken",
@@ -516,13 +541,14 @@ class UserControllerTest {
         // given
         String api = "/search/user?name=name";
         MessageResponse messageResponse = MessageResponse.of(REQUEST_SUCCESS
-                , Arrays.asList(getUserResponse() , getUserResponse() , getUserResponse()));
-        doReturn(messageResponse).when(userService)
-                .searchUserByNameAndNickName("name" , "token");
+                , Arrays.asList(getUserResponse(), getUserResponse(), getUserResponse()));
+        doReturn(messageResponse).when(userService).searchUserByNameAndNickName("name", "token");
 
         // when
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.get(api).cookie(new Cookie("accessToken", "token"))
+                MockMvcRequestBuilders
+                        .get(api)
+                        .cookie(new Cookie("accessToken", "token"))
         );
 
         // then

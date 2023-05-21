@@ -4,7 +4,7 @@ import lombok.*;
 
 @Builder
 @Data
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 public class HistoryRequest {
     private String searchHistory;

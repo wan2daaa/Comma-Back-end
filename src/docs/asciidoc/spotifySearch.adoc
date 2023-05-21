@@ -22,7 +22,7 @@ include::{snippets}/spotify/searchArtist/request-cookies.adoc[]
 include::{snippets}/spotify/searchArtist/http-response.adoc[]
 include::{snippets}/spotify/searchArtist/response-fields.adoc[]
 
-=== 트랙 검색하기
+=== 트랙 검색하기 & 아티스트로 트랙 검색하기
 
 ==== Request
 

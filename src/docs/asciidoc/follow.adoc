@@ -1,0 +1,113 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+== 메인 화면
+
+link:main.html[main 화면]
+
+== 팔로우 API
+
+=== 팔로우 추가 실패 _ 이미 팔로우한 사용자
+
+==== request
+
+include::{snippets}/following/addFail-alreadyFollowUser/http-request.adoc[]
+include::{snippets}/following/addFail-alreadyFollowUser/request-fields.adoc[]
+include::{snippets}/following/addFail-alreadyFollowUser/request-cookies.adoc[]
+
+==== response
+
+include::{snippets}/following/addFail-alreadyFollowUser/http-response.adoc[]
+include::{snippets}/following/addFail-alreadyFollowUser/response-fields.adoc[]
+
+=== 팔로우 추가 실패 _ 차단된 사용자
+
+include::{snippets}/following/addFail-isBlockUser/http-request.adoc[]
+include::{snippets}/following/addFail-isBlockUser/request-fields.adoc[]
+include::{snippets}/following/addFail-isBlockUser/request-cookies.adoc[]
+
+==== response
+
+include::{snippets}/following/addFail-isBlockUser/http-response.adoc[]
+include::{snippets}/following/addFail-isBlockUser/response-fields.adoc[]
+
+=== 팔로우 추가 실패 _ 찾을 수 없는 대상
+
+==== request
+
+include::{snippets}/following/addFail-notFoundException/http-request.adoc[]
+include::{snippets}/following/addFail-notFoundException/request-fields.adoc[]
+include::{snippets}/following/addFail-notFoundException/request-cookies.adoc[]
+
+==== response
+
+include::{snippets}/following/addFail-notFoundException/http-response.adoc[]
+include::{snippets}/following/addFail-notFoundException/response-fields.adoc[]
+
+=== 팔로우 추가
+
+==== request
+
+include::{snippets}/following/addSuccess/http-request.adoc[]
+include::{snippets}/following/addSuccess/request-fields.adoc[]
+include::{snippets}/following/addSuccess/request-cookies.adoc[]
+
+==== response
+
+include::{snippets}/following/addSuccess/http-response.adoc[]
+include::{snippets}/following/addSuccess/response-fields.adoc[]
+
+=== 팔로우 차단
+
+==== request
+
+include::{snippets}/following/blockSuccess/http-request.adoc[]
+include::{snippets}/following/blockSuccess/request-fields.adoc[]
+include::{snippets}/following/blockSuccess/request-cookies.adoc[]
+
+==== response
+
+include::{snippets}/following/blockSuccess/http-response.adoc[]
+include::{snippets}/following/blockSuccess/response-fields.adoc[]
+
+=== 팔로우 차단 해제
+
+==== request
+
+include::{snippets}/following/unblockSuccess/http-request.adoc[]
+include::{snippets}/following/unblockSuccess/request-fields.adoc[]
+include::{snippets}/following/unblockSuccess/request-cookies.adoc[]
+
+==== response
+
+include::{snippets}/following/unblockSuccess/http-response.adoc[]
+include::{snippets}/following/unblockSuccess/response-fields.adoc[]
+
+=== 팔로우 여부 확인 ( 팔로우된 사용자 )
+
+==== request
+
+include::{snippets}/following/isFollow-true/http-request.adoc[]
+include::{snippets}/following/isFollow-true/request-fields.adoc[]
+include::{snippets}/following/isFollow-true/request-cookies.adoc[]
+
+==== response
+
+include::{snippets}/following/isFollow-true/http-response.adoc[]
+include::{snippets}/following/isFollow-true/response-fields.adoc[]
+
+=== 팔로우 여부 확인 ( 팔로우 하지 않은 사용자 )
+
+==== request
+
+include::{snippets}/following/isFollow-false/http-request.adoc[]
+include::{snippets}/following/isFollow-false/request-fields.adoc[]
+include::{snippets}/following/isFollow-false/request-cookies.adoc[]
+
+==== response
+
+include::{snippets}/following/isFollow-false/http-response.adoc[]
+include::{snippets}/following/isFollow-false/response-fields.adoc[]

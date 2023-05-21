@@ -56,12 +56,12 @@ public class SecurityControllerTest {
 
     @BeforeEach
     public void init(WebApplicationContext webApplicationContext,
-        RestDocumentationContextProvider restDocumentation) {
+                     RestDocumentationContextProvider restDocumentation) {
         gson = new Gson();
 
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-            .apply(documentationConfiguration(restDocumentation))
-            .build();
+                .apply(documentationConfiguration(restDocumentation))
+                .build();
     }
 
     @Test
@@ -71,23 +71,25 @@ public class SecurityControllerTest {
         final String api = "/authentication/denied";
 
         // when
-        final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get(api));
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders
+                        .get(api));
 
         // then
         resultActions.andExpect(status().isForbidden()).andDo(
-            document("security/createToken-Fail/notExistToken",
-                preprocessRequest(prettyPrint()),
-                preprocessResponse(prettyPrint()),
-                responseFields(
-                    fieldWithPath("code").description("응답 코드"),
-                    fieldWithPath("message").description("메세지"),
-                    fieldWithPath("data").description("결과 데이터")
+                document("security/createToken-Fail/notExistToken",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        responseFields(
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("메세지"),
+                                fieldWithPath("data").description("결과 데이터")
+                        )
                 )
-            )
         );
         final MessageResponse messageDTO = gson.fromJson(
-            resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
-            MessageResponse.class);
+                resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
+                MessageResponse.class);
 
         assertThat(messageDTO.getCode()).isEqualTo(AUTHENTICATION_ERROR.getCode());
         assertThat(messageDTO.getMessage()).isEqualTo("인증되지 않은 사용자입니다.");
@@ -99,29 +101,31 @@ public class SecurityControllerTest {
         // given
         final String api = "/authentication/denied";
         doThrow(new TokenForgeryException("변조되거나, 알 수 없는 RefreshToken 입니다."))
-            .when(jwtService).validateRefreshToken("token");
+                .when(jwtService).validateRefreshToken("token");
+
         // when
-        final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get(api)
-            .cookie(new Cookie("refreshToken", "token")));
+        final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .get(api)
+                .cookie(new Cookie("refreshToken", "token")));
 
         // then
         resultActions.andExpect(status().isForbidden()).andDo(
-            document("security/createToken-Fail/falsifedToken",
-                preprocessRequest(prettyPrint()),
-                preprocessResponse(prettyPrint()),
-                requestCookies(
-                    cookieWithName("refreshToken").description("refreshToken")
-                ),
-                responseFields(
-                    fieldWithPath("code").description("응답 코드"),
-                    fieldWithPath("message").description("메세지"),
-                    fieldWithPath("data").description("결과 데이터")
+                document("security/createToken-Fail/falsifedToken",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestCookies(
+                                cookieWithName("refreshToken").description("refreshToken")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("메세지"),
+                                fieldWithPath("data").description("결과 데이터")
+                        )
                 )
-            )
         );
         final MessageResponse messageResponse = gson.fromJson(
-            resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
-            MessageResponse.class);
+                resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
+                MessageResponse.class);
 
         assertThat(messageResponse.getCode()).isEqualTo(AUTHORIZATION_ERROR.getCode());
         assertThat(messageResponse.getMessage()).isEqualTo("변조되거나, 알 수 없는 RefreshToken 입니다.");
@@ -133,38 +137,37 @@ public class SecurityControllerTest {
         // given
         final String api = "/authentication/denied";
         ResponseCookie responseCookieData = ResponseCookie.from("accessToken", "newAccessToken")
-            .build();
-        doReturn(
-            ResponseEntity.status(HttpStatus.OK).header(SET_COOKIE, responseCookieData.toString())
-                .body(MessageResponse.of(ACCESS_TOKEN_CREATE)))
-            .when(jwtService).validateRefreshToken("token");
-        Cookie cookie = new Cookie("refreshToken", "token");
+                .build();
+        doReturn(ResponseEntity.status(HttpStatus.OK).header(SET_COOKIE, responseCookieData.toString())
+                        .body(MessageResponse.of(ACCESS_TOKEN_CREATE))).when(jwtService).validateRefreshToken("token");
 
         // when
         final ResultActions resultActions = mockMvc.perform(
-            MockMvcRequestBuilders.get(api).cookie(cookie));
+                MockMvcRequestBuilders
+                        .get(api)
+                        .cookie(new Cookie("refreshToken", "token")));
 
         // then
         resultActions.andExpect(status().isOk()).andDo(
-            document("security/createToken",
-                preprocessRequest(prettyPrint()),
-                preprocessResponse(prettyPrint()),
-                requestCookies(
-                    cookieWithName("refreshToken").description("refreshToken")
-                ),
-                responseCookies(
-                    cookieWithName("accessToken").description("accessToken")
-                ),
-                responseFields(
-                    fieldWithPath("code").description("응답 코드"),
-                    fieldWithPath("message").description("메세지"),
-                    fieldWithPath("data").description("결과 데이터")
+                document("security/createToken",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestCookies(
+                                cookieWithName("refreshToken").description("refreshToken")
+                        ),
+                        responseCookies(
+                                cookieWithName("accessToken").description("accessToken")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("메세지"),
+                                fieldWithPath("data").description("결과 데이터")
+                        )
                 )
-            )
         );
         final MessageResponse messageResponse = gson.fromJson(
-            resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
-            MessageResponse.class);
+                resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
+                MessageResponse.class);
 
         assertThat(messageResponse.getCode()).isEqualTo(ACCESS_TOKEN_CREATE.getCode());
         assertThat(messageResponse.getMessage()).isEqualTo("AccessToken이 재발급되었습니다.");
@@ -180,23 +183,25 @@ public class SecurityControllerTest {
         final String api = "/authorization/denied";
 
         // when
-        final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get(api));
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders
+                        .get(api));
 
         // then
         resultActions.andExpect(status().isForbidden()).andDo(
-            document("security/authorization",
-                preprocessRequest(prettyPrint()),
-                preprocessResponse(prettyPrint()),
-                responseFields(
-                    fieldWithPath("code").description("응답 코드"),
-                    fieldWithPath("message").description("메세지"),
-                    fieldWithPath("data").description("결과 데이터")
+                document("security/authorization",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        responseFields(
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("메세지"),
+                                fieldWithPath("data").description("결과 데이터")
+                        )
                 )
-            )
         );
         MessageResponse result = gson.fromJson(
-            resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
-            MessageResponse.class);
+                resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
+                MessageResponse.class);
 
         assertThat(result.getCode()).isEqualTo(AUTHORIZATION_ERROR.getCode());
         assertThat(result.getMessage()).isEqualTo("인가되지 않은 사용자입니다.");
@@ -207,23 +212,27 @@ public class SecurityControllerTest {
     public void successLogout() throws Exception {
         // given
         final String api = "/logout/message";
+
         // when
-        final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get(api));
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders
+                        .get(api));
+
         // then
         resultActions.andExpect(status().isOk()).andDo(
-            document("security/logout",
-                preprocessRequest(prettyPrint()),
-                preprocessResponse(prettyPrint()),
-                responseFields(
-                    fieldWithPath("code").description("응답 코드"),
-                    fieldWithPath("message").description("메세지"),
-                    fieldWithPath("data").description("결과 데이터")
+                document("security/logout",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        responseFields(
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("메세지"),
+                                fieldWithPath("data").description("결과 데이터")
+                        )
                 )
-            )
         );
         MessageResponse result = gson.fromJson(
-            resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
-            MessageResponse.class);
+                resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
+                MessageResponse.class);
 
         assertThat(result.getCode()).isEqualTo(LOGOUT_SUCCESS.getCode());
         assertThat(result.getMessage()).isEqualTo("로그아웃이 성공적으로 되었습니다.");

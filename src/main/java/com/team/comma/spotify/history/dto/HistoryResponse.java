@@ -1,12 +1,13 @@
 package com.team.comma.spotify.history.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
 
-@Getter
+@Builder
+@Data
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 public class HistoryResponse {
-    private final long id;
-    private final String searchHistory;
+    private long id;
+    private String searchHistory;
 
 }

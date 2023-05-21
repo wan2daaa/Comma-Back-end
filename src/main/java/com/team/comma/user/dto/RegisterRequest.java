@@ -3,8 +3,8 @@ package com.team.comma.user.dto;
 import lombok.*;
 
 @Builder
-@Getter
-@NoArgsConstructor
+@Data
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 public class RegisterRequest {
 
