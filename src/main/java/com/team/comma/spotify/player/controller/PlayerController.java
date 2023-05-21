@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/player")
 @RequiredArgsConstructor
+@RequestMapping("/players")
 public class PlayerController {
 
     private final PlayerService playerService;
@@ -20,16 +20,12 @@ public class PlayerController {
     public ResponseEntity<MessageResponse> startAndResumePlayer(
         @PathVariable long trackId
     ) {
-        return ResponseEntity.ok(
-            playerService.startAndResumePlayer(trackId)
-        );
+        return ResponseEntity.ok(playerService.startAndResumePlayer(trackId));
     }
 
     @GetMapping("/pause")
     public ResponseEntity<MessageResponse> pausePlayer() {
-        return ResponseEntity.ok(
-            playerService.pausePlayer()
-        );
+        return ResponseEntity.ok(playerService.pausePlayer());
     }
 
 }
