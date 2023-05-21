@@ -25,7 +25,8 @@ public class Following {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Boolean blockFlag;
+
+    private boolean blockFlag;
 
     @JoinColumn(name = "user_from")
     @ManyToOne(fetch = FetchType.LAZY)
