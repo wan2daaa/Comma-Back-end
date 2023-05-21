@@ -31,14 +31,3 @@ include::{snippets}/spotify/player/start/fail/http-response.adoc[]
 
 ==== Response
 include::{snippets}/spotify/player/start/fail2/http-response.adoc[]
-
-
-=== 음악 정지 API
-
-==== Request
-include::{snippets}/spotify/player/pause/success/http-request.adoc[]
-
-==== Response
-include::{snippets}/spotify/player/pause/success/http-response.adoc[]
-
-
