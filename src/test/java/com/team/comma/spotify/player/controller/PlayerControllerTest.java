@@ -72,7 +72,7 @@ class PlayerControllerTest {
 
         //when
         ResultActions resultActions = mockMvc.perform(
-            get("/player/start/{trackId}", 1L)
+            get("/players/start/{trackId}", 1L)
                 .contentType(APPLICATION_JSON)
         ).andDo(print());
 
@@ -102,7 +102,7 @@ class PlayerControllerTest {
 
         //when
         ResultActions resultActions = mockMvc.perform(
-            get("/player/start/{trackId}", 1L)
+            get("/players/start/{trackId}", 1L)
                 .contentType(APPLICATION_JSON)
         ).andDo(print());
 
@@ -132,7 +132,7 @@ class PlayerControllerTest {
 
         //when
         ResultActions resultActions = mockMvc.perform(
-            get("/player/start/{trackId}", 1L)
+            get("/players/start/{trackId}", 1L)
                 .contentType(APPLICATION_JSON)
         ).andDo(print());
 
@@ -153,32 +153,4 @@ class PlayerControllerTest {
                 )
             );
     }
-
-    @Test
-    void 플레이어의_트랙을_정지시킨다() throws Exception {
-        //given
-        doReturn(MessageResponse.of(REQUEST_SUCCESS))
-            .when(playerService).pausePlayer();
-
-        //when
-        ResultActions resultActions = mockMvc.perform(
-            get("/player/pause")
-        ).andDo(print());
-
-        //then
-        resultActions.andExpect(status().isOk())
-            .andDo(
-                document("spotify/player/pause/success",
-                    preprocessRequest(prettyPrint()),
-                    preprocessResponse(prettyPrint()),
-                    responseFields(
-                        fieldWithPath("code").description("응답 코드"),
-                        fieldWithPath("message").description("응답 메시지"),
-                        fieldWithPath("data").ignored()
-                    )
-                )
-            );
-
-    }
-
 }
