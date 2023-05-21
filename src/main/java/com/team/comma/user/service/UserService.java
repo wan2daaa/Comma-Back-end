@@ -11,7 +11,6 @@ import com.team.comma.user.dto.LoginRequest;
 import com.team.comma.user.dto.RegisterRequest;
 import com.team.comma.user.dto.UserDetailRequest;
 import com.team.comma.user.dto.UserResponse;
-import com.team.comma.user.repository.FavoriteArtistRepository;
 import com.team.comma.user.repository.FavoriteGenreRepository;
 import com.team.comma.user.repository.UserRepository;
 import com.team.comma.util.jwt.service.JwtService;
@@ -43,7 +42,6 @@ public class UserService {
     private final JwtService jwtService;
     private final JwtTokenProvider jwtTokenProvider;
     private final FavoriteGenreRepository favoriteGenreRepository;
-    private final FavoriteArtistRepository favoriteArtistRepository;
     private final HistoryService historyService;
 
     public ResponseEntity<MessageResponse> login(final LoginRequest loginRequest)
@@ -110,14 +108,6 @@ public class UserService {
                 .orElseThrow(() -> new AccountException("사용자를 찾을 수 없습니다."));
 
         return favoriteGenreRepository.findByGenreNameList(user);
-    }
-
-    public List<String> getFavoriteArtistList(String token) throws AccountException {
-        String userName = jwtTokenProvider.getUserPk(token);
-        User user = userRepository.findByEmail(userName)
-                .orElseThrow(() -> new AccountException("사용자를 찾을 수 없습니다."));
-
-        return favoriteArtistRepository.findArtistListByUser(user);
     }
 
     public MessageResponse searchUserByNameAndNickName(String name , String accessToken) throws AccountException {

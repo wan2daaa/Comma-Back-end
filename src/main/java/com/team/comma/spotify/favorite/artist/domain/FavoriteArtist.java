@@ -1,5 +1,6 @@
-package com.team.comma.user.domain;
+package com.team.comma.spotify.favorite.artist.domain;
 
+import com.team.comma.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -32,7 +33,6 @@ public class FavoriteArtist {
 
     @Column(length = 50)
     private String artistImageUrl;
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

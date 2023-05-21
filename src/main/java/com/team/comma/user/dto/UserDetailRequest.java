@@ -1,17 +1,14 @@
 package com.team.comma.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalTime;
 import java.util.List;
 
 @Builder
-@Getter
-@NoArgsConstructor
+@Data
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 public class UserDetailRequest {
 

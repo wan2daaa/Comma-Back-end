@@ -3,11 +3,7 @@ package com.team.comma.spotify.history.domain;
 import com.team.comma.user.domain.User;
 import com.team.comma.util.converter.BooleanConverter;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
@@ -24,9 +20,8 @@ public class History {
     @Column(length = 50)
     private String searchHistory;
 
-    @Builder.Default
     @Convert(converter = BooleanConverter.class)
-    private boolean delFlag = false;
+    private boolean delFlag;
 
     @JoinColumn(name = "user_id")
     @ManyToOne(fetch = FetchType.LAZY)

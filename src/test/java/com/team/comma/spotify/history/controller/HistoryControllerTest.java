@@ -73,11 +73,15 @@ public class HistoryControllerTest {
         // given
         final String api = "/spotify/histories";
         HistoryRequest request = HistoryRequest.builder().searchHistory("history").build();
-        doThrow(new AccountException("사용자를 찾을 수 없습니다.")).when(spotifyHistoryService).addHistory(request , "token");
+        doThrow(new AccountException("사용자를 찾을 수 없습니다.")).when(spotifyHistoryService).addHistory(request, "token");
+
         // when
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.post(api).content(gson.toJson(request))
-                        .contentType(MediaType.APPLICATION_JSON).cookie(new Cookie("accessToken" , "token")));
+                MockMvcRequestBuilders
+                        .post(api)
+                        .content(gson.toJson(request))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .cookie(new Cookie("accessToken", "token")));
 
         // then
         resultActions.andExpect(status().isBadRequest()).andDo(
@@ -111,12 +115,16 @@ public class HistoryControllerTest {
         // given
         final String api = "/spotify/histories";
         HistoryRequest request = HistoryRequest.builder().searchHistory("history").build();
-        MessageResponse messageResponse = MessageResponse.of(REQUEST_SUCCESS , null);
-        doReturn(messageResponse).when(spotifyHistoryService).addHistory(request , "token");
+        MessageResponse messageResponse = MessageResponse.of(REQUEST_SUCCESS, null);
+        doReturn(messageResponse).when(spotifyHistoryService).addHistory(request, "token");
+
         // when
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.post(api).content(gson.toJson(request))
-                        .contentType(MediaType.APPLICATION_JSON).cookie(new Cookie("accessToken" , "token")));
+                MockMvcRequestBuilders
+                        .post(api)
+                        .content(gson.toJson(request))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .cookie(new Cookie("accessToken", "token")));
 
         // then
         resultActions.andExpect(status().isCreated()).andDo(
@@ -150,9 +158,12 @@ public class HistoryControllerTest {
         // given
         final String api = "/spotify/histories";
         doThrow(new AccountException("사용자를 찾을 수 없습니다.")).when(spotifyHistoryService).getHistoryList("token");
+
         // when
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.get(api).cookie(new Cookie("accessToken" , "token")));
+                MockMvcRequestBuilders
+                        .get(api)
+                        .cookie(new Cookie("accessToken", "token")));
 
         // then
         resultActions.andExpect(status().isBadRequest()).andDo(
@@ -183,13 +194,16 @@ public class HistoryControllerTest {
         // given
         final String api = "/spotify/histories";
         List<HistoryResponse> historyList = Arrays.asList(
-                new HistoryResponse(1 , "history 1") ,
-                new HistoryResponse(2 , "history 2") ,
-                new HistoryResponse(3 , "history 3"));
-        doReturn(MessageResponse.of(REQUEST_SUCCESS , historyList)).when(spotifyHistoryService).getHistoryList("token");
+                new HistoryResponse(1, "history 1"),
+                new HistoryResponse(2, "history 2"),
+                new HistoryResponse(3, "history 3"));
+        doReturn(MessageResponse.of(REQUEST_SUCCESS, historyList)).when(spotifyHistoryService).getHistoryList("token");
+
         // when
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.get(api).cookie(new Cookie("accessToken" , "token")));
+                MockMvcRequestBuilders
+                        .get(api)
+                        .cookie(new Cookie("accessToken", "token")));
 
         // then
         resultActions.andExpect(status().isOk()).andDo(
@@ -212,7 +226,7 @@ public class HistoryControllerTest {
                 MessageResponse.class);
 
         assertThat(result.getCode()).isEqualTo(REQUEST_SUCCESS.getCode());
-        assertThat(((List<HistoryResponse>)result.getData()).size()).isEqualTo(3);
+        assertThat(((List<HistoryResponse>) result.getData()).size()).isEqualTo(3);
     }
 
     @Test
@@ -220,11 +234,14 @@ public class HistoryControllerTest {
     public void deleteHistorySuccess() throws Exception {
         // given
         final String api = "/spotify/histories/{id}";
-        MessageResponse messageResponse = MessageResponse.of(REQUEST_SUCCESS , null);
+        MessageResponse messageResponse = MessageResponse.of(REQUEST_SUCCESS, null);
         doReturn(messageResponse).when(spotifyHistoryService).deleteHistory(any(Long.class));
+
         // when
         final ResultActions resultActions = mockMvc.perform(
-                RestDocumentationRequestBuilders.delete(api , "1").cookie(new Cookie("accessToken" , "token")));
+                RestDocumentationRequestBuilders
+                        .delete(api, "1")
+                        .cookie(new Cookie("accessToken", "token")));
 
         // then
         resultActions.andExpect(status().isOk()).andDo(
@@ -233,7 +250,7 @@ public class HistoryControllerTest {
                         preprocessResponse(prettyPrint()),
                         pathParameters(
                                 parameterWithName("id").description("삭제할 History의 Id값")
-                        ) ,
+                        ),
                         requestCookies(
                                 cookieWithName("accessToken").description("사용자 인증에 필요한 accessToken")
                         ),
@@ -261,7 +278,9 @@ public class HistoryControllerTest {
 
         // when
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.delete(api).cookie(new Cookie("accessToken" , "token")));
+                MockMvcRequestBuilders
+                        .delete(api)
+                        .cookie(new Cookie("accessToken", "token")));
 
         // then
         resultActions.andExpect(status().isBadRequest()).andDo(
@@ -291,12 +310,14 @@ public class HistoryControllerTest {
     public void deleteAllHistory() throws Exception {
         // given
         final String api = "/spotify/all-histories";
-        MessageResponse messageResponse = MessageResponse.of(REQUEST_SUCCESS , null);
+        MessageResponse messageResponse = MessageResponse.of(REQUEST_SUCCESS, null);
         doReturn(messageResponse).when(spotifyHistoryService).deleteAllHistory("token");
 
         // when
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.delete(api).cookie(new Cookie("accessToken" , "token")));
+                MockMvcRequestBuilders
+                        .delete(api)
+                        .cookie(new Cookie("accessToken", "token")));
 
         // then
         resultActions.andExpect(status().isOk()).andDo(

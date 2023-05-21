@@ -3,14 +3,11 @@ package com.team.comma.user.dto;
 import com.team.comma.user.constant.UserRole;
 import com.team.comma.user.domain.User;
 import com.team.comma.user.domain.UserDetail;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Builder
-@Getter
-@NoArgsConstructor
+@Data
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 public class UserResponse {
 

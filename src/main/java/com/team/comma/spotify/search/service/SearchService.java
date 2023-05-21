@@ -2,6 +2,7 @@ package com.team.comma.spotify.search.service;
 
 import com.neovisionaries.i18n.CountryCode;
 import com.team.comma.common.dto.MessageResponse;
+import com.team.comma.spotify.favorite.artist.service.FavoriteArtistService;
 import com.team.comma.spotify.history.dto.HistoryRequest;
 import com.team.comma.spotify.history.service.HistoryService;
 import com.team.comma.spotify.search.dto.ArtistResponse;
@@ -35,6 +36,7 @@ public class SearchService {
 
     private final SpotifyAuthorization spotifyAuthorization;
     private final SpotifySearchCommand spotifySearchCommand;
+    private final FavoriteArtistService favoriteArtistService;
     private final HistoryService historyService;
     private final UserService userService;
 
@@ -169,7 +171,7 @@ public class SearchService {
     }
 
     public String getOneRandomFavoriteArtistByUser(String token) throws AccountException {
-        List<String> artistList = userService.getFavoriteArtistList(token);
+        List<String> artistList = favoriteArtistService.getFavoriteArtistList(token);
         Random random = new Random();
 
         if(artistList.isEmpty()) {

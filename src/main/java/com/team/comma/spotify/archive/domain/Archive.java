@@ -2,22 +2,11 @@ package com.team.comma.spotify.archive.domain;
 
 import com.team.comma.spotify.playlist.domain.Playlist;
 import com.team.comma.user.domain.User;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import java.time.LocalDateTime;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -39,6 +28,7 @@ public class Archive {
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
@@ -46,6 +36,15 @@ public class Archive {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "playlist_id")
     private Playlist playlist;
+
+    public static Archive createArchive(User user , String context , Playlist playlist) {
+        return Archive.builder()
+                .content(context)
+                .publicFlag(true)
+                .user(user)
+                .playlist(playlist)
+                .build();
+    }
 
 
 }

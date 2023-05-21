@@ -67,10 +67,10 @@ public class SearchControllerTest {
 
     @BeforeEach
     public void init(RestDocumentationContextProvider restDocumentation,
-        WebApplicationContext webApplicationContext) {
+                     WebApplicationContext webApplicationContext) {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-            .apply(documentationConfiguration(restDocumentation))
-            .build();
+                .apply(documentationConfiguration(restDocumentation))
+                .build();
 
         gson = new Gson();
     }
@@ -80,16 +80,17 @@ public class SearchControllerTest {
     public void searchBySinger() throws Exception {
         // given
         final String api = "/spotify/artist/{artist}";
-        MessageResponse messageResponse = MessageResponse.of(REQUEST_SUCCESS ,
+        MessageResponse messageResponse = MessageResponse.of(REQUEST_SUCCESS,
                 new ArrayList<>(Arrays.asList(
                         createArtistResponse()
                 )));
-        doReturn(messageResponse).when(spotifyService).searchArtistList(any(String.class) , any(String.class));
+        doReturn(messageResponse).when(spotifyService).searchArtistList(any(String.class), any(String.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(
-            RestDocumentationRequestBuilders.get(api, "{artistName}")
-                .cookie(new Cookie("accessToken", "token")));
+                RestDocumentationRequestBuilders
+                        .get(api, "{artistName}")
+                        .cookie(new Cookie("accessToken", "token")));
 
         // then
         resultActions.andExpect(status().isOk()).andDo(
@@ -129,17 +130,18 @@ public class SearchControllerTest {
     public void searchByTrack() throws Exception {
         // given
         final String api = "/spotify/track/{track}";
-        MessageResponse messageResponse = MessageResponse.of(REQUEST_SUCCESS ,
+        MessageResponse messageResponse = MessageResponse.of(REQUEST_SUCCESS,
                 new ArrayList<>(Arrays.asList(
                         createTrackResponse()
                 )));
 
-        doReturn(messageResponse).when(spotifyService).searchTrackList(any(String.class) , any(String.class));
+        doReturn(messageResponse).when(spotifyService).searchTrackList(any(String.class), any(String.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(
-            RestDocumentationRequestBuilders.get(api, "{trackName}")
-                .cookie(new Cookie("accessToken", "token")));
+                RestDocumentationRequestBuilders
+                        .get(api, "{trackName}")
+                        .cookie(new Cookie("accessToken", "token")));
 
         // then
         resultActions.andExpect(status().isOk()).andDo(
@@ -150,7 +152,7 @@ public class SearchControllerTest {
                                 cookieWithName("accessToken").description("History 등록에 필요한 accessToken")
                         ),
                         pathParameters(
-                                parameterWithName("track").description("트랙 이름")
+                                parameterWithName("track").description("트랙 이름 또는 아티스트 이름")
                         ),
                         responseFields(
                                 fieldWithPath("code").description("응답 코드"),
@@ -166,7 +168,9 @@ public class SearchControllerTest {
                                 fieldWithPath("data[].images[].width").description("이미지 Width"),
                                 fieldWithPath("data[].images[].url").description("이미지 URL"),
                                 fieldWithPath("data[].popularity").description("인기도"),
-                                fieldWithPath("data[].releaseData").description("출시 일")
+                                fieldWithPath("data[].releaseData").description("출시 일"),
+                                fieldWithPath("data[].durationMinute").description("곡 재생 시간 ( 분 )"),
+                                fieldWithPath("data[].durationSecond").description("곡 재생 시간 ( 초 )")
                         )
                 )
         );
@@ -185,12 +189,14 @@ public class SearchControllerTest {
     public void getGenresList() throws Exception {
         // given
         final String api = "/spotify/genre";
-        MessageResponse messageResponse = MessageResponse.of(REQUEST_SUCCESS ,
+        MessageResponse messageResponse = MessageResponse.of(REQUEST_SUCCESS,
                 new String[]{"hipPop", "sleep", "jazz"});
         doReturn(messageResponse).when(spotifyService).searchGenreList();
 
         // when
-        final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get(api));
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders
+                    .get(api));
 
         // then
         resultActions.andExpect(status().isOk()).andDo(
@@ -219,12 +225,15 @@ public class SearchControllerTest {
     public void getArtistListByYear() throws Exception {
         // given
         final String api = "/spotify/artist?offset=0";
-        MessageResponse messageResponse = MessageResponse.of(REQUEST_SUCCESS ,
-                new String[]{"artist1", "artist2", "artist3"});
-        doReturn(messageResponse)
-                .when(spotifyService).searchArtistListByYear(0);
+        MessageResponse messageResponse = MessageResponse.of(REQUEST_SUCCESS
+                , new String[]{"artist1", "artist2", "artist3"});
+        doReturn(messageResponse).when(spotifyService).searchArtistListByYear(0);
+
         // when
-        final ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get(api));
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders
+                        .get(api));
+
         // then
         resultActions.andExpect(status().isOk()).andDo(
                 document("spotify/searchArtistByYear",
@@ -258,8 +267,10 @@ public class SearchControllerTest {
 
         // when
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.get(api).contentType(MediaType.APPLICATION_JSON)
-                        .cookie(new Cookie("accessToken" , "token")));
+                MockMvcRequestBuilders
+                        .get(api)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .cookie(new Cookie("accessToken", "token")));
 
         // then
         resultActions.andExpect(status().isBadRequest()).andDo(
@@ -293,8 +304,10 @@ public class SearchControllerTest {
 
         // when
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.get(api).contentType(MediaType.APPLICATION_JSON)
-                        .cookie(new Cookie("accessToken" , "token")));
+                MockMvcRequestBuilders
+                        .get(api)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .cookie(new Cookie("accessToken", "token")));
 
         // then
         resultActions.andExpect(status().isInternalServerError()).andDo(
@@ -328,8 +341,10 @@ public class SearchControllerTest {
 
         // when
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.get(api).contentType(MediaType.APPLICATION_JSON)
-                        .cookie(new Cookie("accessToken" , "token")));
+                MockMvcRequestBuilders
+                        .get(api)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .cookie(new Cookie("accessToken", "token")));
 
         // then
         resultActions.andExpect(status().isInternalServerError()).andDo(
@@ -359,7 +374,7 @@ public class SearchControllerTest {
     public void recommendMusicSuccess() throws Exception {
         // given
         final String api = "/spotify/recommendations";
-        MessageResponse messageResponse = MessageResponse.of(REQUEST_SUCCESS ,
+        MessageResponse messageResponse = MessageResponse.of(REQUEST_SUCCESS,
                 new ArrayList<>(Arrays.asList(
                         createTrackResponse()
                 )));
@@ -368,8 +383,10 @@ public class SearchControllerTest {
 
         // when
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.get(api).contentType(MediaType.APPLICATION_JSON)
-                        .cookie(new Cookie("accessToken" , "token")));
+                MockMvcRequestBuilders
+                        .get(api)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .cookie(new Cookie("accessToken", "token")));
 
         // then
         resultActions.andExpect(status().isOk()).andDo(
@@ -378,7 +395,7 @@ public class SearchControllerTest {
                         preprocessResponse(prettyPrint()),
                         requestCookies(
                                 cookieWithName("accessToken").description("사용자 인증에 필요한 accessToken")
-                        ) ,
+                        ),
                         responseFields(
                                 fieldWithPath("code").description("응답 코드"),
                                 fieldWithPath("message").description("응답 메세지"),
@@ -393,7 +410,9 @@ public class SearchControllerTest {
                                 fieldWithPath("data[].images[].height").description("이미지 Height"),
                                 fieldWithPath("data[].images[].width").description("이미지 Width"),
                                 fieldWithPath("data[].images[].url").description("이미지 URL"),
-                                fieldWithPath("data[].releaseData").description("출시 일")
+                                fieldWithPath("data[].releaseData").description("출시 일"),
+                                fieldWithPath("data[].durationMinute").description("곡 재생 시간 ( 분 )"),
+                                fieldWithPath("data[].durationSecond").description("곡 재생 시간 ( 초 )")
                         )
                 )
         );
@@ -417,7 +436,7 @@ public class SearchControllerTest {
                 .artistId("57htMBtzpppc1yoXgjbslj")
                 .albumId("4aLnzOsnBf5gqTDMJn3XLz")
                 .previewUrl("https://p.scdn.co/mp3-preview/a2d5d6880809b93ccb3149ebef43d582597cfd1c?cid=f6d89d8d397049678cbbf45f829dd85a")
-                .images(new Image[] {image1 , image2 , image3})
+                .images(new Image[]{image1, image2, image3})
                 .popularity(42)
                 .releaseData("2014-03-28")
                 .build();
@@ -432,7 +451,7 @@ public class SearchControllerTest {
                 .artistId("57htMBtzpppc1yoXgjbslj")
                 .artistName("Wild Flower")
                 .genres(new String[]{"korean pop"})
-                .images(new Image[] {image1 , image2 , image3})
+                .images(new Image[]{image1, image2, image3})
                 .popularity(42)
                 .build();
     }

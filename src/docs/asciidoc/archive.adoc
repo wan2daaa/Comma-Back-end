@@ -1,0 +1,50 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+== 메인 화면
+
+link:main.html[main 화면]
+
+== 아카이브 API
+
+=== 아카이브 추가 실패 _ 찾을 수 없는 유저
+
+==== request
+
+include::{snippets}/spotify/archive/addFail_notfoundUser/http-request.adoc[]
+include::{snippets}/spotify/archive/addFail_notfoundUser/request-fields.adoc[]
+include::{snippets}/spotify/archive/addFail_notfoundUser/request-cookies.adoc[]
+
+==== response
+
+include::{snippets}/spotify/archive/addFail_notfoundUser/http-response.adoc[]
+include::{snippets}/spotify/archive/addFail_notfoundUser/response-fields.adoc[]
+
+=== 아카이브 추가 실패 _ 찾을 수 없는 플레이리스트
+
+==== request
+
+include::{snippets}/spotify/archive/addFail_notfoundPlaylist/http-request.adoc[]
+include::{snippets}/spotify/archive/addFail_notfoundPlaylist/request-fields.adoc[]
+include::{snippets}/spotify/archive/addFail_notfoundPlaylist/request-cookies.adoc[]
+
+==== response
+
+include::{snippets}/spotify/archive/addFail_notfoundPlaylist/http-response.adoc[]
+include::{snippets}/spotify/archive/addFail_notfoundPlaylist/response-body.adoc[]
+
+=== 아카이브 추가 성공
+
+==== request
+
+include::{snippets}/spotify/archive/addSuccess/http-request.adoc[]
+include::{snippets}/spotify/archive/addSuccess/request-fields.adoc[]
+include::{snippets}/spotify/archive/addSuccess/request-cookies.adoc[]
+
+==== response
+
+include::{snippets}/spotify/archive/addSuccess/http-response.adoc[]
+include::{snippets}/spotify/archive/addSuccess/response-fields.adoc[]

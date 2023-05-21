@@ -1,36 +1,31 @@
 package com.team.comma.spotify.history.repository;
 
-import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.team.comma.spotify.history.dto.HistoryResponse;
 import com.team.comma.user.constant.UserRole;
 import com.team.comma.user.domain.User;
 import com.team.comma.user.repository.UserRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
+import com.team.comma.util.config.TestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 
 import java.util.List;
 
-import static com.team.comma.spotify.history.domain.QHistory.history;
-import static com.team.comma.user.domain.QUser.user;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@SpringBootTest
-@Transactional
+@DataJpaTest
+@Import(TestConfig.class)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class HistoryRepositoryTest {
 
     @Autowired
     UserRepository userRepository;
 
     @Autowired
-    EntityManager entityManager;
-
-    @Autowired
-    private JPAQueryFactory queryFactory;
+    HistoryRepository historyRepository;
 
     @Test
     @DisplayName("사용자 History 조회")
@@ -43,38 +38,33 @@ public class HistoryRepositoryTest {
         userRepository.save(user);
 
         // when
-        List<HistoryResponse> result = getHistoryListByUserEmail("email");
+        List<HistoryResponse> result = historyRepository.getHistoryListByUserEmail("email");
 
         // then
         assertThat(result.size()).isEqualTo(3);
     }
 
     @Test
-    @DisplayName("사용자 History 삭제")
+    @DisplayName("사용자 History 한개 삭제")
     public void deleteUserHistory() {
         // given
         User userData = User.builder().email("email").password("password").role(UserRole.USER).build();
-        userRepository.save(userData);
         userData.addHistory("History01");
         userData.addHistory("History02");
         userData.addHistory("History03");
+        userRepository.save(userData);
 
         // when
-        List<HistoryResponse> resultBefore = getHistoryListByUserEmail("email");
+        List<HistoryResponse> resultBefore = historyRepository.getHistoryListByUserEmail("email");
         for(HistoryResponse response : resultBefore) {
-            queryFactory.update(history)
-                    .set(history.delFlag, true)
-                    .where(history.id.eq(response.getId()))
-                    .execute();
+            historyRepository.deleteHistoryById(response.getId());
+            break;
         }
-        entityManager.flush();
-        entityManager.clear();
-
-        List<HistoryResponse> resultAfter = getHistoryListByUserEmail("email");
 
         // when
+        List<HistoryResponse> resultAfter = historyRepository.getHistoryListByUserEmail("email");
         assertThat(resultBefore.size()).isEqualTo(3);
-        assertThat(resultAfter.size()).isEqualTo(0);
+        assertThat(resultAfter.size()).isEqualTo(2);
     }
 
     @Test
@@ -82,34 +72,18 @@ public class HistoryRepositoryTest {
     public void deleteUserAllHistory() {
         // given
         User userData = User.builder().email("email").password("password").role(UserRole.USER).build();
-        userRepository.save(userData);
         userData.addHistory("History01");
         userData.addHistory("History02");
         userData.addHistory("History03");
+        userRepository.save(userData);
 
         // when
-        List<HistoryResponse> resultBefore = getHistoryListByUserEmail("email");
-
-        queryFactory.update(history)
-                .set(history.delFlag, true)
-                .where(history.user.in(userData))
-                .execute();
-
-        entityManager.flush();
-        entityManager.clear();
-
-        List<HistoryResponse> resultAfter = getHistoryListByUserEmail("email");
+        List<HistoryResponse> resultBefore = historyRepository.getHistoryListByUserEmail("email");
+        historyRepository.deleteAllHistoryByUser(userData);
 
         // then
+        List<HistoryResponse> resultAfter = historyRepository.getHistoryListByUserEmail("email");
         assertThat(resultBefore.size()).isEqualTo(3);
         assertThat(resultAfter.size()).isEqualTo(0);
-    }
-
-    public List<HistoryResponse> getHistoryListByUserEmail(String userEmail) {
-        return queryFactory.select(Projections.constructor(HistoryResponse.class, history.id, history.searchHistory))
-                .from(history)
-                .innerJoin(history.user, user)
-                .where(history.user.email.eq(userEmail).and(history.delFlag.eq(false)))
-                .fetch();
     }
 }

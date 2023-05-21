@@ -1,5 +1,6 @@
 package com.team.comma.user.domain;
 
+import com.team.comma.spotify.favorite.artist.domain.FavoriteArtist;
 import com.team.comma.spotify.history.domain.History;
 import com.team.comma.user.constant.UserRole;
 import com.team.comma.user.constant.UserType;
@@ -86,6 +87,7 @@ public class User implements UserDetails {
     public void addHistory(String history) {
         History historyEntity = History.builder()
                 .searchHistory(history)
+                .delFlag(false)
                 .user(this)
                 .build();
 
