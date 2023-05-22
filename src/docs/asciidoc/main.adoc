@@ -36,5 +36,3 @@
 * link:playlist-track.html[Playlist-Track 문서]
 
 * link:track.html[Track 문서]
-
-* link:player.html[Player 문서]

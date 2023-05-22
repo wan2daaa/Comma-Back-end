@@ -26,3 +26,18 @@ include::{snippets}/spotify/track/updateAlarmFlag/success/http-response.adoc[]
 ==== Response
 include::{snippets}/spotify/track/updateAlarmFlag/fail/http-response.adoc[]
 
+
+=== 음악 재생 API
+
+==== Request
+
+include::{snippets}/spotify/track/start/success/http-request.adoc[]
+include::{snippets}/spotify/track/start/success/path-parameters.adoc[]
+
+==== Response
+include::{snippets}/spotify/track/start/success/http-response.adoc[]
+
+=== 음악 재생 API 실패 (존재하지 않는 트랙)
+
+==== Response
+include::{snippets}/spotify/track/start/fail2/http-response.adoc[]
