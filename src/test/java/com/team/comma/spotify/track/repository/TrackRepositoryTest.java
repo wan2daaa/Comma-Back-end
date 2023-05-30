@@ -58,7 +58,6 @@ public class TrackRepositoryTest {
         assertThat(result).isNotEmpty();
     }
 
-
     private Track getTrack(String title) {
         return Track.builder()
             .trackTitle(title)

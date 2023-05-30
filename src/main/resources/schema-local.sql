@@ -36,6 +36,7 @@ CREATE TABLE user_detail_tb
     sex                  VARCHAR(10),
     age                  INT ,
     recommend_time       TIME,
+    name                 VARCHAR(10),
     nickname             VARCHAR(10),
     profile_image_url    VARCHAR(50),
     popup_alert_flag     VARCHAR(10) NOT NULL,
@@ -66,6 +67,7 @@ CREATE TABLE playlist_tb
     alarm_start_time TIME,
     alarm_flag       BOOLEAN,
     list_sequence    INTEGER,
+    del_flag         VARCHAR(1),
     user_id          BIGINT,
     PRIMARY KEY (id),
     FOREIGN KEY (user_id) REFERENCES user_tb (id)
@@ -187,7 +189,7 @@ CREATE TABLE history_tb
 (
     id             BIGINT NOT NULL AUTO_INCREMENT,
     search_history VARCHAR(50),
-    del_flag       BOOLEAN,
+    del_flag       VARCHAR(1),
     user_id        BIGINT,
     PRIMARY KEY (id),
     FOREIGN KEY (user_id) REFERENCES user_tb (id)

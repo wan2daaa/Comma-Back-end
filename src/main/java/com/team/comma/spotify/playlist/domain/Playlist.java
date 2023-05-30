@@ -4,6 +4,7 @@ import com.team.comma.spotify.playlist.dto.PlaylistRequest;
 import com.team.comma.spotify.playlist.dto.PlaylistUpdateRequest;
 import com.team.comma.spotify.track.domain.Track;
 import com.team.comma.user.domain.User;
+import com.team.comma.util.converter.BooleanConverter;
 import jakarta.persistence.*;
 
 import java.time.LocalTime;
@@ -40,6 +41,10 @@ public class Playlist {
     private Boolean alarmFlag;
 
     private Integer listSequence;
+
+    @Builder.Default
+    @Convert(converter = BooleanConverter.class)
+    private boolean delFlag = false;
 
     @JoinColumn(name = "user_id")
     @ManyToOne(fetch = FetchType.LAZY)

@@ -29,4 +29,20 @@ public class PlaylistRepositoryImpl implements PlaylistRepositoryCustom {
             .from(playlist)
             .fetchOne();
     }
+
+    @Override
+    public long updateAlarmFlag(long id, boolean alarmFlag) {
+        return queryFactory.update(playlist)
+                .set(playlist.alarmFlag, alarmFlag)
+                .where(playlist.id.eq(id))
+                .execute();
+    }
+
+    @Override
+    public long deletePlaylist(long id) {
+        return queryFactory.update(playlist)
+                .set(playlist.delFlag,true)
+                .where(playlist.id.eq(id))
+                .execute();
+    }
 }

@@ -1,8 +1,6 @@
 package com.team.comma.spotify.track.service;
 
-import com.team.comma.spotify.playlist.domain.PlaylistTrack;
 import com.team.comma.spotify.playlist.dto.PlaylistTrackArtistResponse;
-import com.team.comma.spotify.playlist.dto.PlaylistTrackResponse;
 import com.team.comma.spotify.track.domain.TrackArtist;
 import com.team.comma.spotify.track.repository.TrackRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,9 +15,9 @@ public class TrackService {
 
     private final TrackRepository trackRepository;
 
-    public List<PlaylistTrackArtistResponse> getTrackArtistResponseList(final List<TrackArtist> artists){
+    public List<PlaylistTrackArtistResponse> createArtistResponse(List<TrackArtist> artistList) {
         List<PlaylistTrackArtistResponse> result = new ArrayList<>();
-        for (TrackArtist artist : artists){
+        for (TrackArtist artist : artistList) {
             result.add(PlaylistTrackArtistResponse.of(artist));
         }
         return result;

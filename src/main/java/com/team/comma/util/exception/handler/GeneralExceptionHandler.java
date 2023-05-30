@@ -1,6 +1,5 @@
 package com.team.comma.util.exception.handler;
 
-import com.team.comma.common.constant.ResponseCode;
 import com.team.comma.common.dto.MessageResponse;
 import com.team.comma.follow.exception.FollowingException;
 import com.team.comma.spotify.favorite.artist.exception.FavoriteArtistException;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import se.michaelthelin.spotify.exceptions.detailed.UnauthorizedException;
-
 import javax.security.auth.login.AccountException;
 
 import static com.team.comma.common.constant.ResponseCodeEnum.*;
@@ -69,12 +67,13 @@ public class GeneralExceptionHandler {
     }
 
     @ExceptionHandler({PlaylistException.class})
-    public ResponseEntity<MessageResponse> handlePlaylistNotFoundException(Exception e){
-        MessageResponse message = MessageResponse.of(ResponseCode.ALARM_UPDATE_FAILURE,
-                e.getMessage());
+    public ResponseEntity<MessageResponse> handlePlaylistNotFoundException(Exception e) {
+        MessageResponse message = MessageResponse.of(
+                PLAYLIST_NOT_FOUND.getCode(),
+                e.getMessage()
+        );
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
-
     }
 
     @ExceptionHandler({MethodArgumentTypeMismatchException.class})

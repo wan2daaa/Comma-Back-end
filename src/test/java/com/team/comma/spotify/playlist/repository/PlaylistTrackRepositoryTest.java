@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @Import(TestConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class PlaylistTrackRepositoryTest {
+class PlaylistTrackRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
@@ -47,15 +47,15 @@ public class PlaylistTrackRepositoryTest {
     private final String trackTitle = "test track";
 
     @Test
-    public void 플레이리스트_곡_연관관계_저장() {
+    void 플레이리스트_곡_연관관계_저장() {
         // given
-        final User user = userRepository.save(getUser());
-        final Playlist playlist = playlistRepository.save(getPlaylist(user, title));
-        final Track track = trackRepository.save(getTrack(trackTitle));
+        final User user = userRepository.save(buildUser());
+        final Playlist playlist = playlistRepository.save(buildPlaylist(user, title));
+        final Track track = trackRepository.save(buildTrack(trackTitle));
 
         // when
         final PlaylistTrack result = playlistTrackRepository.save(
-            getPlaylistTrack(playlist, track));
+                buildPlaylistTrack(playlist, track));
 
         // then
         assertThat(result).isNotNull();
@@ -64,10 +64,10 @@ public class PlaylistTrackRepositoryTest {
     }
 
     @Test
-    public void 플레이리스트_곡_연관관계_조회_0개() {
+    void 플레이리스트_곡_연관관계_조회_0개() {
         // given
-        final User user = userRepository.save(getUser());
-        final Playlist playlist = playlistRepository.save(getPlaylist(user, title));
+        final User user = userRepository.save(buildUser());
+        final Playlist playlist = playlistRepository.save(buildPlaylist(user, title));
 
         // when
         final List<PlaylistTrack> result = playlistTrackRepository.findAllByPlaylist(playlist);
@@ -77,14 +77,14 @@ public class PlaylistTrackRepositoryTest {
     }
 
     @Test
-    public void 플레이리스트_곡_연관관계_조회_2개() {
+    void 플레이리스트_곡_연관관계_조회_2개() {
         // given
-        final User user = userRepository.save(getUser());
-        final Playlist playlist = playlistRepository.save(getPlaylist(user, title));
-        final Track track1 = trackRepository.save(getTrack(trackTitle));
-        final Track track2 = trackRepository.save(getTrack(trackTitle));
-        playlistTrackRepository.save(getPlaylistTrack(playlist, track1));
-        playlistTrackRepository.save(getPlaylistTrack(playlist, track2));
+        final User user = userRepository.save(buildUser());
+        final Playlist playlist = playlistRepository.save(buildPlaylist(user, title));
+        final Track track1 = trackRepository.save(buildTrack(trackTitle));
+        final Track track2 = trackRepository.save(buildTrack(trackTitle));
+        playlistTrackRepository.save(buildPlaylistTrack(playlist, track1));
+        playlistTrackRepository.save(buildPlaylistTrack(playlist, track2));
 
         // when
         final List<PlaylistTrack> result = playlistTrackRepository.findAllByPlaylist(playlist);
@@ -188,7 +188,7 @@ public class PlaylistTrackRepositoryTest {
     }
 
 
-    private User getUser() {
+    private User buildUser() {
         return User.builder()
             .email(userEmail)
             .type(UserType.GENERAL_USER)
@@ -196,7 +196,7 @@ public class PlaylistTrackRepositoryTest {
             .build();
     }
 
-    private Playlist getPlaylist(User user, String title) {
+    private Playlist buildPlaylist(User user, String title) {
         return Playlist.builder()
             .playlistTitle(title)
             .alarmFlag(true)
@@ -204,13 +204,13 @@ public class PlaylistTrackRepositoryTest {
             .build();
     }
 
-    private Track getTrack(String title) {
+    private Track buildTrack(String title) {
         return Track.builder()
             .trackTitle(title)
             .build();
     }
 
-    private PlaylistTrack getPlaylistTrack(Playlist playlist, Track track) {
+    private PlaylistTrack buildPlaylistTrack(Playlist playlist, Track track) {
         return PlaylistTrack.builder()
             .playlist(playlist)
             .track(track)

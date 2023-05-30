@@ -10,12 +10,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface PlaylistRepository extends JpaRepository<Playlist, Long>,
     PlaylistRepositoryCustom {
-
-    List<Playlist> findAllByUser(User user);
-
-    @Modifying
-    @Query("update Playlist p set p.alarmFlag = :alarmFlag where p.id = :id")
-    int updateAlarmFlag(@Param("id") long id, @Param("alarmFlag") boolean alarmFlag);
-
+    List<Playlist> findAllByUserAndDelFlag(User user, boolean flag);
 
 }
