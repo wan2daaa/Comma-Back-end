@@ -22,7 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @Import(TestConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-// EmbeddedDatabase 가 아닌 Mysql 에 테스트 사용됨
 public class UserRepositoryTest {
 
     @Autowired

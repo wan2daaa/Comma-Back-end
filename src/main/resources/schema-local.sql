@@ -212,3 +212,5 @@ CREATE TABLE refresh_token_tb
     key_email VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
 );
+
+insert into user_tb (email , password , type , role) values ('testEmail' , 'password' , 'GENERAL_USER' , 'USER');

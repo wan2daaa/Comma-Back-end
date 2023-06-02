@@ -11,7 +11,7 @@ public class CreationCookie {
     public static ResponseCookie createResponseAccessToken(String cookieName) {
         return ResponseCookie.from("accessToken", cookieName)
             .httpOnly(true)
-            .secure(true)
+            //.secure(true)
             .path("/")
             .sameSite("None")
             .maxAge(30 * 60 * 1000L)
@@ -22,7 +22,7 @@ public class CreationCookie {
     public static ResponseCookie createResponseRefreshToken(String cookieName) {
         return ResponseCookie.from("refreshToken", cookieName)
             .httpOnly(true)
-            .secure(true)
+            //.secure(true)
             .path("/")
             .sameSite("None")
             .maxAge(14 * 24 * 60 * 60 * 1000L)
