@@ -1,6 +1,7 @@
 package com.team.comma.spotify.playlist.controller;
 
-import static com.team.comma.common.constant.ResponseCodeEnum.REQUEST_SUCCESS;
+import static com.team.comma.common.constant.ResponseCodeEnum.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anySet;
@@ -27,11 +28,15 @@ import com.team.comma.common.dto.MessageResponse;
 import com.team.comma.spotify.playlist.dto.PlaylistTrackRequest;
 import com.team.comma.spotify.playlist.dto.PlaylistTrackSaveRequestDto;
 import com.team.comma.spotify.playlist.dto.PlaylistUpdateRequest;
+import com.team.comma.spotify.playlist.exception.PlaylistException;
 import com.team.comma.spotify.playlist.service.PlaylistTrackService;
+import com.team.comma.spotify.track.dto.TrackRequest;
 import com.team.comma.user.domain.User;
 import com.team.comma.util.gson.GsonUtil;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.Cookie;
+
+import java.nio.charset.StandardCharsets;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
@@ -197,10 +202,18 @@ class PlaylistTrackControllerTest {
                 REQUEST_SUCCESS.getMessage()
             );
 
+        TrackRequest trackRequest = TrackRequest.builder()
+                .trackTitle("test track")
+                .albumImageUrl("url/track")
+                .spotifyTrackId("input ISRC")
+                .spotifyTrackHref("input href")
+                .trackArtistList(List.of("artist","artist")).build();
+
         String body = objectMapper.writeValueAsString(PlaylistTrackSaveRequestDto.builder()
+            .playlistIdList(List.of(1L,2L,3L))
             .playlistTitle("test playlist")
             .alarmStartTime(LocalTime.of(10, 10))
-            .trackIdList(List.of(1L, 2L, 3L))
+            .trackList(List.of(trackRequest))
             .build());
 
         doReturn(messageResponse)
@@ -209,7 +222,7 @@ class PlaylistTrackControllerTest {
 
         //when
         ResultActions resultActions = mockMvc.perform(
-            post("/playlist-track")
+            post("/playlists/tracks")
                 .contentType(APPLICATION_JSON)
                 .content(body)
                 .cookie(accessToken)
@@ -223,9 +236,15 @@ class PlaylistTrackControllerTest {
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestFields(
+                        fieldWithPath("playlistIdList").description("플레이리스트 ID 리스트, 신규 생성의 경우 입력받지 않음"),
                         fieldWithPath("playlistTitle").description("플레이리스트 제목"),
                         fieldWithPath("alarmStartTime").description("알람 시작 시간"),
-                        fieldWithPath("trackIdList").description("저장할 트랙 id 리스트")
+                        fieldWithPath("trackList").description("저장할 트랙 정보 리스트"),
+                        fieldWithPath("trackList.[].trackTitle").description("트랙 제목"),
+                        fieldWithPath("trackList.[].albumImageUrl").description("트랙 앨범 이미지 경로"),
+                        fieldWithPath("trackList.[].spotifyTrackId").description("트랙 ISRC 값"),
+                        fieldWithPath("trackList.[].spotifyTrackHref").description("트랙 href"),
+                        fieldWithPath("trackList.[].trackArtistList").description("트랙 아티스트 이름 리스트")
                     ),
                     responseFields(
                         fieldWithPath("code").description("응답 코드"),
@@ -234,6 +253,13 @@ class PlaylistTrackControllerTest {
                     )
                 )
             );
+
+        final MessageResponse result = gson.fromJson(
+                resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
+                MessageResponse.class);
+
+        assertThat(result.getCode()).isEqualTo(REQUEST_SUCCESS.getCode());
+        assertThat(result.getMessage()).isEqualTo(REQUEST_SUCCESS.getMessage());
     }
 
 
@@ -242,12 +268,6 @@ class PlaylistTrackControllerTest {
         //given
         Cookie accessToken = new Cookie("accessToken", "testToken");
         User user = User.builder().email(userEmail).build();
-
-        MessageResponse messageResponse = MessageResponse.of
-            (
-                REQUEST_SUCCESS.getCode(),
-                REQUEST_SUCCESS.getMessage()
-            );
 
         String body = objectMapper.writeValueAsString(PlaylistUpdateRequest.builder()
             .playlistTitle("test playlist")
@@ -260,7 +280,7 @@ class PlaylistTrackControllerTest {
 
         //when
         ResultActions resultActions = mockMvc.perform(
-            post("/playlist-track")
+            post("/playlists/tracks")
                 .contentType(APPLICATION_JSON)
                 .content(body)
                 .cookie(accessToken)
@@ -280,10 +300,17 @@ class PlaylistTrackControllerTest {
                     )
                 )
             );
+
+        final MessageResponse result = gson.fromJson(
+                resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
+                MessageResponse.class);
+
+        assertThat(result.getCode()).isEqualTo(SIMPLE_REQUEST_FAILURE.getCode());
+        assertThat(result.getMessage()).isEqualTo("사용자를 찾을 수 없습니다.");
     }
 
     @Test
-    void 플레이리스트트랙_저장_실패_존재하지않는_트랙() throws Exception {
+    void 플레이리스트트랙_저장_실패_존재하지않는_플레이리스트() throws Exception {
         //given
         Cookie accessToken = new Cookie("accessToken", "testToken");
         User user = User.builder().email(userEmail).build();
@@ -294,18 +321,27 @@ class PlaylistTrackControllerTest {
                 REQUEST_SUCCESS.getMessage()
             );
 
-        String body = objectMapper.writeValueAsString(PlaylistUpdateRequest.builder()
-            .playlistTitle("test playlist")
-            .alarmStartTime(LocalTime.of(10, 10))
-            .build());
+        TrackRequest trackRequest = TrackRequest.builder()
+                .trackTitle("test track")
+                .albumImageUrl("url/track")
+                .spotifyTrackId("input ISRC")
+                .spotifyTrackHref("input href")
+                .trackArtistList(List.of("artist","artist")).build();
 
-        doThrow(new EntityNotFoundException("해당 트랙이 존재하지 않습니다."))
+        String body = objectMapper.writeValueAsString(PlaylistTrackSaveRequestDto.builder()
+                .playlistIdList(List.of(1L,2L,3L))
+                .playlistTitle("test playlist")
+                .alarmStartTime(LocalTime.of(10, 10))
+                .trackList(List.of(trackRequest))
+                .build());
+
+        doThrow(new PlaylistException("플레이리스트를 찾을 수 없습니다."))
             .when(playlistTrackService)
             .savePlaylistTrackList(any(PlaylistTrackSaveRequestDto.class), anyString());
 
         //when
         ResultActions resultActions = mockMvc.perform(
-            post("/playlist-track")
+            post("/playlists/tracks")
                 .contentType(APPLICATION_JSON)
                 .content(body)
                 .cookie(accessToken)
@@ -325,6 +361,13 @@ class PlaylistTrackControllerTest {
                     )
                 )
             );
+
+        final MessageResponse result = gson.fromJson(
+                resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
+                MessageResponse.class);
+
+        assertThat(result.getCode()).isEqualTo(PLAYLIST_NOT_FOUND.getCode());
+        assertThat(result.getMessage()).isEqualTo("플레이리스트를 찾을 수 없습니다.");
     }
 
 

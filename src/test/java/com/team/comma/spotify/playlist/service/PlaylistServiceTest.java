@@ -74,7 +74,6 @@ class PlaylistServiceTest {
         );
         doReturn(userPlaylist).when(playlistRepository).findAllByUserAndDelFlag(user, false);
 
-
         // when
         final List<PlaylistResponse> result = playlistService.getPlaylists(token);
 
@@ -90,7 +89,7 @@ class PlaylistServiceTest {
         final Throwable thrown = catchThrowable(() -> playlistService.updatePlaylistAlarmFlag(123L, false));
 
         // then
-        assertThat(thrown.getMessage()).isEqualTo("플레이리스트가 존재하지 않습니다.");
+        assertThat(thrown.getMessage()).isEqualTo("플레이리스트를 찾을 수 없습니다.");
     }
 
     @Test
@@ -120,7 +119,7 @@ class PlaylistServiceTest {
         final Throwable thrown = catchThrowable(() -> playlistService.updatePlaylistsDelFlag(playlistIdList));
 
         // then
-        assertThat(thrown.getMessage()).isEqualTo("플레이리스트가 존재하지 않습니다.");
+        assertThat(thrown.getMessage()).isEqualTo("플레이리스트를 찾을 수 없습니다.");
     }
 
     @Test

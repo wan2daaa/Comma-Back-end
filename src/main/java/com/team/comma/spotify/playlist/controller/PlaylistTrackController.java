@@ -32,8 +32,7 @@ public class PlaylistTrackController {
         );
     }
 
-
-    @PostMapping("/playlist-track")
+    @PostMapping("/playlists/tracks")
     public ResponseEntity<MessageResponse> createPlaylistTrack(
         @CookieValue(value = "accessToken") String accessToken,
         @RequestBody final PlaylistTrackSaveRequestDto requestDto

@@ -64,9 +64,8 @@ public class PlaylistService {
 
     @Transactional
     public MessageResponse updatePlaylist(PlaylistUpdateRequest playlistUpdateRequest) {
-
         Playlist playlist = playlistRepository.findById(playlistUpdateRequest.getId()).orElseThrow(
-            () -> new EntityNotFoundException("해당 플레이리스트가 없습니다."));
+            () -> new EntityNotFoundException("플레이리스트를 찾을 수 없습니다."));
         playlist.updatePlaylist(playlistUpdateRequest);
 
         return MessageResponse.of(REQUEST_SUCCESS);
@@ -75,7 +74,7 @@ public class PlaylistService {
     @Transactional
     public MessageResponse updatePlaylistAlarmFlag(long playlistId, boolean alarmFlag) {
         Playlist playlist = playlistRepository.findById(playlistId)
-                .orElseThrow(() -> new PlaylistException("플레이리스트가 존재하지 않습니다."));
+                .orElseThrow(() -> new PlaylistException("플레이리스트를 찾을 수 없습니다."));
 
         playlistRepository.updateAlarmFlag(playlistId, alarmFlag);
         return MessageResponse.of(PLAYLIST_ALARM_UPDATED);
@@ -85,7 +84,7 @@ public class PlaylistService {
     public MessageResponse updatePlaylistsDelFlag(List<Long> playlistIdList) {
         for(Long playlistId : playlistIdList){
             Playlist playlist = playlistRepository.findById(playlistId)
-                    .orElseThrow(() -> new PlaylistException("플레이리스트가 존재하지 않습니다."));
+                    .orElseThrow(() -> new PlaylistException("플레이리스트를 찾을 수 없습니다."));
         }
         for(Long playlistId : playlistIdList){
             playlistRepository.deletePlaylist(playlistId);

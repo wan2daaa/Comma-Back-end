@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.team.comma.spotify.playlist.domain.Playlist;
 import com.team.comma.spotify.playlist.domain.PlaylistTrack;
 import com.team.comma.spotify.track.domain.Track;
+import com.team.comma.spotify.track.dto.TrackRequest;
 import com.team.comma.user.domain.User;
 import java.time.LocalTime;
 import java.util.List;
@@ -22,14 +23,16 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PlaylistTrackSaveRequestDto {
 
+    private List<Long> playlistIdList;
+
     private String playlistTitle;
 
     private LocalTime alarmStartTime;
 
-    private List<Long> trackIdList;
+    private List<TrackRequest> trackList;
 
-    @JsonIgnore
     @Setter
+    @JsonIgnore
     private int listSequence;
 
     @Setter
@@ -41,11 +44,11 @@ public class PlaylistTrackSaveRequestDto {
         (
             @JsonProperty("playlistTitle") String playlistTitle,
             @JsonProperty("alarmStartTime") LocalTime alarmStartTime,
-            @JsonProperty("trackIdList") List<Long> trackIdList
+            @JsonProperty("trackList") List<TrackRequest> trackList
         ) {
         this.playlistTitle = playlistTitle;
         this.alarmStartTime = alarmStartTime;
-        this.trackIdList = trackIdList;
+        this.trackList = trackList;
     }
 
     public Playlist toPlaylistEntity() {

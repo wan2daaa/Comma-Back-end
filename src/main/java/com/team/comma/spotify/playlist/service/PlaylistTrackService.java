@@ -6,14 +6,20 @@ import com.team.comma.common.dto.MessageResponse;
 import com.team.comma.spotify.playlist.domain.Playlist;
 import com.team.comma.spotify.playlist.domain.PlaylistTrack;
 import com.team.comma.spotify.playlist.dto.PlaylistTrackSaveRequestDto;
+import com.team.comma.spotify.playlist.exception.PlaylistException;
 import com.team.comma.spotify.playlist.repository.PlaylistRepository;
 import com.team.comma.spotify.playlist.repository.PlaylistTrackRepository;
 import com.team.comma.spotify.track.domain.Track;
+import com.team.comma.spotify.track.domain.TrackArtist;
+import com.team.comma.spotify.track.dto.TrackRequest;
+import com.team.comma.spotify.track.repository.TrackArtistRepository;
 import com.team.comma.spotify.track.repository.TrackRepository;
 import com.team.comma.user.domain.User;
 import com.team.comma.user.repository.UserRepository;
 import com.team.comma.util.jwt.support.JwtTokenProvider;
 import jakarta.persistence.EntityNotFoundException;
+
+import java.util.Optional;
 import java.util.Set;
 import javax.security.auth.login.AccountException;
 import lombok.RequiredArgsConstructor;
@@ -47,8 +53,7 @@ public class PlaylistTrackService {
         );
     }
 
-    public MessageResponse savePlaylistTrackList(PlaylistTrackSaveRequestDto dto,
-        String accessToken)
+    public MessageResponse savePlaylistTrackList(PlaylistTrackSaveRequestDto dto, String accessToken)
         throws AccountException {
 
         String userEmail = jwtTokenProvider.getUserPk(accessToken);
@@ -59,23 +64,22 @@ public class PlaylistTrackService {
             throw new AccountException("사용자를 찾을 수 없습니다.");
         }
 
-        Playlist playlist = dto.toPlaylistEntity();
-        playlistRepository.save(playlist);
+        if (dto.getPlaylistIdList().isEmpty()){
+            Playlist playlist = dto.toPlaylistEntity();
+            playlistRepository.save(playlist);
 
-        for (Long trackId : dto.getTrackIdList()) {
-            Track eachTrack = trackRepository.findById(trackId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 트랙이 존재하지 않습니다."));
+            for (TrackRequest trackRequest : dto.getTrackList()) {
+                addTrackToPlaylist(playlist,trackRequest);
+            }
+        } else {
+            for (Long playlistId : dto.getPlaylistIdList()){
+                Playlist playlist = playlistRepository.findById(playlistId)
+                        .orElseThrow(() -> new PlaylistException("플레이리스트를 찾을 수 없습니다."));
 
-            Integer maxPlaySequence = playlistTrackRepository.
-                findMaxPlaySequenceByPlaylistId(playlist.getId())
-                .orElse(0);
-
-            PlaylistTrack eachPlaylistTrack = PlaylistTrack.builder()
-                .playlist(playlist)
-                .track(eachTrack)
-                .playSequence(maxPlaySequence + 1)
-                .build();
-            playlistTrackRepository.save(eachPlaylistTrack);
+                for (TrackRequest trackRequest : dto.getTrackList()) {
+                    addTrackToPlaylist(playlist,trackRequest);
+                }
+            }
         }
 
         return MessageResponse.of(
@@ -83,5 +87,21 @@ public class PlaylistTrackService {
             REQUEST_SUCCESS.getMessage()
         );
     }
-}
 
+    public void addTrackToPlaylist(Playlist playlist, TrackRequest trackRequest){
+        Track track = trackRepository.findBySpotifyTrackId(trackRequest.getSpotifyTrackId())
+                .orElse(trackRepository.save(trackRequest.toTrackEntity()));
+
+        int maxPlaySequence = playlistTrackRepository.
+                findMaxPlaySequenceByPlaylistId(playlist.getId())
+                .orElse(0);
+
+        PlaylistTrack eachPlaylistTrack = PlaylistTrack.builder()
+                .playlist(playlist)
+                .track(track)
+                .playSequence(maxPlaySequence + 1)
+                .build();
+        playlistTrackRepository.save(eachPlaylistTrack);
+    }
+
+}

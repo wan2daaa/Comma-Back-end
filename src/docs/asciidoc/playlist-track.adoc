@@ -49,7 +49,7 @@ include::{snippets}/spotify/savePlaylistTrack/response-fields.adoc[]
 
 include::{snippets}/spotify/savePlaylistTrackFailUser/http-response.adoc[]
 
-=== 플레이리스트 저장 실패 (존재하지 않는 트랙)
+=== 플레이리스트 저장 실패 (존재하지 않는 플레이리스트)
 
 ==== Response
 

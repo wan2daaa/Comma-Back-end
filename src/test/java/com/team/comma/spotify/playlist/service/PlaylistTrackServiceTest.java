@@ -1,8 +1,7 @@
 package com.team.comma.spotify.playlist.service;
 
 import static com.team.comma.common.constant.ResponseCodeEnum.REQUEST_SUCCESS;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -13,9 +12,12 @@ import com.team.comma.common.dto.MessageResponse;
 import com.team.comma.spotify.playlist.domain.Playlist;
 import com.team.comma.spotify.playlist.domain.PlaylistTrack;
 import com.team.comma.spotify.playlist.dto.PlaylistTrackSaveRequestDto;
+import com.team.comma.spotify.playlist.exception.PlaylistException;
 import com.team.comma.spotify.playlist.repository.PlaylistRepository;
 import com.team.comma.spotify.playlist.repository.PlaylistTrackRepository;
 import com.team.comma.spotify.track.domain.Track;
+import com.team.comma.spotify.track.domain.TrackArtist;
+import com.team.comma.spotify.track.dto.TrackRequest;
 import com.team.comma.spotify.track.repository.TrackRepository;
 import com.team.comma.user.domain.User;
 import com.team.comma.user.repository.UserRepository;
@@ -58,6 +60,9 @@ class PlaylistTrackServiceTest {
     @Mock
     UserRepository userRepository;
 
+
+    private String spotifyTrackId = "input ISRC of track";
+
     @Test
     void 플리에_담긴_트랙들을_삭제한다() {
         //given
@@ -97,78 +102,6 @@ class PlaylistTrackServiceTest {
     }
 
     @Test
-    void 플레이리스트와_트랙들을_PlaylistTrackSaveRequestDto로_저장한다() throws AccountException {
-        //given
-        final String accessToken = "accessToken";
-        final String userEmail = "test@email.com";
-
-        PlaylistTrackSaveRequestDto requestDto = PlaylistTrackSaveRequestDto.builder()
-            .playlistTitle("플리 타이틀")
-            .alarmStartTime(LocalTime.now())
-            .listSequence(1)
-            .trackIdList(List.of(1L, 2L, 3L))
-            .build();
-
-        Playlist playlist = requestDto.toPlaylistEntity();
-
-        doReturn(userEmail)
-            .when(jwtTokenProvider).getUserPk(accessToken);
-
-        doReturn(Optional.of(User.builder().email(userEmail).build()))
-            .when(userRepository).findByEmail(userEmail);
-
-        doReturn(Optional.of(1))
-            .when(playlistTrackRepository).findMaxPlaySequenceByPlaylistId(playlist.getId());
-
-        doReturn(playlist)
-            .when(playlistRepository).save(any(Playlist.class));
-
-        doReturn(Optional.of(Track.builder().build()))
-            .when(trackRepository).findById(anyLong());
-
-        doReturn(PlaylistTrack.builder().build())
-            .when(playlistTrackRepository).save(any(PlaylistTrack.class));
-
-        //when
-        MessageResponse messageResponse = playlistTrackService.savePlaylistTrackList(requestDto,
-            accessToken);
-
-        //then
-        assertThat(messageResponse.getCode()).isEqualTo(REQUEST_SUCCESS.getCode());
-        assertThat(messageResponse.getMessage()).isEqualTo(REQUEST_SUCCESS.getMessage());
-
-    }
-
-    @Test
-    void 트랙이_존재하지않으면_EntityNotFoundException() throws AccountException {
-        //given
-        final String accessToken = "accessToken";
-        final String userEmail = "test@email.com";
-
-        User user = User.builder().email(userEmail).build();
-
-        PlaylistTrackSaveRequestDto requestDto = PlaylistTrackSaveRequestDto.builder()
-            .playlistTitle("플리 타이틀")
-            .alarmStartTime(LocalTime.now())
-            .listSequence(1)
-            .trackIdList(List.of(1L, 2L, 3L))
-            .build();
-
-        Playlist playlist = requestDto.toPlaylistEntity();
-
-        doReturn(userEmail)
-            .when(jwtTokenProvider).getUserPk(accessToken);
-        doReturn(Optional.of(user))
-            .when(userRepository).findByEmail(userEmail);
-
-        //when
-        //then
-        assertThatThrownBy(
-            () -> playlistTrackService.savePlaylistTrackList(requestDto, accessToken))
-            .isInstanceOf(EntityNotFoundException.class);
-    }
-
-    @Test
     void 사용자가_존재하지않으면_UsernameNotFoundException() {
         //given
         final String accessToken = "accessToken";
@@ -177,7 +110,7 @@ class PlaylistTrackServiceTest {
             .playlistTitle("플리 타이틀")
             .alarmStartTime(LocalTime.now())
             .listSequence(1)
-            .trackIdList(List.of(1L, 2L, 3L))
+            .trackList(List.of(TrackRequest.builder().build()))
             .build();
 
         //when
@@ -186,4 +119,198 @@ class PlaylistTrackServiceTest {
             () -> playlistTrackService.savePlaylistTrackList(requestDto, accessToken))
             .isInstanceOf(UsernameNotFoundException.class);
     }
+
+    @Test
+    void 트랙_저장_성공_playlistIdList_비어있고_track_존재하지않으면_트랙_신규_저장_후_플레이리스트_신규_저장() throws AccountException {
+        //given
+        final String accessToken = "accessToken";
+        final String userEmail = "test@email.com";
+        final User user = User.builder().email(userEmail).build();
+
+        TrackRequest trackRequest = TrackRequest.builder()
+                .trackTitle("test track")
+                .albumImageUrl("url/track")
+                .spotifyTrackId(spotifyTrackId)
+                .spotifyTrackHref("href string")
+                .trackArtistList(List.of("test artist"))
+                .build();
+
+        PlaylistTrackSaveRequestDto requestDto = PlaylistTrackSaveRequestDto.builder()
+                .playlistIdList(List.of())
+                .playlistTitle("플리 타이틀")
+                .alarmStartTime(LocalTime.now())
+                .listSequence(1)
+                .trackList(List.of(trackRequest))
+                .build();
+
+        doReturn(userEmail)
+                .when(jwtTokenProvider).getUserPk(accessToken);
+        doReturn(Optional.of(user))
+                .when(userRepository).findByEmail(userEmail);
+
+        //when
+        final MessageResponse result = playlistTrackService.savePlaylistTrackList(requestDto, accessToken);
+
+        //then
+        assertThat(result.getCode()).isEqualTo(REQUEST_SUCCESS.getCode());
+        assertThat(result.getMessage()).isEqualTo(REQUEST_SUCCESS.getMessage());
+
+    }
+
+    @Test
+    void 트랙_저장_성공_playlistIdList_비어있고_track_존재하면_플레이리스트_신규_저장() throws AccountException {
+        //given
+        final String accessToken = "accessToken";
+        final String userEmail = "test@email.com";
+        final User user = User.builder().email(userEmail).build();
+
+        TrackRequest trackRequest = TrackRequest.builder()
+                .trackTitle("test track")
+                .albumImageUrl("url/track")
+                .spotifyTrackId(spotifyTrackId)
+                .spotifyTrackHref("href string")
+                .trackArtistList(List.of("test artist"))
+                .build();
+        Track track = trackRequest.toTrackEntity();
+
+        PlaylistTrackSaveRequestDto requestDto = PlaylistTrackSaveRequestDto.builder()
+                .playlistIdList(List.of())
+                .playlistTitle("플리 타이틀")
+                .alarmStartTime(LocalTime.now())
+                .listSequence(1)
+                .trackList(List.of(trackRequest))
+                .build();
+
+        doReturn(userEmail)
+                .when(jwtTokenProvider).getUserPk(accessToken);
+        doReturn(Optional.of(user))
+                .when(userRepository).findByEmail(userEmail);
+        doReturn(Optional.of(track))
+                .when(trackRepository).findBySpotifyTrackId(trackRequest.getSpotifyTrackId());
+
+        //when
+        final MessageResponse result = playlistTrackService.savePlaylistTrackList(requestDto, accessToken);
+
+        //then
+        assertThat(result.getCode()).isEqualTo(REQUEST_SUCCESS.getCode());
+        assertThat(result.getMessage()).isEqualTo(REQUEST_SUCCESS.getMessage());
+    }
+
+    @Test
+    void 트랙_저장_성공_playlistIdList_비어있지않고_track_존재하지않으면_트랙_신규_저장_후_플레이리스트_트랙_추가() throws AccountException {
+        //given
+        final String accessToken = "accessToken";
+        final String userEmail = "test@email.com";
+        final User user = User.builder().email(userEmail).build();
+
+        TrackRequest trackRequest = TrackRequest.builder()
+                .trackTitle("test track")
+                .albumImageUrl("url/track")
+                .spotifyTrackId(spotifyTrackId)
+                .spotifyTrackHref("href string")
+                .trackArtistList(List.of("test artist"))
+                .build();
+
+        PlaylistTrackSaveRequestDto requestDto = PlaylistTrackSaveRequestDto.builder()
+                .playlistIdList(List.of(1L,2L,3L))
+                .playlistTitle("플리 타이틀")
+                .alarmStartTime(LocalTime.now())
+                .listSequence(1)
+                .trackList(List.of(trackRequest))
+                .build();
+        Playlist playlist = requestDto.toPlaylistEntity();
+
+        doReturn(userEmail)
+                .when(jwtTokenProvider).getUserPk(accessToken);
+        doReturn(Optional.of(user))
+                .when(userRepository).findByEmail(userEmail);
+        doReturn(Optional.of(playlist))
+                .when(playlistRepository).findById(anyLong());
+
+        //when
+        final MessageResponse result = playlistTrackService.savePlaylistTrackList(requestDto, accessToken);
+
+        //then
+        assertThat(result.getCode()).isEqualTo(REQUEST_SUCCESS.getCode());
+        assertThat(result.getMessage()).isEqualTo(REQUEST_SUCCESS.getMessage());
+
+    }
+
+    @Test
+    void 트랙_저장_성공_playlistIdList_비어있지않고_track_존재하면_플레이리스트_트랙_추가() throws AccountException {
+        //given
+        final String accessToken = "accessToken";
+        final String userEmail = "test@email.com";
+        final User user = User.builder().email(userEmail).build();
+
+        TrackRequest trackRequest = TrackRequest.builder()
+                .trackTitle("test track")
+                .albumImageUrl("url/track")
+                .spotifyTrackId(spotifyTrackId)
+                .spotifyTrackHref("href string")
+                .trackArtistList(List.of("test artist"))
+                .build();
+        Track track = trackRequest.toTrackEntity();
+
+        PlaylistTrackSaveRequestDto requestDto = PlaylistTrackSaveRequestDto.builder()
+                .playlistIdList(List.of(1L,2L,3L))
+                .playlistTitle("플리 타이틀")
+                .alarmStartTime(LocalTime.now())
+                .listSequence(1)
+                .trackList(List.of(trackRequest))
+                .build();
+        Playlist playlist = requestDto.toPlaylistEntity();
+
+        doReturn(userEmail)
+                .when(jwtTokenProvider).getUserPk(accessToken);
+        doReturn(Optional.of(user))
+                .when(userRepository).findByEmail(userEmail);
+        doReturn(Optional.of(track))
+                .when(trackRepository).findBySpotifyTrackId(trackRequest.getSpotifyTrackId());
+        doReturn(Optional.of(playlist))
+                .when(playlistRepository).findById(anyLong());
+
+        //when
+        final MessageResponse result = playlistTrackService.savePlaylistTrackList(requestDto, accessToken);
+
+        //then
+        assertThat(result.getCode()).isEqualTo(REQUEST_SUCCESS.getCode());
+        assertThat(result.getMessage()).isEqualTo(REQUEST_SUCCESS.getMessage());
+
+    }
+
+    @Test
+    void 트랙_저장_실패_playlistIdList_존재하지않는_플레이리스트_포함() throws PlaylistException {
+        final String accessToken = "accessToken";
+        final String userEmail = "test@email.com";
+        final User user = User.builder().email(userEmail).build();
+
+        TrackRequest trackRequest = TrackRequest.builder()
+                .trackTitle("test track")
+                .albumImageUrl("url/track")
+                .spotifyTrackId(spotifyTrackId)
+                .spotifyTrackHref("href string")
+                .trackArtistList(List.of("test artist"))
+                .build();
+
+        PlaylistTrackSaveRequestDto requestDto = PlaylistTrackSaveRequestDto.builder()
+                .playlistIdList(List.of(1L,2L,3L))
+                .playlistTitle("플리 타이틀")
+                .alarmStartTime(LocalTime.now())
+                .listSequence(1)
+                .trackList(List.of(trackRequest))
+                .build();
+
+        doReturn(userEmail)
+                .when(jwtTokenProvider).getUserPk(accessToken);
+        doReturn(Optional.of(user))
+                .when(userRepository).findByEmail(userEmail);
+
+        // when
+        final Throwable thrown = catchThrowable(() -> playlistTrackService.savePlaylistTrackList(requestDto, accessToken));
+
+        // then
+        assertThat(thrown.getMessage()).isEqualTo("플레이리스트를 찾을 수 없습니다.");
+    }
+
 }

@@ -42,6 +42,7 @@ import com.team.comma.util.gson.GsonUtil;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.Cookie;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
@@ -116,7 +117,6 @@ class PlaylistControllerTest {
             RestDocumentationRequestBuilders.get(url)
                 .cookie(new Cookie("accessToken", "accessToken"))
                 .contentType(MediaType.APPLICATION_JSON));
-        final List<PlaylistResponse> result = playlistService.getPlaylists("accessToken");
 
         // then
         resultActions.andExpect(status().isOk()).andDo(
@@ -144,6 +144,9 @@ class PlaylistControllerTest {
                 )
             )
         );
+
+        final List<PlaylistResponse> result = playlistService.getPlaylists("accessToken");
+
         assertThat(result).hasSize(1);
     }
 
@@ -151,6 +154,7 @@ class PlaylistControllerTest {
     void 플레이리스트_알람설정변경_성공() throws Exception {
         // given
         final String url = "/playlist/alert";
+
         doReturn(MessageResponse.of(PLAYLIST_ALARM_UPDATED)
         ).when(playlistService).updatePlaylistAlarmFlag(123L, false);
 
@@ -178,12 +182,20 @@ class PlaylistControllerTest {
                 )
             )
         );
+
+        final MessageResponse result = gson.fromJson(
+                resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
+                MessageResponse.class);
+
+        assertThat(result.getCode()).isEqualTo(PLAYLIST_ALARM_UPDATED.getCode());
+        assertThat(result.getMessage()).isEqualTo(PLAYLIST_ALARM_UPDATED.getMessage());
     }
 
     @Test
     void 플레이리스트_알람설정변경_실패_플레이리스트_찾을수없음() throws Exception {
         // given
         final String url = "/playlist/alert";
+
         doThrow(new PlaylistException("플레이리스트를 찾을 수 없습니다."))
                 .when(playlistService).updatePlaylistAlarmFlag(123L, false);
 
@@ -211,6 +223,13 @@ class PlaylistControllerTest {
                         )
                 )
         );
+
+        final MessageResponse result = gson.fromJson(
+                resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
+                MessageResponse.class);
+
+        assertThat(result.getCode()).isEqualTo(PLAYLIST_NOT_FOUND.getCode());
+        assertThat(result.getMessage()).isEqualTo(PLAYLIST_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -218,6 +237,7 @@ class PlaylistControllerTest {
         // given
         final String url = "/playlist";
         final List<Long> playlistIdList = Arrays.asList(123L, 124L);
+
         doReturn(MessageResponse.of(PLAYLIST_DELETED)
         ).when(playlistService).updatePlaylistsDelFlag(playlistIdList);
 
@@ -243,6 +263,13 @@ class PlaylistControllerTest {
                         )
                 )
         );
+
+        final MessageResponse result = gson.fromJson(
+                resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
+                MessageResponse.class);
+
+        assertThat(result.getCode()).isEqualTo(PLAYLIST_DELETED.getCode());
+        assertThat(result.getMessage()).isEqualTo(PLAYLIST_DELETED.getMessage());
     }
 
     @Test
@@ -250,7 +277,8 @@ class PlaylistControllerTest {
         // given
         final String url = "/playlist";
         final List<Long> playlistIdList = Arrays.asList(123L, 124L);
-        doThrow(new PlaylistException("플레이리스트가 존재하지 않습니다. 다시 시도해 주세요."))
+
+        doThrow(new PlaylistException("플레이리스트를 찾을 수 없습니다."))
                 .when(playlistService).updatePlaylistsDelFlag(playlistIdList);
 
         // when
@@ -275,6 +303,13 @@ class PlaylistControllerTest {
                         )
                 )
         );
+
+        final MessageResponse result = gson.fromJson(
+                resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
+                MessageResponse.class);
+
+        assertThat(result.getCode()).isEqualTo(PLAYLIST_NOT_FOUND.getCode());
+        assertThat(result.getMessage()).isEqualTo(PLAYLIST_NOT_FOUND.getMessage());
     }
 
     @Test

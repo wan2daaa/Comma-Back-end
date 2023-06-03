@@ -21,22 +21,21 @@ public class TrackRepositoryTest {
     @Autowired
     private TrackRepository trackRepository;
 
-    private final String title = "test track";
-
+    private String spotifyTrackId = "input ISRC of track";
     @Test
-    public void 곡_저장() {
+    void 곡_저장() {
         // given
 
         // when
-        final Track result = trackRepository.save(getTrack(title));
+        final Track result = trackRepository.save(buildTrack("test track"));
 
         // then
         assertThat(result).isNotNull();
-        assertThat(result.getTrackTitle()).isEqualTo(title);
+        assertThat(result.getTrackTitle()).isEqualTo("test track");
     }
 
     @Test
-    public void 곡_조회_실패_곡정보없음() {
+    void 곡_조회_실패_곡정보없음() {
         // given
 
         // when
@@ -47,20 +46,46 @@ public class TrackRepositoryTest {
     }
 
     @Test
-    public void 곡_조회_성공() {
+    void 곡_조회_성공() {
         // given
-        final Track track = trackRepository.save(getTrack("track test"));
+        final Track track = trackRepository.save(buildTrack("test track"));
 
         // when
         final Optional<Track> result = trackRepository.findById(track.getId());
 
         // then
         assertThat(result).isNotEmpty();
+        assertThat(result).isEqualTo(Optional.of(track));
     }
 
-    private Track getTrack(String title) {
+    @Test
+    void spotify_track_id로_곡_조회_성공(){
+        // given
+        final Track track = trackRepository.save(buildTrack("test track"));
+
+        // when
+        final Optional<Track> result = trackRepository.findBySpotifyTrackId(spotifyTrackId);
+
+        // then
+        assertThat(result).isNotEmpty();
+        assertThat(result).isEqualTo(Optional.of(track));
+    }
+
+    @Test
+    void spotify_track_id로_곡_조회_실패_곡정보없음(){
+        // given
+
+        // when
+        final Optional<Track> result = trackRepository.findBySpotifyTrackId(spotifyTrackId);
+
+        // then
+        assertThat(result).isEmpty();
+    }
+
+    private Track buildTrack(String title) {
         return Track.builder()
             .trackTitle(title)
+            .spotifyTrackId(spotifyTrackId)
             .build();
     }
 
