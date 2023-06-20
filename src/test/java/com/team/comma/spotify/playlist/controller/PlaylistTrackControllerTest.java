@@ -19,17 +19,19 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.team.comma.common.dto.MessageResponse;
-import com.team.comma.spotify.playlist.dto.PlaylistTrackRequest;
-import com.team.comma.spotify.playlist.dto.PlaylistTrackSaveRequestDto;
-import com.team.comma.spotify.playlist.dto.PlaylistUpdateRequest;
+import com.team.comma.spotify.playlist.dto.*;
 import com.team.comma.spotify.playlist.exception.PlaylistException;
 import com.team.comma.spotify.playlist.service.PlaylistTrackService;
+import com.team.comma.spotify.track.domain.Track;
+import com.team.comma.spotify.track.domain.TrackArtist;
 import com.team.comma.spotify.track.dto.TrackRequest;
 import com.team.comma.user.domain.User;
 import com.team.comma.util.gson.GsonUtil;
@@ -38,6 +40,7 @@ import jakarta.servlet.http.Cookie;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import javax.security.auth.login.AccountException;
@@ -51,6 +54,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -194,7 +198,6 @@ class PlaylistTrackControllerTest {
     @Test
     void 플레이리스트트랙_저장_성공() throws Exception {
         Cookie accessToken = new Cookie("accessToken", "testToken");
-        User user = User.builder().email(userEmail).build();
 
         MessageResponse messageResponse = MessageResponse.of
             (
@@ -267,7 +270,6 @@ class PlaylistTrackControllerTest {
     void 플레이리스트트랙_저장_실패_존재하지않는_사용자() throws Exception {
         //given
         Cookie accessToken = new Cookie("accessToken", "testToken");
-        User user = User.builder().email(userEmail).build();
 
         String body = objectMapper.writeValueAsString(PlaylistUpdateRequest.builder()
             .playlistTitle("test playlist")
@@ -313,13 +315,6 @@ class PlaylistTrackControllerTest {
     void 플레이리스트트랙_저장_실패_존재하지않는_플레이리스트() throws Exception {
         //given
         Cookie accessToken = new Cookie("accessToken", "testToken");
-        User user = User.builder().email(userEmail).build();
-
-        MessageResponse messageResponse = MessageResponse.of
-            (
-                REQUEST_SUCCESS.getCode(),
-                REQUEST_SUCCESS.getMessage()
-            );
 
         TrackRequest trackRequest = TrackRequest.builder()
                 .trackTitle("test track")
@@ -370,5 +365,106 @@ class PlaylistTrackControllerTest {
         assertThat(result.getMessage()).isEqualTo("플레이리스트를 찾을 수 없습니다.");
     }
 
+    @Test
+    void 플레이리스트_트랙_상세_리스트_조회_성공() throws Exception {
+        // given
+        final String url = "/playlists/tracks/{playlistId}";
+
+        final List<PlaylistTrackArtistResponse> playlistTrackArtistResponseList = List.of(
+                PlaylistTrackArtistResponse.of(buildTrackArtist()));
+        final List<PlaylistTrackResponse> playlistTracks = Arrays.asList(
+                PlaylistTrackResponse.of(buildTrack(), true, playlistTrackArtistResponseList),
+                PlaylistTrackResponse.of(buildTrack(), true, playlistTrackArtistResponseList));
+
+        final MessageResponse message = MessageResponse.of(REQUEST_SUCCESS, playlistTracks);
+
+        doReturn(message).when(playlistTrackService).getPlaylistTracks(anyLong());
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                RestDocumentationRequestBuilders.get(url,1L));
+
+        // then
+        resultActions.andExpect(status().isOk()).andDo(
+                document("spotify/selectPlaylistsTracks",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("playlistId").description("플레이리스트 id")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메세지"),
+                                fieldWithPath("data").description("응답 데이터"),
+                                fieldWithPath("data.[].trackId").description("트랙 id"),
+                                fieldWithPath("data.[].trackTitle").description("트랙 제목"),
+                                fieldWithPath("data.[].durationTimeMs").description("트랙 재생 시간"),
+                                fieldWithPath("data.[].albumImageUrl").description("트랙 앨범 이미지 URL"),
+                                fieldWithPath("data.[].trackAlarmFlag").description("트랙 알람 설정 여부"),
+                                fieldWithPath("data.[].trackArtistList").description("트랙 아티스트 리스트"),
+                                fieldWithPath("data.[].trackArtistList.[].artistId").description("트랙 아티스트 id"),
+                                fieldWithPath("data.[].trackArtistList.[].artistName").description("트랙 아티스트명")
+                        )
+                )
+        );
+        final MessageResponse result = gson.fromJson(
+                resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
+                MessageResponse.class);
+
+        assertThat((List<PlaylistTrackResponse>) result.getData()).size().isEqualTo(2);
+    }
+
+    @Test
+    void 플레이리스트_트랙_상세_리스트_조회_실패_플레이리스트없음() throws Exception {
+        // given
+        final String url = "/playlists/tracks/{playlistId}";
+
+        doThrow(new PlaylistException("플레이리스트를 찾을 수 없습니다."))
+                .when(playlistTrackService)
+                .getPlaylistTracks(anyLong());
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                RestDocumentationRequestBuilders.get(url,1L));
+
+        // then
+        resultActions.andExpect(status().isBadRequest()).andDo(
+                document("spotify/selectPlaylistsTracksFailure",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("playlistId").description("플레이리스트 id")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메세지"),
+                                fieldWithPath("data").description("응답 데이터")
+                        )
+                )
+        );
+
+        final MessageResponse result = gson.fromJson(
+                resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
+                MessageResponse.class);
+
+        assertThat(result.getCode()).isEqualTo(PLAYLIST_NOT_FOUND.getCode());
+        assertThat(result.getMessage()).isEqualTo(PLAYLIST_NOT_FOUND.getMessage());
+    }
+
+    private Track buildTrack() {
+        return Track.builder()
+                .id(123L)
+                .trackTitle("test track")
+                .durationTimeMs(3000)
+                .albumImageUrl("url/test/image")
+                .build();
+    }
+
+    private TrackArtist buildTrackArtist() {
+        return TrackArtist.builder()
+                .id(123L)
+                .artistName("test artist")
+                .build();
+    }
 
 }

@@ -111,3 +111,27 @@ include::{snippets}/following/isFollow-false/request-cookies.adoc[]
 
 include::{snippets}/following/isFollow-false/http-response.adoc[]
 include::{snippets}/following/isFollow-false/response-fields.adoc[]
+
+=== 팔로잉 리스트 조회 성공
+
+==== request
+
+include::{snippets}/following/listSuccess/http-request.adoc[]
+include::{snippets}/following/listSuccess/request-cookies.adoc[]
+
+==== response
+
+include::{snippets}/following/listSuccess/http-response.adoc[]
+include::{snippets}/following/listSuccess/response-fields.adoc[]
+
+=== 팔로잉 리스트 조회 실패 (사용자 없음)
+
+==== request
+
+include::{snippets}/following/listFailure/http-request.adoc[]
+include::{snippets}/following/listFailure/request-cookies.adoc[]
+
+==== response
+
+include::{snippets}/following/listFailure/http-response.adoc[]
+include::{snippets}/following/listFailure/response-fields.adoc[]

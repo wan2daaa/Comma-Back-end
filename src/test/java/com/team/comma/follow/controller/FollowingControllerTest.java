@@ -2,9 +2,13 @@ package com.team.comma.follow.controller;
 
 import com.google.gson.Gson;
 import com.team.comma.common.dto.MessageResponse;
+import com.team.comma.follow.domain.Following;
 import com.team.comma.follow.dto.FollowingRequest;
+import com.team.comma.follow.dto.FollowingResponse;
 import com.team.comma.follow.exception.FollowingException;
 import com.team.comma.follow.service.FollowingService;
+import com.team.comma.user.constant.UserRole;
+import com.team.comma.user.domain.User;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,6 +31,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.security.auth.login.AccountException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import static com.team.comma.common.constant.ResponseCodeEnum.REQUEST_SUCCESS;
 import static com.team.comma.common.constant.ResponseCodeEnum.SIMPLE_REQUEST_FAILURE;
@@ -405,6 +410,90 @@ public class FollowingControllerTest {
 
         assertThat(result.getCode()).isEqualTo(REQUEST_SUCCESS.getCode());
         assertThat(result.getData()).isEqualTo(false);
+    }
+
+    @Test
+    public void 팔로잉_리스트_조회_성공() throws Exception {
+        // given
+        final String api = "/followings/lists";
+
+        final String token = "accessToken";
+        final User fromUser = User.builder().role(UserRole.USER).email("fromUser").build();
+        final User toUser = User.builder().role(UserRole.USER).email("toUser").build();
+        final Following following = Following.builder().id(1L).blockFlag(false).userFrom(fromUser).userTo(toUser).build();
+        final FollowingResponse response = FollowingResponse.of(following);
+        final MessageResponse message = MessageResponse.of(REQUEST_SUCCESS , List.of(response,response));
+
+        doReturn(message).when(followingService).getFollowingUserList(token);
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(api)
+                        .cookie(new Cookie("accessToken" , token))
+                        .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        resultActions.andExpect(status().isOk()).andDo(
+                document("following/listSuccess",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestCookies(
+                                cookieWithName("accessToken").description("리스트 조회 할 사용자의 accessToken")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메세지"),
+                                fieldWithPath("data").description("응답 데이터"),
+                                fieldWithPath("data.[].followingId").description("팔로우 관계 Id"),
+                                fieldWithPath("data.[].fromUserEmail").description("팔로우 한 사용자 이메일"),
+                                fieldWithPath("data.[].toUserEmail").description("팔로우 대상 사용자 이메일")
+                        )
+                )
+        );
+        final MessageResponse result = gson.fromJson(
+                resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
+                MessageResponse.class);
+
+        assertThat((List<FollowingResponse>) result.getData()).size().isEqualTo(2);
+
+    }
+
+    @Test
+    public void 팔로잉_리스트_조회_실패_사용자찾을수없음() throws Exception {
+        // given
+        final String api = "/followings/lists";
+
+        final String token = "accessToken";
+        doThrow(new AccountException("해당 사용자를 찾을 수 없습니다.")).when(followingService).getFollowingUserList(token);
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(api)
+                        .cookie(new Cookie("accessToken" , token))
+                        .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        resultActions.andExpect(status().isBadRequest()).andDo(
+                document("following/listFailure",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestCookies(
+                                cookieWithName("accessToken").description("리스트 조회 할 사용자의 accessToken")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메세지"),
+                                fieldWithPath("data").description("응답 데이터")
+                        )
+                )
+        );
+        final MessageResponse result = gson.fromJson(
+                resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
+                MessageResponse.class);
+
+        assertThat(result.getCode()).isEqualTo(SIMPLE_REQUEST_FAILURE.getCode());
+        assertThat(result.getData()).isNull();
+
     }
 
 }

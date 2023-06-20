@@ -30,14 +30,10 @@ import com.team.comma.common.dto.MessageResponse;
 import com.team.comma.spotify.playlist.domain.Playlist;
 import com.team.comma.spotify.playlist.dto.PlaylistRequest;
 import com.team.comma.spotify.playlist.dto.PlaylistResponse;
-import com.team.comma.spotify.playlist.dto.PlaylistTrackArtistResponse;
-import com.team.comma.spotify.playlist.dto.PlaylistTrackResponse;
 import com.team.comma.spotify.playlist.dto.PlaylistUpdateRequest;
 import com.team.comma.spotify.playlist.exception.PlaylistException;
 import com.team.comma.spotify.playlist.service.PlaylistService;
 import com.team.comma.spotify.playlist.service.PlaylistTrackService;
-import com.team.comma.spotify.track.domain.Track;
-import com.team.comma.spotify.track.domain.TrackArtist;
 import com.team.comma.util.gson.GsonUtil;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.Cookie;
@@ -84,7 +80,6 @@ class PlaylistControllerTest {
 
     MockMvc mockMvc;
     Gson gson;
-    private String userEmail = "email@naver.com";
 
     @BeforeEach
     public void init(WebApplicationContext webApplicationContext,
@@ -102,15 +97,13 @@ class PlaylistControllerTest {
         // given
         final String url = "/playlist";
 
-        final List<PlaylistTrackArtistResponse> trackArtistList = Arrays.asList(
-            PlaylistTrackArtistResponse.of(buildTrackArtist()));
+        final List<PlaylistResponse> playlist = Arrays.asList(
+                PlaylistResponse.of(buildPlaylist(),3, "representative album image url"),
+                PlaylistResponse.of(buildPlaylist(),3, "representative album image url"));
 
-        final List<PlaylistTrackResponse> trackList = Arrays.asList(
-            PlaylistTrackResponse.of(buildTrack(), true, trackArtistList));
+        final MessageResponse message = MessageResponse.of(REQUEST_SUCCESS, playlist);
 
-        doReturn(Arrays.asList(
-            PlaylistResponse.of(buildPlaylist(), trackList)
-        )).when(playlistService).getPlaylists("accessToken");
+        doReturn(message).when(playlistService).getPlaylists("accessToken");
 
         // when
         final ResultActions resultActions = mockMvc.perform(
@@ -127,27 +120,24 @@ class PlaylistControllerTest {
                     cookieWithName("accessToken").description("사용자 access token 값")
                 ),
                 responseFields(
-                    fieldWithPath("[].playlistId").description("플레이리스트 id"),
-                    fieldWithPath("[].playlistTitle").description("플레이리스트 제목"),
-                    fieldWithPath("[].alarmFlag").description("알람 설정 여부, true = on / false = off"),
-                    fieldWithPath("[].alarmStartTime").description("알람 시작 시간"),
-                    fieldWithPath("[].trackList.[].trackId").description("트랙 id"),
-                    fieldWithPath("[].trackList.[].trackTitle").description("트랙 제목"),
-                    fieldWithPath("[].trackList.[].durationTimeMs").description("재생시간"),
-                    fieldWithPath("[].trackList.[].albumImageUrl").description("앨범 이미지 URL"),
-                    fieldWithPath("[].trackList.[].trackAlarmFlag").description(
-                        "알람 설정 여부, 플레이리스트 알람 설정과 관계 없이 개별로 설정 가능"),
-                    fieldWithPath("[].trackList.[].trackArtistList.[].artistId").description(
-                        "가수 id"),
-                    fieldWithPath("[].trackList.[].trackArtistList.[].artistName").description(
-                        "가수 이름")
+                    fieldWithPath("code").description("응답 코드"),
+                    fieldWithPath("message").description("응답 메세지"),
+                    fieldWithPath("data").description("응답 데이터"),
+                    fieldWithPath("data.[].playlistId").description("플레이리스트 id"),
+                    fieldWithPath("data.[].playlistTitle").description("플레이리스트 제목"),
+                    fieldWithPath("data.[].alarmFlag").description("알람 설정 여부, true = on / false = off"),
+                    fieldWithPath("data.[].alarmStartTime").description("알람 시작 시간"),
+                    fieldWithPath("data.[].trackCount").description("플레이리스트에 포함된 트랙 갯수"),
+                    fieldWithPath("data.[].repAlbumImageUrl").description("플레이리스트 대표 앨범 이미지 url")
                 )
             )
         );
+        final MessageResponse result = gson.fromJson(
+                resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8),
+                MessageResponse.class);
 
-        final List<PlaylistResponse> result = playlistService.getPlaylists("accessToken");
+        assertThat((List<PlaylistResponse>) result.getData()).size().isEqualTo(2);
 
-        assertThat(result).hasSize(1);
     }
 
     @Test
@@ -455,22 +445,6 @@ class PlaylistControllerTest {
                 )
             );
 
-    }
-
-    private TrackArtist buildTrackArtist() {
-        return TrackArtist.builder()
-            .id(123L)
-            .artistName("test artist")
-            .build();
-    }
-
-    private Track buildTrack() {
-        return Track.builder()
-            .id(123L)
-            .trackTitle("test track")
-            .durationTimeMs(3000)
-            .albumImageUrl("url/test/image")
-            .build();
     }
 
     private Playlist buildPlaylist() {

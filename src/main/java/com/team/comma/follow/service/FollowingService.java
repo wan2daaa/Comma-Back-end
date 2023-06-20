@@ -2,6 +2,7 @@ package com.team.comma.follow.service;
 
 import com.team.comma.common.dto.MessageResponse;
 import com.team.comma.follow.domain.Following;
+import com.team.comma.follow.dto.FollowingResponse;
 import com.team.comma.follow.exception.FollowingException;
 import com.team.comma.follow.repository.FollowingRepository;
 import com.team.comma.user.domain.User;
@@ -12,6 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.security.auth.login.AccountException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.team.comma.common.constant.ResponseCodeEnum.REQUEST_SUCCESS;
 
@@ -86,6 +90,14 @@ public class FollowingService {
         }
 
         return false;
+    }
+
+    public MessageResponse getFollowingUserList(String token) throws AccountException {
+        String fromUserEmail = jwtTokenProvider.getUserPk(token);
+        User fromUser = userRepository.findByEmail(fromUserEmail)
+                .orElseThrow(() -> new AccountException("해당 사용자를 찾을 수 없습니다."));
+
+        return MessageResponse.of(REQUEST_SUCCESS, followingRepository.getFollowingUserListByUser(fromUser));
     }
 
 }

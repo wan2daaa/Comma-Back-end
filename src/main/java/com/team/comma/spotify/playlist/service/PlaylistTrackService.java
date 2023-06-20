@@ -10,16 +10,12 @@ import com.team.comma.spotify.playlist.exception.PlaylistException;
 import com.team.comma.spotify.playlist.repository.PlaylistRepository;
 import com.team.comma.spotify.playlist.repository.PlaylistTrackRepository;
 import com.team.comma.spotify.track.domain.Track;
-import com.team.comma.spotify.track.domain.TrackArtist;
 import com.team.comma.spotify.track.dto.TrackRequest;
-import com.team.comma.spotify.track.repository.TrackArtistRepository;
 import com.team.comma.spotify.track.repository.TrackRepository;
 import com.team.comma.user.domain.User;
 import com.team.comma.user.repository.UserRepository;
 import com.team.comma.util.jwt.support.JwtTokenProvider;
-import jakarta.persistence.EntityNotFoundException;
 
-import java.util.Optional;
 import java.util.Set;
 import javax.security.auth.login.AccountException;
 import lombok.RequiredArgsConstructor;
@@ -102,6 +98,14 @@ public class PlaylistTrackService {
                 .playSequence(maxPlaySequence + 1)
                 .build();
         playlistTrackRepository.save(eachPlaylistTrack);
+    }
+
+    public MessageResponse getPlaylistTracks(long playlistId) {
+        Playlist playlist = playlistRepository.findById(playlistId)
+                .orElseThrow(() -> new PlaylistException("플레이리스트를 찾을 수 없습니다."));
+
+        return MessageResponse.of(REQUEST_SUCCESS,
+                playlistTrackRepository.getPlaylistTracksByPlaylist(playlist));
     }
 
 }

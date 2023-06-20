@@ -1,12 +1,16 @@
 package com.team.comma.follow.repository;
 
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.team.comma.follow.domain.Following;
+import com.team.comma.follow.dto.FollowingResponse;
 import com.team.comma.user.domain.QUser;
 import com.team.comma.user.domain.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.team.comma.follow.domain.QFollowing.following;
@@ -65,4 +69,19 @@ public class FollowingRepositoryImpl implements FollowingRepositoryCustom{
                 ))
                 .execute();
     }
+
+    @Override
+    public List<FollowingResponse> getFollowingUserListByUser(User fromUser) {
+        return queryFactory.select(
+                                Projections.constructor(
+                                    FollowingResponse.class,
+                                    following.id,
+                                    following.userFrom.email,
+                                    following.userTo.email))
+                            .from(following)
+                            .where(following.userFrom.eq(fromUser)
+                                    .and(following.blockFlag.eq(false)))
+                            .fetch();
+    }
+
 }

@@ -8,12 +8,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface PlaylistTrackRepository extends JpaRepository<PlaylistTrack, Long> {
+public interface PlaylistTrackRepository extends JpaRepository<PlaylistTrack, Long>,
+    PlaylistTrackRepositoryCustom {
 
     List<PlaylistTrack> findAllByPlaylist(Playlist playlist);
 
     int deletePlaylistTrackByTrackIdAndPlaylistId(Long trackId, Long playlistId);
-
 
     Optional<PlaylistTrack> findByTrackIdAndPlaylistId(Long trackId, Long playlistId);
 

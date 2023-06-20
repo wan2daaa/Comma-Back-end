@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.team.comma.spotify.playlist.domain.Playlist;
 import com.team.comma.spotify.playlist.domain.PlaylistTrack;
+import com.team.comma.spotify.playlist.dto.PlaylistTrackResponse;
 import com.team.comma.spotify.track.domain.Track;
 import com.team.comma.spotify.track.repository.TrackRepository;
 import com.team.comma.user.constant.UserRole;
@@ -19,9 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.springframework.security.core.parameters.P;
 
 @DataJpaTest
 @Import(TestConfig.class)
@@ -187,6 +186,30 @@ class PlaylistTrackRepositoryTest {
         assertThat(maxPlaySequence).isEqualTo(3);
     }
 
+    @Test
+    void 플레이리스트_트랙_상세_조회() {
+        // given
+        final User user = buildUser();
+        final Playlist playlist = buildPlaylist(user, "test playlist");
+        final Track track1 = buildTrack("test track");
+        final Track track2 = buildTrack("test track");
+        final PlaylistTrack playlistTrack1 = buildPlaylistTrack(playlist,track1);
+        final PlaylistTrack playlistTrack2 = buildPlaylistTrack(playlist,track2);
+
+        userRepository.save(user);
+        playlistRepository.save(playlist);
+        trackRepository.save(track1);
+        trackRepository.save(track2);
+        playlistTrackRepository.save(playlistTrack1);
+        playlistTrackRepository.save(playlistTrack2);
+
+        // when
+        final List<PlaylistTrackResponse> result = playlistTrackRepository.getPlaylistTracksByPlaylist(playlist);
+
+        // then
+        assertThat(result.size()).isEqualTo(2);
+
+    }
 
     private User buildUser() {
         return User.builder()

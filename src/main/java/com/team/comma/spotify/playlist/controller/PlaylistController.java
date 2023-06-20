@@ -2,13 +2,11 @@ package com.team.comma.spotify.playlist.controller;
 
 import com.team.comma.common.dto.MessageResponse;
 import com.team.comma.spotify.playlist.dto.PlaylistRequest;
-import com.team.comma.spotify.playlist.dto.PlaylistResponse;
 import com.team.comma.spotify.playlist.dto.PlaylistUpdateRequest;
 import com.team.comma.spotify.playlist.exception.PlaylistException;
 import com.team.comma.spotify.playlist.service.PlaylistService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +26,7 @@ public class PlaylistController {
     private final PlaylistService playlistService;
 
     @GetMapping
-    public ResponseEntity<List<PlaylistResponse>> getUserPlaylist(
+    public ResponseEntity<MessageResponse> getUserPlaylist(
         @CookieValue final String accessToken) throws AccountException {
         return ResponseEntity.ok()
                 .body(playlistService.getPlaylists(accessToken));

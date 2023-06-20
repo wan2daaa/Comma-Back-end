@@ -1,9 +1,7 @@
 package com.team.comma.spotify.playlist.service;
 
-import static com.team.comma.common.constant.ResponseCodeEnum.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
 import com.team.comma.common.dto.MessageResponse;
@@ -11,11 +9,11 @@ import com.team.comma.spotify.playlist.domain.Playlist;
 import com.team.comma.spotify.playlist.domain.PlaylistTrack;
 import com.team.comma.spotify.playlist.dto.PlaylistResponse;
 import com.team.comma.spotify.playlist.dto.PlaylistTrackArtistResponse;
+import com.team.comma.spotify.playlist.dto.PlaylistTrackResponse;
 import com.team.comma.spotify.playlist.dto.PlaylistUpdateRequest;
 import com.team.comma.spotify.playlist.repository.PlaylistRepository;
 import com.team.comma.spotify.track.domain.Track;
 import com.team.comma.spotify.track.domain.TrackArtist;
-import com.team.comma.spotify.track.service.TrackService;
 import com.team.comma.user.domain.User;
 import com.team.comma.user.repository.UserRepository;
 import com.team.comma.util.jwt.support.JwtTokenProvider;
@@ -32,16 +30,12 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.team.comma.common.constant.ResponseCodeEnum.REQUEST_SUCCESS;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MockitoExtension.class)
 class PlaylistServiceTest {
 
     @InjectMocks
     private PlaylistService playlistService;
-    @Mock
-    private TrackService trackService;
     @Mock
     private PlaylistRepository playlistRepository;
     @Mock
@@ -56,29 +50,26 @@ class PlaylistServiceTest {
     void 플레이리스트_조회_성공() throws AccountException {
         // given
         final User user = buildUserWithEmail();
-        Optional<User> optionalUser = Optional.of(user);
-        doReturn(optionalUser).when(userRepository).findByEmail(userEmail);
-        doReturn(userEmail).when(jwtTokenProvider).getUserPk(token);
+        final Optional<User> optionalUser = Optional.of(user);
 
         final TrackArtist trackArtist = buildTrackArtist();
-        doReturn(Arrays.asList(
-                PlaylistTrackArtistResponse.of(buildTrackArtist())
-        )).when(trackService).createArtistResponse(any());
-
         final Track track = buildTrack(Arrays.asList(trackArtist));
         final PlaylistTrack playlistTrack = buildPlaylistTrack(track);
-        final List<Playlist> userPlaylist = Arrays.asList(
-                buildUserPlaylist(Arrays.asList(playlistTrack)),
-                buildUserPlaylist(Arrays.asList(playlistTrack)),
-                buildUserPlaylist(Arrays.asList(playlistTrack))
-        );
-        doReturn(userPlaylist).when(playlistRepository).findAllByUserAndDelFlag(user, false);
+
+        final PlaylistResponse playlistResponse = PlaylistResponse.of(buildUserPlaylist(Arrays.asList(playlistTrack)), 3, "representative album image url");
+        final List<PlaylistResponse> playlistResponseList = List.of(playlistResponse);
+
+        doReturn(optionalUser).when(userRepository).findByEmail(userEmail);
+        doReturn(userEmail).when(jwtTokenProvider).getUserPk(token);
+        doReturn(playlistResponseList).when(playlistRepository).getPlaylistsByUser(user);
 
         // when
-        final List<PlaylistResponse> result = playlistService.getPlaylists(token);
+        final MessageResponse result = playlistService.getPlaylists(token);
 
         // then
-        assertThat(result).hasSize(3);
+        assertThat(result.getCode()).isEqualTo(REQUEST_SUCCESS.getCode());
+        assertThat(result.getMessage()).isEqualTo(REQUEST_SUCCESS.getMessage());
+        assertThat((List<PlaylistResponse>) result.getData()).isEqualTo(playlistResponseList);
     }
 
     @Test
@@ -99,7 +90,7 @@ class PlaylistServiceTest {
         final Track track = buildTrack(Arrays.asList(trackArtist));
         final PlaylistTrack playlistTrack = buildPlaylistTrack(track);
         final Playlist userPlaylist = buildUserPlaylist(Arrays.asList(playlistTrack));
-        Optional<Playlist> optionalPlaylist = Optional.of(userPlaylist);
+        final Optional<Playlist> optionalPlaylist = Optional.of(userPlaylist);
         doReturn(optionalPlaylist).when(playlistRepository).findById(userPlaylist.getId());
 
         // when

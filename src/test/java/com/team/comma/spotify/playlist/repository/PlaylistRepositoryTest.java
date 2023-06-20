@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.team.comma.spotify.playlist.domain.Playlist;
 import com.team.comma.spotify.playlist.domain.PlaylistTrack;
+import com.team.comma.spotify.playlist.dto.PlaylistResponse;
 import com.team.comma.spotify.playlist.dto.PlaylistUpdateRequest;
 import com.team.comma.spotify.track.domain.Track;
 import com.team.comma.spotify.track.repository.TrackRepository;
@@ -57,7 +58,7 @@ class PlaylistRepositoryTest {
         final User user = userRepository.save(buildUser());
 
         // when
-        final List<Playlist> result = playlistRepository.findAllByUserAndDelFlag(user, false);
+        final List<PlaylistResponse> result = playlistRepository.getPlaylistsByUser(user);
 
         // then
         assertThat(result.size()).isEqualTo(0);
@@ -71,7 +72,7 @@ class PlaylistRepositoryTest {
         playlistRepository.save(buildPlaylist(user, title));
 
         // when
-        final List<Playlist> result = playlistRepository.findAllByUserAndDelFlag(user, false);
+        final List<PlaylistResponse> result = playlistRepository.getPlaylistsByUser(user);
 
         // then
         assertThat(result.size()).isEqualTo(2);
@@ -219,19 +220,20 @@ class PlaylistRepositoryTest {
             playlistUpdateRequest.getListSequence());
     }
 
-    private Playlist buildPlaylistWithListSequence(int listSequence) {
-        return Playlist.builder()
-            .listSequence(listSequence)
-            .build();
+    private User buildUser() {
+        return User.builder()
+                .email(userEmail)
+                .type(UserType.GENERAL_USER)
+                .role(UserRole.USER)
+                .build();
     }
 
-    private PlaylistTrack buildPlaylistTrackWithPlaylistAndTrack(Playlist playlist,
-        Track track1) {
-        PlaylistTrack playlistTrack1 = PlaylistTrack.builder()
-            .playlist(playlist)
-            .track(track1)
-            .build();
-        return playlistTrack1;
+    private Playlist buildPlaylist(User user, String title) {
+        return Playlist.builder()
+                .playlistTitle(title)
+                .alarmFlag(true)
+                .user(user)
+                .build();
     }
 
     private Playlist buildPlaylist() {
@@ -242,41 +244,23 @@ class PlaylistRepositoryTest {
         return playlist;
     }
 
+    private Playlist buildPlaylistWithListSequence(int listSequence) {
+        return Playlist.builder()
+                .listSequence(listSequence)
+                .build();
+    }
+
     private Track buildTrackWithDurationTimeMs(int durationTimeMs) {
-        return Track.builder().durationTimeMs(durationTimeMs).build();
+        return Track.builder()
+                .durationTimeMs(durationTimeMs)
+                .build();
     }
 
-    private User buildGeneralUser() {
-        return User.builder()
-            .email(userEmail)
-            .type(UserType.GENERAL_USER)
-            .role(UserRole.USER)
-            .build();
+    private PlaylistTrack buildPlaylistTrackWithPlaylistAndTrack(Playlist playlist, Track track1) {
+        return PlaylistTrack.builder()
+                .playlist(playlist)
+                .track(track1)
+                .build();
     }
-
-    private Playlist buildPlaylist(User user, String title, List<Track> trackList) {
-        return Playlist.builder()
-            .playlistTitle(title)
-            .alarmFlag(true)
-            .user(user)
-            .build();
-    }
-
-    private User buildUser() {
-        return User.builder()
-            .email(userEmail)
-            .type(UserType.GENERAL_USER)
-            .role(UserRole.USER)
-            .build();
-    }
-
-    private Playlist buildPlaylist(User user, String title) {
-        return Playlist.builder()
-            .playlistTitle(title)
-            .alarmFlag(true)
-            .user(user)
-            .build();
-    }
-
 
 }

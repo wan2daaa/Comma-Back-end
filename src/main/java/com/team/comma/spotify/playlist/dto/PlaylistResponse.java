@@ -17,23 +17,20 @@ public final class PlaylistResponse {
     private final String playlistTitle;
     private final boolean alarmFlag;
     private final LocalTime alarmStartTime;
+    private final String repAlbumImageUrl;
+    private final long trackCount;
 
-    private final List<PlaylistTrackResponse> trackList;
-
-    private PlaylistResponse(Playlist playlist, List<PlaylistTrackResponse> trackList) {
+    private PlaylistResponse(Playlist playlist, long trackCount, String repAlbumImageUrl) {
         this.playlistId = playlist.getId();
         this.playlistTitle = playlist.getPlaylistTitle();
         this.alarmFlag = playlist.getAlarmFlag();
         this.alarmStartTime = playlist.getAlarmStartTime();
-        this.trackList = new ArrayList<>(trackList);
+        this.repAlbumImageUrl = repAlbumImageUrl;
+        this.trackCount = trackCount;
     }
 
-    public static PlaylistResponse of(Playlist playlist, List<PlaylistTrackResponse> trackList) {
-        return new PlaylistResponse(playlist, trackList);
-    }
-
-    public List<PlaylistTrackResponse> getTrackList() {
-        return Collections.unmodifiableList(trackList);
+    public static PlaylistResponse of(Playlist playlist, long trackCount, String repAlbumImageUrl) {
+        return new PlaylistResponse(playlist, trackCount, repAlbumImageUrl);
     }
 
 }
