@@ -1,7 +1,7 @@
 server:
   port: 8080
 client:
-  url: http://localhost:3000
+  url: http://43.201.239.102:3000
 
 #logging
 logging:
