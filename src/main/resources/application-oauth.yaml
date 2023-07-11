@@ -10,7 +10,7 @@ spring:
             client-id: Ni5yEttxU_QaR3wb3pDA
             client-name: naver
           kakao:
-            client-secret: unknown
+            client-secret: zfBjL6Vw5709VgYRk2G9vcV38Y3wpBhx
             client-authentication-method: POST
             redirect-uri: http://15.165.85.78:8080/login/oauth2/code/kakao
             authorization-grant-type: authorization_code
