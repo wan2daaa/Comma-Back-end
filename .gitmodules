@@ -1,0 +1,3 @@
+[submodule "Comma-Submodule"]
+	path = Comma-Submodule
+	url = https://github.com/CommaProject/Comma-Submodule.git

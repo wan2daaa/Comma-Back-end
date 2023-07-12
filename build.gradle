@@ -99,3 +99,11 @@ bootJar {
         into 'static/docs'
     }
 }
+
+task copyPrivate(type: Copy) {
+    copy {
+        from './Comma-Submodule'
+        include '*.yaml'
+        into './src/main/resources'
+    }
+}
