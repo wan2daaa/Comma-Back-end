@@ -75,6 +75,14 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 }
 
+task copyPrivate(type: Copy) {
+    copy {
+        from './Comma-Submodule'
+        include '*.yaml'
+        into './src/main/resources'
+    }
+}
+
 tasks.named('test') {
     useJUnitPlatform()
 }
@@ -97,13 +105,5 @@ bootJar {
     dependsOn asciidoctor
     from("${asciidoctor.outputDir}") {
         into 'static/docs'
-    }
-}
-
-task copyPrivate(type: Copy) {
-    copy {
-        from './Comma-Submodule'
-        include '*.yaml'
-        into './src/main/resources'
     }
 }
