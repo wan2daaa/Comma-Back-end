@@ -1,6 +1,5 @@
 package com.team.comma.spotify.track.dto;
 
-import com.team.comma.spotify.playlist.domain.Playlist;
 import com.team.comma.spotify.track.domain.Track;
 import com.team.comma.spotify.track.domain.TrackArtist;
 import lombok.AllArgsConstructor;
@@ -23,6 +22,8 @@ public class TrackRequest {
 
     private String spotifyTrackHref;
 
+    private int durationTimeMs;
+
     private List<String> trackArtistList;
 
     public Track toTrackEntity() {
@@ -31,6 +32,7 @@ public class TrackRequest {
                 .albumImageUrl(albumImageUrl)
                 .spotifyTrackId(spotifyTrackId)
                 .spotifyTrackHref(spotifyTrackHref)
+                .durationTimeMs(durationTimeMs)
                 .trackArtistList(buildTrackArtistList(trackArtistList))
                 .build();
     }

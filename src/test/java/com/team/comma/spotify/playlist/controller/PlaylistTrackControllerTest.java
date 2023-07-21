@@ -247,6 +247,7 @@ class PlaylistTrackControllerTest {
                         fieldWithPath("trackList.[].albumImageUrl").description("트랙 앨범 이미지 경로"),
                         fieldWithPath("trackList.[].spotifyTrackId").description("트랙 ISRC 값"),
                         fieldWithPath("trackList.[].spotifyTrackHref").description("트랙 href"),
+                        fieldWithPath("trackList.[].durationTimeMs").description("트랙 재생 시간"),
                         fieldWithPath("trackList.[].trackArtistList").description("트랙 아티스트 이름 리스트")
                     ),
                     responseFields(

@@ -32,7 +32,7 @@ include::{snippets}/spotify/updatePlaylistAlert/http-request.adoc[]
 include::{snippets}/spotify/updatePlaylistAlert/request-fields.adoc[]
 
 ==== Response
-
+x
 include::{snippets}/spotify/updatePlaylistAlert/http-response.adoc[]
 include::{snippets}/spotify/updatePlaylistAlert/response-fields.adoc[]
 

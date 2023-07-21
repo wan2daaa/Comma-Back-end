@@ -55,6 +55,5 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         return UriComponentsBuilder.fromUriString(url).build().toUriString();
     }
 
-
 }
 

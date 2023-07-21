@@ -1,0 +1,23 @@
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+== 메인 화면
+
+link:main.html[main 화면]
+
+== 플레이리스트 추천 API
+
+=== 플레이리스트 추천(익명/팔로잉) 저장 성공
+
+==== Request
+
+include::{snippets}/spotify/saveRecommend/http-request.adoc[]
+include::{snippets}/spotify/saveRecommend/request-cookies.adoc[]
+include::{snippets}/spotify/saveRecommend/request-fields.adoc[]
+
+==== Response
+
+include::{snippets}/spotify/saveRecommend/http-response.adoc[]
+include::{snippets}/spotify/saveRecommend/response-fields.adoc[]

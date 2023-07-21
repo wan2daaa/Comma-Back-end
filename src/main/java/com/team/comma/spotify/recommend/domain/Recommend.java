@@ -42,12 +42,12 @@ public class Recommend {
     @ManyToOne(fetch = FetchType.LAZY)
     private Playlist playlist;
 
-    @JoinColumn(name = "recommend_from")
+    @JoinColumn(name = "fromUser_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private User recommendFrom;
+    private User fromUser;
 
-    @JoinColumn(name = "recommend_to")
+    @JoinColumn(name = "toUser_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private User recommendTo;
+    private User toUser;
 
 }

@@ -173,12 +173,12 @@ CREATE TABLE recommend_tb
     recommend_type VARCHAR(15),
     comment        TEXT,
     playlist_id    BIGINT,
-    recommend_from BIGINT,
-    recommend_to   BIGINT,
+    from_user_id BIGINT,
+    to_user_id   BIGINT,
     PRIMARY KEY (id),
     FOREIGN KEY (playlist_id) REFERENCES playlist_tb (id),
-    FOREIGN KEY (recommend_from) REFERENCES recommend_tb (id),
-    FOREIGN KEY (recommend_to) REFERENCES recommend_tb (id)
+    FOREIGN KEY (from_user_id) REFERENCES user_tb (id),
+    FOREIGN KEY (to_user_id) REFERENCES user_tb (id)
 );
 
 CREATE TABLE track_artist_tb

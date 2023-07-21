@@ -51,12 +51,13 @@ public class PlaylistTrackSaveRequestDto {
         this.trackList = trackList;
     }
 
-    public Playlist toPlaylistEntity() {
+    public Playlist toPlaylistEntity(User user) {
         return Playlist.builder()
             .playlistTitle(playlistTitle)
             .alarmStartTime(alarmStartTime)
             .user(user)
             .listSequence(listSequence)
+            .alarmFlag(true)
             .build();
     }
 }
