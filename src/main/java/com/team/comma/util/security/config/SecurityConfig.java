@@ -1,9 +1,12 @@
 package com.team.comma.util.security.config;
 
 import com.team.comma.user.constant.UserRole;
-import com.team.comma.util.exception.handler.ExceptionHandlerFilter;
 import com.team.comma.util.auth.service.CustomOAuth2UserService;
 import com.team.comma.util.auth.support.OAuth2AuthenticationSuccessHandler;
+import com.team.comma.util.exception.handler.ExceptionHandlerFilter;
+import com.team.comma.util.jwt.support.JwtAuthenticationFilter;
+import com.team.comma.util.jwt.support.JwtTokenProvider;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -11,11 +14,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import com.team.comma.util.jwt.support.JwtAuthenticationFilter;
-import com.team.comma.util.jwt.support.JwtTokenProvider;
-
-import lombok.RequiredArgsConstructor;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -27,10 +25,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    final private JwtTokenProvider jwtTokenProvider;
-    final private ExceptionHandlerFilter exceptionHandlerFilter;
-    final private CustomOAuth2UserService oauth2UserService;
-    final private OAuth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final ExceptionHandlerFilter exceptionHandlerFilter;
+    private final CustomOAuth2UserService oauth2UserService;
+    private final OAuth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

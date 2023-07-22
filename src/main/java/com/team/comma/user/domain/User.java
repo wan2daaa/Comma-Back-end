@@ -8,12 +8,15 @@ import com.team.comma.util.converter.BooleanConverter;
 import jakarta.persistence.*;
 import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
+import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 
@@ -36,6 +39,11 @@ public class User implements UserDetails {
 
     @Column(length = 50)
     private String password;
+
+    @Temporal(TemporalType.DATE)
+    @Column(nullable = false)
+    @CreationTimestamp
+    private Date joinDate;
 
     @Enumerated(EnumType.STRING)
     private UserType type;

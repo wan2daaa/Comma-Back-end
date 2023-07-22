@@ -1,12 +1,14 @@
 package com.team.comma.util.jwt.support;
 
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class CreationCookie {
 
-    private static final String DOMAIN_URL = "15.165.85.78";
+    @Value("${spring.server}")
+    private static String DOMAIN_URL;
 
     public static ResponseCookie createResponseAccessToken(String cookieName) {
         return ResponseCookie.from("accessToken", cookieName)

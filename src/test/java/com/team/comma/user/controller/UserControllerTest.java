@@ -127,6 +127,7 @@ class UserControllerTest {
                                 fieldWithPath("data.userId").description("사용자 Id 데이터"),
                                 fieldWithPath("data.profileImage").description("사용자 프로필 이미지 URL"),
                                 fieldWithPath("data.name").description("사용자 이름"),
+                                fieldWithPath("data.joinDate").description("가입 날짜"),
                                 fieldWithPath("data.nickName").description("사용자 닉네임"),
                                 fieldWithPath("data.age").description("사용자 연령"),
                                 fieldWithPath("data.sex").description("사용자 성별")
@@ -225,6 +226,7 @@ class UserControllerTest {
                                 fieldWithPath("data.name").description("사용자 이름"),
                                 fieldWithPath("data.nickName").description("사용자 닉네임"),
                                 fieldWithPath("data.age").description("사용자 연령"),
+                                fieldWithPath("data.joinDate").description("가입 날짜"),
                                 fieldWithPath("data.sex").description("사용자 성별")
                         )
                 )
@@ -523,6 +525,7 @@ class UserControllerTest {
                                 fieldWithPath("data.name").description("사용자 이름"),
                                 fieldWithPath("data.nickName").description("사용자 닉네임"),
                                 fieldWithPath("data.age").description("사용자 연령"),
+                                fieldWithPath("data.joinDate").description("가입 날짜"),
                                 fieldWithPath("data.sex").description("사용자 성별")
                         )
                 )
@@ -575,6 +578,7 @@ class UserControllerTest {
                                 fieldWithPath("data[].name").description("사용자 이름"),
                                 fieldWithPath("data[].nickName").description("사용자 닉네임"),
                                 fieldWithPath("data[].age").description("사용자 연령"),
+                                fieldWithPath("data[].joinDate").description("가입 날짜"),
                                 fieldWithPath("data[].sex").description("사용자 성별")
                         )
                 )

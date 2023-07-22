@@ -2,7 +2,9 @@ package com.team.comma.common.dto;
 
 import com.team.comma.common.constant.ResponseCodeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
 
+@Getter
 public final class MessageResponse<D> {
 
     final private int code;
@@ -31,15 +33,4 @@ public final class MessageResponse<D> {
         return new MessageResponse(code, message, null);
     }
 
-    public int getCode() {
-        return code;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public D getData() {
-        return data;
-    }
 }

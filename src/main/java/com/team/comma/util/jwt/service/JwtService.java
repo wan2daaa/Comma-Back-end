@@ -8,6 +8,7 @@ import com.team.comma.util.security.domain.RefreshToken;
 import com.team.comma.util.security.domain.Token;
 import com.team.comma.util.security.repository.RefreshTokenRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -21,12 +22,11 @@ import static com.team.comma.common.constant.ResponseCodeEnum.ACCESS_TOKEN_CREAT
 import static org.apache.http.cookie.SM.SET_COOKIE;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
 
-    @Autowired
-    JwtTokenProvider jwtTokenProvider;
-    @Autowired
-    RefreshTokenRepository refreshTokenRepository;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional
     public void login(Token tokenEntity) {
@@ -74,9 +74,5 @@ public class JwtService {
 
         return ResponseEntity.status(HttpStatus.OK).header(SET_COOKIE, cookie.toString())
             .body(MessageResponse.of(ACCESS_TOKEN_CREATE));
-    }
-
-    public JwtService() {
-
     }
 }
