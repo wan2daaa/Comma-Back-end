@@ -59,6 +59,7 @@ CREATE TABLE user_tb
     role     VARCHAR(255),
     type     VARCHAR(255),
     del_flag varchar(255),
+    join_date DATETIME,
     user_detail_id BIGINT ,
     FOREIGN KEY (user_detail_id) REFERENCES user_detail_tb (id),
     PRIMARY KEY (id)
